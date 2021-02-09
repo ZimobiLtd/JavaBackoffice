@@ -219,7 +219,7 @@ public class Betting_TurnOver extends HttpServlet {
                 
                 dataQuery = "SELECT Play_Bet_ID,Play_Bet_Slip_ID, Play_Bet_Mobile,Play_Bet_Timestamp,Play_Bet_Stake,Play_Bet_Status,Play_Bet_Possible_Winning, ifnull(Play_Bet_Settle_Bet_Time,'0000-00-00 00:00'), "+
                 "Play_Bet_Bonus_Stake, (case when Play_Bet_Type=1 then'Singlebet' when Play_Bet_Type=2 then 'Jackpot' when Play_Bet_Type=3 then 'Multibet' end) as 'bet _type', "+
-                "Play_Bet_Bonus_Winning FROM player_bets where Play_Bet_Timestamp between '"+fromDate+"' and '"+toDate+"'   and play_Bet_Type in (1,2,3) and "+
+                "Play_Bet_Bonus_Winning FROM player_bets where date(Play_Bet_Timestamp) between '"+fromDate+"' and '"+toDate+"'   and play_Bet_Type in (1,2,3) and "+
                 "Play_Bet_Status in (201, 202, 203, 204, 205, 206) order by Play_Bet_Timestamp desc";              
                   
                 rs = stmt.executeQuery(dataQuery);
@@ -234,7 +234,7 @@ public class Betting_TurnOver extends HttpServlet {
                     String bet_id = rs.getString(1);
                     String betslip_id = rs.getString(2);
                     String bet_mobile = rs.getString(3);//player
-                    String betdate =  rs.getString(4);//bet date
+                    String betdate =  sdf.format(rs.getTimestamp(4));//bet date
                     String betamount = rs.getString(5);//bet real money amount
                     int status = Integer.valueOf(rs.getString(6));//bet status code
                     
@@ -408,7 +408,33 @@ public class Betting_TurnOver extends HttpServlet {
                 }
 
                 
-                
+                if(dataArray.length()==0)
+                {
+                    dataObj  = new JSONObject();
+                    dataObj.put("BetID", "0");
+                    dataObj.put("BetSlipID", "0");
+                    dataObj.put("BetMobile", "0");
+                    dataObj.put("BetDate", "0");
+                    dataObj.put("BetAmountRM", "0");
+                    dataObj.put("BetStatus", "0");
+                    dataObj.put("BetPossibleWinning", "0");
+                    dataObj.put("BetLastChangeDate", "0");
+                    dataObj.put("BetOpenRM", "0");
+                    dataObj.put("BetRejectedRM", "0");
+                    dataObj.put("BetCancelledRM", "0");
+                    dataObj.put("BetWonAmount", "0");
+                    dataObj.put("BetBonusOpenBM", "0");
+                    dataObj.put("BetBonusRejectedBM", "0");
+                    dataObj.put("BetBonusCancelledBM", "0");
+                    dataObj.put("BetBonusPossibleWinningBM", "0");
+                    dataObj.put("BetAmountBM", "0");
+                    dataObj.put("BetType", "0");
+                    dataObj.put("BetRMProcessed", "0");
+                    dataObj.put("BetBMProcessed", "0");
+                    dataObj.put("BetBonusAchieved", "0");
+
+                    dataArray.put(dataObj);
+                }
                    
 
             rs.close();
@@ -447,44 +473,15 @@ public class Betting_TurnOver extends HttpServlet {
                 
                 dataQuery = "SELECT Play_Bet_ID,Play_Bet_Slip_ID, Play_Bet_Mobile,Play_Bet_Timestamp,Play_Bet_Stake,Play_Bet_Status,Play_Bet_Possible_Winning, ifnull(ifnull(Play_Bet_Settle_Bet_Time,'0000-00-00 00:00'),'0000-00-00 00:00'), "+
                 "Play_Bet_Bonus_Stake, (case when Play_Bet_Type=1 then'Singlebet' when Play_Bet_Type=2 then 'Jackpot' when Play_Bet_Type=3 then 'Multibet' end) as 'bet _type', "+
-                "Play_Bet_Bonus_Winning FROM player_bets where Play_Bet_Timestamp between '"+fromDate+"' and '"+toDate+"'  and "+bet_type+" and "+bet_status+"  order by Play_Bet_Timestamp desc";              
+                "Play_Bet_Bonus_Winning FROM player_bets where date(Play_Bet_Timestamp) between '"+fromDate+"' and '"+toDate+"'  and "+bet_type+" and "+bet_status+"  order by Play_Bet_Timestamp desc";              
                   
                 rs = stmt.executeQuery(dataQuery);
 
                 System.out.println("getAllBetting_Turnover==="+dataQuery);
 
-                if (rs.next() == false)
-                {
-                    dataObj  = new JSONObject();
-                    dataObj.put("BetID", "0");
-                    dataObj.put("BetSlipID", "0");
-                    dataObj.put("BetMobile", "0");
-                    dataObj.put("BetDate", "0");
-                    dataObj.put("BetAmountRM", "0");
-                    dataObj.put("BetStatus", "0");
-                    dataObj.put("BetPossibleWinning", "0");
-                    dataObj.put("BetLastChangeDate", "0");
-                    dataObj.put("BetOpenRM", "0");
-                    dataObj.put("BetRejectedRM", "0");
-                    dataObj.put("BetCancelledRM", "0");
-                    dataObj.put("BetWonAmount", "0");
-                    dataObj.put("BetBonusOpenBM", "0");
-                    dataObj.put("BetBonusRejectedBM", "0");
-                    dataObj.put("BetBonusCancelledBM", "0");
-                    dataObj.put("BetBonusPossibleWinningBM", "0");
-                    dataObj.put("BetAmountBM", "0");
-                    dataObj.put("BetType", "0");
-                    dataObj.put("BetRMProcessed", "0");
-                    dataObj.put("BetBMProcessed", "0");
-                    dataObj.put("BetBonusAchieved", "0");
-
-                    dataArray.put(dataObj);
+                
                     
-                }
-                else
-                {
-                    
-                    while (rs.next())
+                while (rs.next())
                 {
                  
                     dataObj  = new JSONObject();
@@ -492,7 +489,7 @@ public class Betting_TurnOver extends HttpServlet {
                     String bet_id = rs.getString(1);
                     String betslip_id = rs.getString(2);
                     String bet_mobile = rs.getString(3);//player
-                    String betdate =  rs.getString(4);//bet date
+                    String betdate =  sdf.format(rs.getTimestamp(4));//bet date
                     String betamount = rs.getString(5);//bet real money amount
                     String val=rs.getString(6);
                     int status =0;
@@ -512,7 +509,7 @@ public class Betting_TurnOver extends HttpServlet {
                         double winning_tax=Double.valueOf(betpossiblewinningamount)*0.2;
                         taxedbetpossiblewinningamount=String.format("%.2f", (Double.valueOf(betpossiblewinningamount)-winning_tax)); 
                         possiblewinningamounttax=String.format("%.2f", winning_tax);
-                        betsettledtime = rs.getString(8);// bet settled  date  sdf.format(rs.getTimestamp(8));
+                        betsettledtime = sdf.format(rs.getTimestamp(8));// bet settled  date  sdf.format(rs.getTimestamp(8));
                         openbet_rm = rs.getString(5);  // real money(rm) open
                         rejectedbet_rm = "0.00"; // rm rejected
                         cancellebet_rm = "0.00"; // rm cancelled
@@ -532,7 +529,7 @@ public class Betting_TurnOver extends HttpServlet {
                     {
                         betstatus="Won"; //bet status
                         betpossiblewinningamount = "0.00"; //rs.getString(7);
-                        betsettledtime = rs.getString(8);// bet settled  date  sdf.format(rs.getTimestamp(8));
+                        betsettledtime = sdf.format(rs.getTimestamp(8));// bet settled  date  sdf.format(rs.getTimestamp(8));
                         openbet_rm = rs.getString(5);  // real money(rm) open
                         rejectedbet_rm = "0.00"; // rm rejected
                         cancellebet_rm = "0.00"; // rm cancelled
@@ -557,7 +554,7 @@ public class Betting_TurnOver extends HttpServlet {
                     {
                         betstatus="Lost"; //bet status
                         betpossiblewinningamount = "0.00"; //rs.getString(7);
-                        betsettledtime = rs.getString(8);// bet settled  date  sdf.format(rs.getTimestamp(8));
+                        betsettledtime = sdf.format(rs.getTimestamp(8));// bet settled  date  sdf.format(rs.getTimestamp(8));
                         openbet_rm = "0.00";  // real money(rm) open
                         rejectedbet_rm = "0.00"; // rm rejected
                         cancellebet_rm = "0.00"; // rm cancelled
@@ -578,7 +575,7 @@ public class Betting_TurnOver extends HttpServlet {
                     {
                         betstatus="Rejected"; //bet status
                         betpossiblewinningamount = "0.00"; //rs.getString(7);
-                        betsettledtime = rs.getString(8);// bet settled  date  sdf.format(rs.getTimestamp(8));
+                        betsettledtime = sdf.format(rs.getTimestamp(8));// bet settled  date  sdf.format(rs.getTimestamp(8));
                         openbet_rm = "0.00";  // real money(rm) open
                         rejectedbet_rm = rs.getString(5); // rm rejected
                         cancellebet_rm = "0.00"; // rm cancelled
@@ -599,7 +596,7 @@ public class Betting_TurnOver extends HttpServlet {
                     {
                         betstatus="Cancelled"; //bet status
                         betpossiblewinningamount = "0.00"; //rs.getString(7);
-                        betsettledtime = rs.getString(8);// bet settled  date  sdf.format(rs.getTimestamp(8));
+                        betsettledtime = sdf.format(rs.getTimestamp(8));// bet settled  date  sdf.format(rs.getTimestamp(8));
                         openbet_rm = "0.00";  // real money(rm) open
                         rejectedbet_rm = "0.00"; // rm rejected
                         cancellebet_rm = rs.getString(5); // rm cancelled
@@ -620,7 +617,7 @@ public class Betting_TurnOver extends HttpServlet {
                     {
                         betstatus="Pending"; //bet status
                         betpossiblewinningamount = "0.00"; //rs.getString(7);
-                        betsettledtime = rs.getString(8);// bet settled  date  sdf.format(rs.getTimestamp(8));
+                        betsettledtime = sdf.format(rs.getTimestamp(8));// bet settled  date  sdf.format(rs.getTimestamp(8));
                         openbet_rm = "0.00";  // real money(rm) open
                         rejectedbet_rm = "0.00"; // rm rejected
                         cancellebet_rm = "0.00"; // rm cancelled
@@ -672,11 +669,36 @@ public class Betting_TurnOver extends HttpServlet {
 
                     dataArray.put(dataObj); 
                     
-                    
-                }
-                    
+                     
                 }
                 
+                if(dataArray.length()==0)
+                {
+                    dataObj  = new JSONObject();
+                    dataObj.put("BetID", "0");
+                    dataObj.put("BetSlipID", "0");
+                    dataObj.put("BetMobile", "0");
+                    dataObj.put("BetDate", "0");
+                    dataObj.put("BetAmountRM", "0");
+                    dataObj.put("BetStatus", "0");
+                    dataObj.put("BetPossibleWinning", "0");
+                    dataObj.put("BetLastChangeDate", "0");
+                    dataObj.put("BetOpenRM", "0");
+                    dataObj.put("BetRejectedRM", "0");
+                    dataObj.put("BetCancelledRM", "0");
+                    dataObj.put("BetWonAmount", "0");
+                    dataObj.put("BetBonusOpenBM", "0");
+                    dataObj.put("BetBonusRejectedBM", "0");
+                    dataObj.put("BetBonusCancelledBM", "0");
+                    dataObj.put("BetBonusPossibleWinningBM", "0");
+                    dataObj.put("BetAmountBM", "0");
+                    dataObj.put("BetType", "0");
+                    dataObj.put("BetRMProcessed", "0");
+                    dataObj.put("BetBMProcessed", "0");
+                    dataObj.put("BetBonusAchieved", "0");
+
+                    dataArray.put(dataObj);
+                }
                 
                 
 
@@ -730,7 +752,7 @@ public class Betting_TurnOver extends HttpServlet {
                     String bet_id = rs.getString(1);
                     String betslip_id = rs.getString(2);
                     String bet_mobile = rs.getString(3);//player
-                    String betdate =  rs.getString(4);//bet date
+                    String betdate =  sdf.format(rs.getTimestamp(4));//bet date
                     String betamount = rs.getString(5);//bet real money amount
                     int status = Integer.valueOf(rs.getString(6));//bet status code
                     
@@ -742,7 +764,7 @@ public class Betting_TurnOver extends HttpServlet {
                         double winning_tax=Double.valueOf(betpossiblewinningamount)*0.2;
                         taxedbetpossiblewinningamount=String.format("%.2f", (Double.valueOf(betpossiblewinningamount)-winning_tax)); 
                         possiblewinningamounttax=String.format("%.2f", winning_tax);
-                        betsettledtime = rs.getString(8);// bet settled  date  sdf.format(rs.getTimestamp(8));
+                        betsettledtime =sdf.format(rs.getTimestamp(8));// bet settled  date  sdf.format(rs.getTimestamp(8));
                         openbet_rm = rs.getString(5);  // real money(rm) open
                         rejectedbet_rm = "0.00"; // rm rejected
                         cancellebet_rm = "0.00"; // rm cancelled
@@ -762,7 +784,7 @@ public class Betting_TurnOver extends HttpServlet {
                     {
                         betstatus="Won"; //bet status
                         betpossiblewinningamount = "0.00"; //rs.getString(7);
-                        betsettledtime = rs.getString(8);// bet settled  date  sdf.format(rs.getTimestamp(8));
+                        betsettledtime = sdf.format(rs.getTimestamp(8));// bet settled  date  sdf.format(rs.getTimestamp(8));
                         openbet_rm = rs.getString(5);  // real money(rm) open
                         rejectedbet_rm = "0.00"; // rm rejected
                         cancellebet_rm = "0.00"; // rm cancelled
@@ -787,7 +809,7 @@ public class Betting_TurnOver extends HttpServlet {
                     {
                         betstatus="Lost"; //bet status
                         betpossiblewinningamount = "0.00"; //rs.getString(7);
-                        betsettledtime = rs.getString(8);// bet settled  date  sdf.format(rs.getTimestamp(8));
+                        betsettledtime = sdf.format(rs.getTimestamp(8));// bet settled  date  sdf.format(rs.getTimestamp(8));
                         openbet_rm = "0.00";  // real money(rm) open
                         rejectedbet_rm = "0.00"; // rm rejected
                         cancellebet_rm = "0.00"; // rm cancelled
@@ -808,7 +830,7 @@ public class Betting_TurnOver extends HttpServlet {
                     {
                         betstatus="Rejected"; //bet status
                         betpossiblewinningamount = "0.00"; //rs.getString(7);
-                        betsettledtime = rs.getString(8);// bet settled  date  sdf.format(rs.getTimestamp(8));
+                        betsettledtime = sdf.format(rs.getTimestamp(8));// bet settled  date  sdf.format(rs.getTimestamp(8));
                         openbet_rm = "0.00";  // real money(rm) open
                         rejectedbet_rm = rs.getString(5); // rm rejected
                         cancellebet_rm = "0.00"; // rm cancelled
@@ -829,7 +851,7 @@ public class Betting_TurnOver extends HttpServlet {
                     {
                         betstatus="Cancelled"; //bet status
                         betpossiblewinningamount = "0.00"; //rs.getString(7);
-                        betsettledtime = rs.getString(8);// bet settled  date  sdf.format(rs.getTimestamp(8));
+                        betsettledtime = sdf.format(rs.getTimestamp(8));// bet settled  date  sdf.format(rs.getTimestamp(8));
                         openbet_rm = "0.00";  // real money(rm) open
                         rejectedbet_rm = "0.00"; // rm rejected
                         cancellebet_rm = rs.getString(5); // rm cancelled
@@ -850,7 +872,7 @@ public class Betting_TurnOver extends HttpServlet {
                     {
                         betstatus="Pending"; //bet status
                         betpossiblewinningamount = "0.00"; //rs.getString(7);
-                        betsettledtime = rs.getString(8);// bet settled  date  sdf.format(rs.getTimestamp(8));
+                        betsettledtime = sdf.format(rs.getTimestamp(8));// bet settled  date  sdf.format(rs.getTimestamp(8));
                         openbet_rm = "0.00";  // real money(rm) open
                         rejectedbet_rm = "0.00"; // rm rejected
                         cancellebet_rm = "0.00"; // rm cancelled
@@ -904,6 +926,34 @@ public class Betting_TurnOver extends HttpServlet {
                 }
 
                 
+                
+                if(dataArray.length()==0)
+                {
+                    dataObj  = new JSONObject();
+                    dataObj.put("BetID", "0");
+                    dataObj.put("BetSlipID", "0");
+                    dataObj.put("BetMobile", "0");
+                    dataObj.put("BetDate", "0");
+                    dataObj.put("BetAmountRM", "0");
+                    dataObj.put("BetStatus", "0");
+                    dataObj.put("BetPossibleWinning", "0");
+                    dataObj.put("BetLastChangeDate", "0");
+                    dataObj.put("BetOpenRM", "0");
+                    dataObj.put("BetRejectedRM", "0");
+                    dataObj.put("BetCancelledRM", "0");
+                    dataObj.put("BetWonAmount", "0");
+                    dataObj.put("BetBonusOpenBM", "0");
+                    dataObj.put("BetBonusRejectedBM", "0");
+                    dataObj.put("BetBonusCancelledBM", "0");
+                    dataObj.put("BetBonusPossibleWinningBM", "0");
+                    dataObj.put("BetAmountBM", "0");
+                    dataObj.put("BetType", "0");
+                    dataObj.put("BetRMProcessed", "0");
+                    dataObj.put("BetBMProcessed", "0");
+                    dataObj.put("BetBonusAchieved", "0");
+
+                    dataArray.put(dataObj);
+                }
                 
                    
 

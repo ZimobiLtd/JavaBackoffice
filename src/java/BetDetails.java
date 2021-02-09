@@ -111,7 +111,7 @@ public class BetDetails extends HttpServlet {
                         dataObj  = new JSONObject();
                         String bet_id = rs.getString(1);
                         String match_type = rs.getString(2);
-                        String event_date = rs.getString(3);
+                        String event_date = sdf.format(rs.getTimestamp(3));
                         String event = rs.getString(4);
                         String bet_game_id = rs.getString(5);
                         String bet_market_id = rs.getString(6);

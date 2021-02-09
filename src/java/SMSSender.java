@@ -26,8 +26,8 @@ import org.json.JSONArray;
  *
  * @author jac
  */
-@WebServlet(urlPatterns = {"/ActivePlayers"})
-public class ActivePlayers extends HttpServlet {
+@WebServlet(urlPatterns = {"/SendSMS"})
+public class SMSSender extends HttpServlet {
 
     /**
      * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
@@ -67,43 +67,23 @@ public class ActivePlayers extends HttpServlet {
                    maindata=jsonobj.getString("data");
                    
                    
-                   if(function.equals("getActivePlayers"))
+                   if(function.equals("sendSMS"))
                    {
-                        String filters=" and Play_Bet_Type in(1,2,3)";
-                        String []respo=initDates();
-                        String fromdate=respo[0];
-                        String todate=respo[1];
-                        responseobj=getActivePlayer("2017-05-23" ,"2020-01-30",filters);
+                        JSONObject dataObj  = new JSONObject();
+                        JSONArray dataArray = new JSONArray();
+                        
+                        String []data=maindata.split("#");
+                        String type=data[0];
+                        String msg=data[1];
+
+
+                        dataObj  = new JSONObject();
+                        dataObj.put("message", "sms sent"); 
+                        dataArray.put(dataObj);
+                        resp.setStatus(200);
+                        responseobj=dataArray;                        
                    }
                    
-                   
-                   if(function.equals("filterActivePlayers"))
-                   {
-                       String filters="";
-                        String [] data=maindata.split("#");
-                        String from=data[0];
-                        String to=data[1];
-                        String type=data[2];
-                        
-                        if(type.equals("Single Bet"))
-                        {
-                            filters="and Play_Bet_Type=1";
-                        }
-                        else if(type.equals("Multi Bet"))
-                        {
-                            filters="and Play_Bet_Type=3";
-                        }
-                        else if(type.equals("Jackpot"))
-                        {
-                            filters="and Play_Bet_Type=1";
-                        }
-                        else if(type.equals("All"))
-                        {
-                            filters="and Play_Bet_Type in(1,2,3)";
-                        }
-                        
-                        responseobj=getActivePlayer(from ,to,filters);                       
-                   }
                    
                    
                    
@@ -142,7 +122,7 @@ public class ActivePlayers extends HttpServlet {
                      String mobile =rs.getString(1);
                      String name = rs.getString(2);
                      String email = rs.getString(3);
-                     String regdate = sdf.format(rs.getTimestamp(4));
+                     String regdate = rs.getString(4);
                      String betscount = rs.getString(5);
                      String totalstake = rs.getString(6);
                      String payout= rs.getString(7);

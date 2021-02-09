@@ -98,7 +98,7 @@ public JSONArray getGamingSummary()
         
         String reg_today = "select count(id) from player where DATE(registration_date) = curdate() ";
         
-        String reg_played_today = "select count(distinct(Play_Bet_Mobile)) from player inner join player_bets on msisdn = Play_Bet_Mobile where DATE(registration_date) = curdate() ";
+        String reg_played_today = "select count(Play_Bet_Mobile) from player_bets,player where  Play_Bet_Mobile= msisdn  and DATE(registration_date) = curdate() ";
         
         String playerstoday = "select count(distinct(Play_Bet_Mobile)) from player_bets where DATE(Play_Bet_Timestamp) = curdate() ";
         
@@ -135,7 +135,7 @@ public JSONArray getGamingSummary()
         
         dataObj  = new JSONObject();
 
-        int registrations_today =0;// getData(conn,stmt,rs,reg_today);
+        int registrations_today =getData(conn,stmt,rs,reg_today);
         int registered_played_today = getData(conn,stmt,rs,reg_played_today);
         int players_today = getData(conn,stmt,rs,playerstoday);
         int turnover_today = getData(conn,stmt,rs,turnovertoday);

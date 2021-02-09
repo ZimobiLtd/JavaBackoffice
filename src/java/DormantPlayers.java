@@ -117,7 +117,7 @@ public class DormantPlayers extends HttpServlet {
                      String mobile =rs.getString(1);
                      String name = rs.getString(2);
                      String email = rs.getString(3);
-                     String regdate = rs.getString(4);
+                     String regdate =sdf.format(rs.getTimestamp(4));
                      String balanceRM = rs.getString(5);
                      String balanceBM = rs.getString(6);
                      String lastactivedate= rs.getString(7);

@@ -114,13 +114,14 @@ public class PlayerLiability extends HttpServlet {
 
                 ResultSet rs=null;
                     
-                dataQuery = "SELECT msisdn,`name`,email,registration_date,Player_Balance,Bonus_Balance, "+
+                dataQuery = "SELECT msisdn,`name`,email,registration_date,Bonus_Balance, "+
+                "(select ifnull(sum(Acc_Amount),0) from user_accounts where Acc_Mobile = msisdn ), "+
                 "(select count(Acc_ID) from user_accounts where Acc_Mobile = msisdn and Acc_Trans_Type = '1'), "+
                 "(select ifnull(sum(Acc_Amount),0) from user_accounts where Acc_Mobile = msisdn and Acc_Trans_Type = '1'), "+
                 "(select ifnull(sum(Acc_Amount),0) from user_accounts where Acc_Mobile = msisdn and Acc_Trans_Type = '2'), "+
                 "(select ifnull(sum(Acc_Amount),0) from user_accounts where Acc_Mobile = msisdn and Acc_Trans_Type = '7'), "+
                 "(select ifnull(sum(Acc_Amount),0) from user_accounts where Acc_Mobile = msisdn and Acc_Trans_Type = '100') "+
-                "FROM player WHERE registration_date BETWEEN  '" + fromDate + "' and '" + toDate + "' ";
+                "FROM player WHERE registration_date BETWEEN  '" + fromDate + "' and '" + toDate + "' order by registration_date desc ";
 
                 rs = stmt.executeQuery(dataQuery);
 
@@ -133,9 +134,9 @@ public class PlayerLiability extends HttpServlet {
                     String playermobile = rs.getString(1);
                     String playername = rs.getString(2);
                     String playeremail = rs.getString(3);
-                    String playerregdate = rs.getString(4);
-                    String accbalance = rs.getString(5);
-                    String accbonusbalance = rs.getString(6);
+                    String playerregdate = sdf.format(rs.getTimestamp(4));
+                    String accbonusbalance = rs.getString(5);
+                    String accbalance = rs.getString(6);
                     String depositcount = rs.getString(7);
                     String depositamount = rs.getString(8);
                     String withdrawals = rs.getString(9);
@@ -269,11 +270,11 @@ public class PlayerLiability extends HttpServlet {
 
                 long endTime = startDate.getTime(); // create your endtime here, possibly using Calendar or Date
                 long curTime = endDate.getTime();
-                while (endTime <= curTime) 
+                while (curTime>=endTime) 
                 {
-                    System.out.println("==="+new Date(endTime));
-                    dates.add(sdf.format(new Date(endTime)));
-                    endTime += interval;
+                    System.out.println("==="+new Date(curTime));
+                    dates.add(sdf.format(new Date(curTime)));
+                    curTime -= interval;
                 }
 
             } catch (Exception ex) {

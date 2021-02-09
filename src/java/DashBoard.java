@@ -159,10 +159,10 @@ public class DashBoard extends HttpServlet {
         String Multi_Bets="0";
         String Jackpot_Bets="0";
         
-        int GGR=0;
-        int NGR=0;
-        int Profit=0;
-        int Loss=0;
+        double GGR=0;
+        double NGR=0;
+        double Profit=0;
+        double Loss=0;
         
         JSONObject dataObj  = null;
         JSONArray dataArray = new JSONArray();
@@ -294,18 +294,23 @@ public class DashBoard extends HttpServlet {
                 }
                 
                 dataObj  = new JSONObject();
+                
+                double win_tax=Double.valueOf(totalWinnings)*0.2;
+                double taxedamount_won=Double.valueOf(totalWinnings)-win_tax;
+                
                 dataObj.put("TotalTurnover", totalTurnoverRM);
                 dataObj.put("TurnoverRM", totalTurnoverRM);
                 dataObj.put("TurnoverBM", totalTurnoverBM);
                 dataObj.put("TotalOpenBetsRM", totalOpenBetsRMTurnOver);
                 dataObj.put("TotalOpenBetsBM", totalOpenBetsBMTurnOver);
-                dataObj.put("TotalWinnings", totalWinnings);
-                System.out.println("totalTurnoverRM(GGR)>>>"+totalTurnoverRM+">>>totalOpenBetsRMTurnOver>>>"+totalOpenBetsRMTurnOver+">>>totalWinnings>>>"+totalWinnings);
-                System.out.println("NGR>>>"+Integer.valueOf(totalTurnoverRM) +">>>"+ Integer.valueOf(totalOpenBetsRMTurnOver)+">>>"+Integer.valueOf(totalWinnings));
+                dataObj.put("TotalWinnings", taxedamount_won);
+                
                 GGR = Integer.valueOf(totalTurnoverRM) ;
-                NGR =Integer.valueOf(totalTurnoverRM) - (Integer.valueOf(totalOpenBetsRMTurnOver) + Integer.valueOf(totalWinnings));
-                Profit=Integer.valueOf(settledBetsTurnoverRM)-Integer.valueOf(wonBetsTurnoverRM);
-                Loss=Integer.valueOf(totalWinnings);
+                double ngr_val =GGR - (Double.valueOf(totalOpenBetsRMTurnOver) + taxedamount_won);
+                NGR=ngr_val-(ngr_val*0.15);
+                Profit=Double.valueOf(settledBetsTurnoverRM)-(Double.valueOf(wonBetsTurnoverRM)-Double.valueOf(wonBetsTurnoverRM)*0.15);
+                Loss=taxedamount_won;
+                
                 dataObj.put("GGR", String.valueOf(GGR));
                 dataObj.put("NGR", String.valueOf(NGR));
                 dataObj.put("Profit",String.valueOf(Profit));

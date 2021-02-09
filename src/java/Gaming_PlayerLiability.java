@@ -129,7 +129,7 @@ public JSONArray getPlayerLiability(String fromDate,String toDate)
             dataObj  = new JSONObject();
             
             String matchid = rs.getString(1);
-            String eventdate = rs.getString(2);
+            String eventdate =sdf.format(rs.getTimestamp(2));
             String sport = rs.getString(3);
             String championship = rs.getString(4);
             String event = rs.getString(5);

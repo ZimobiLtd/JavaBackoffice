@@ -196,7 +196,7 @@ public JSONArray getEvents(String fromDate,String toDate)
             String countryname = rs.getString(2);
             String torna_name = rs.getString(3);
             String event = rs.getString(4);
-            String eventtime = rs.getString(5);
+            String eventtime =sdf.format(rs.getTimestamp(5));
             String torna_match_id = rs.getString(6);
             String torna_sys_game_id = rs.getString(7);
             String matchstatus = rs.getString(8);
@@ -294,7 +294,7 @@ public JSONArray filterEvents(String fromDate,String toDate,String filters)
             String countryname = rs.getString(2);
             String torna_name = rs.getString(3);
             String event = rs.getString(4);
-            String eventtime = rs.getString(5);
+            String eventtime = sdf.format(rs.getTimestamp(5));
             String torna_match_id = rs.getString(6);
             String torna_sys_game_id = rs.getString(7);
             String matchstatus = rs.getString(8);

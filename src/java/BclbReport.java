@@ -265,11 +265,11 @@ public class BclbReport extends HttpServlet {
 
                 long endTime = startDate.getTime(); // create your endtime here, possibly using Calendar or Date
                 long curTime = endDate.getTime();
-                while (endTime <= curTime) 
+                while (curTime >= endTime) 
                 {
                     System.out.println("==="+new Date(endTime));
-                    dates.add(sdf.format(new Date(endTime)));
-                    endTime += interval;
+                    dates.add(sdf.format(new Date(curTime)));
+                    curTime -= interval;
                 }
 
             } catch (Exception ex) {
@@ -291,7 +291,7 @@ public class BclbReport extends HttpServlet {
 
             String todate=LocalDate.now().toString();
 
-            String fromdate=LocalDate.now().plusDays(-7).toString();
+            String fromdate=LocalDate.now().plusDays(-6).toString();
 
             data=new String[]{fromdate,todate};//fromdate+"#"+todate ;
 

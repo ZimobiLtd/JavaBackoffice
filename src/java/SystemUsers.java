@@ -106,8 +106,6 @@ public class SystemUsers extends HttpServlet {
                         int isactive=Integer.valueOf(data[9]);
                         String role=data[10];
                         
-                       System.out.println(username+"==="+emailaddress+"==="+phoneNumber+"==="+firstname+"==="+lastname+"==="+password+"==="+createdBy+"==="+modifiedBy
-                       +"==="+userStatus+"==="+isactive+"==="+role);
                         int status=validateUser(username,emailaddress);
                         if(status==0)
                         {
@@ -168,6 +166,45 @@ public class SystemUsers extends HttpServlet {
                         {
                             dataObj  = new JSONObject();
                             dataObj.put("message", "User updated successfully"); 
+                            dataArray.put(dataObj);
+                            resp.setStatus(200);
+                            responseobj=dataArray;
+                        }
+                        else
+                        {
+                            dataObj  = new JSONObject();
+                            dataObj.put("error", "request failed");
+                            dataArray.put(dataObj);
+                            resp.setStatus(500);
+                            responseobj=dataArray;                            
+                        }
+                       
+                   }
+                   
+                   
+                   if(function.equals("updateUserAccess"))
+                   {
+                        String []data=maindata.split("#");
+                        String phoneNumber=data[0];
+                        int userStatus=Integer.valueOf(data[1]);
+                        String msg="";
+                        if(userStatus==0)
+                        {
+                           msg="User deactivated" ;
+                        }
+                        else if(userStatus==1)
+                        {
+                           msg="User activated" ;
+                        }
+                        
+                       
+                        int respo_id=updateUserAccess(phoneNumber,userStatus) ;
+                        JSONObject dataObj  = new JSONObject();
+                        JSONArray dataArray = new JSONArray();
+                        if(respo_id>0)
+                        {
+                            dataObj  = new JSONObject();
+                            dataObj.put("message", msg); 
                             dataArray.put(dataObj);
                             resp.setStatus(200);
                             responseobj=dataArray;
@@ -277,47 +314,45 @@ public class SystemUsers extends HttpServlet {
                    if(function.equals("resetPassword"))
                    {
                         String []data=maindata.split("#");
-                        String code=data[0];
-                        String new_pass=data[1];
-                        String email=getCodeEmail(code);
-                        
+                        String email=data[0];
+                        //String new_pass=data[1];
+                        //String email=getCodeEmail(code);
+                        String new_pass=generate_code(7);
                         
                         JSONObject dataObj  = new JSONObject();
                         JSONArray dataArray = new JSONArray();
                         
-                        if(!email.equals("0"))
+                        int respo=changePassword(email,new_pass);
+                        if(respo==200)
                         {
-                            
-                            int respo=changePassword(email,new_pass);
-                            
-                            if(respo==200)
+                            dataObj  = new JSONObject();
+                            dataObj.put("message", "Password changed Successfully"); 
+                            dataArray.put(dataObj);
+                            resp.setStatus(200);
+                            responseobj=dataArray;
+
+                            Runnable myrunnable=new Runnable()
                             {
-                                dataObj  = new JSONObject();
-                                dataObj.put("message", "Password changed Successfully"); 
-                                dataArray.put(dataObj);
-                                resp.setStatus(200);
-                                responseobj=dataArray;
-                            }
-                            else
-                            {
-                                dataObj  = new JSONObject();
-                                dataObj.put("error", "Password change failed");
-                                dataArray.put(dataObj);
-                                resp.setStatus(500);
-                                responseobj=dataArray;                            
-                            }
+                                public void run()
+                                {
+                                    String txt="Hi,\nYour starbet password was changed.New password is: "+new_pass+"\n\n"+
+                                     "Regards,\n" +
+                                     "StartBet Team";
+                                    new EmailSender().sendEmail(txt,email, "Reset Password");
+                                }
+                            };
+                            new Thread(myrunnable).start();
                         }
                         else
                         {
                             dataObj  = new JSONObject();
-                            dataObj.put("error", "Invalid code");
+                            dataObj.put("error", "Password change failed");
                             dataArray.put(dataObj);
                             resp.setStatus(500);
-                            responseobj=dataArray; 
+                            responseobj=dataArray;                            
                         }
                         
-                       
-                       
+                        
                    }
                    
                 
@@ -515,7 +550,7 @@ public class SystemUsers extends HttpServlet {
             try( Connection conn = new DBManager(type).getDBConnection();
             Statement stmt = conn.createStatement();)
             {
-
+                
                 ResultSet rs = stmt.executeQuery(dataQuery);
 
                 while (rs.next())
@@ -602,8 +637,8 @@ public class SystemUsers extends HttpServlet {
             Statement stmt = conn.createStatement();)
             {
                 
-                dataQuery = "update users set username='"+username+"',phonenumber='"+phoneNumber+"',emailaddress='"+emailaddress+"',firstname='"+firstname+"', "
-                          + "lastname='"+lastname+"',userstatus="+userStatus+",blocked="+isactive+",modifiedby="+modifiedBy+", modifiedon='"+timestamp+"',Role='"+role+"' where emailaddress='"+emailaddress+"' ";
+                dataQuery = "update users set username='"+username+"',emailaddress='"+emailaddress+"',emailaddress='"+emailaddress+"',firstname='"+firstname+"', "
+                          + "lastname='"+lastname+"',userstatus="+userStatus+",blocked="+isactive+",modifiedby="+modifiedBy+", modifiedon='"+timestamp+"',Role='"+role+"' where phonenumber='"+phoneNumber+"' ";
                 stmt.executeUpdate(dataQuery);
                 
                 respo_id=1;
@@ -619,6 +654,34 @@ public class SystemUsers extends HttpServlet {
         }
         
         
+        
+        public int updateUserAccess(String phoneNumber, Integer userStatus) 
+        {
+           int respo_id=0; 
+            String dataQuery="";
+
+            java.sql.Timestamp timestamp = new java.sql.Timestamp(new Date().getTime());  
+            JSONObject dataObj  = null;
+            JSONArray dataArray = new JSONArray();
+            PreparedStatement ps=null;
+            try( Connection conn = new DBManager(type).getDBConnection();
+            Statement stmt = conn.createStatement();)
+            {
+                
+                dataQuery = "update users set blocked="+userStatus+" where phonenumber='"+phoneNumber+"' ";
+                stmt.executeUpdate(dataQuery);
+                
+                respo_id=1;
+               
+            stmt.close();
+            conn.close();
+            }
+            catch(Exception e)
+            {
+
+            }
+        return respo_id;    
+        }
         
         
         
@@ -777,7 +840,7 @@ public class SystemUsers extends HttpServlet {
         public String generate_code(int count) 
         {
 
-            String ALPHA_NUMERIC_STRING = "1510435952423192837465";
+            String ALPHA_NUMERIC_STRING = "1A5B1C0D4E3F595242319283G7H4I6J5KLMNOP12QR45ST98";
 
             StringBuilder builder = new StringBuilder();
 

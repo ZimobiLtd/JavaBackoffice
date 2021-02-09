@@ -12,6 +12,7 @@ import java.sql.ResultSet;
 import java.sql.Statement;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
@@ -116,7 +117,7 @@ public class DailySummary extends HttpServlet {
                     dataObj  = new JSONObject();
                     System.out.println("date====="+date);
                     dataQuery = "select count(distinct (msisdn)) as 'registations'," +
-                    "(select count(distinct(Play_Bet_Mobile)) from player_bets,player where DATE(Play_Bet_Timestamp) ='"+date+"' and  Play_Bet_Mobile=msisdn  and DATE(registration_date)=DATE(Play_Bet_Timestamp) )as 'bettors'," +
+                    "(select count(distinct(Play_Bet_Mobile)) from player_bets where DATE(Play_Bet_Timestamp) ='"+date+"'  )as 'bettors'," +
                     "(select count(Play_Bet_ID) from player_bets where date(Play_Bet_Timestamp)='"+date+"' and  Play_Bet_Type=1 and Play_Bet_Status in (201,202,203)) as 'singlebets'," +
                     "(select ifnull(sum(Play_Bet_Stake),0) from player_bets where date(Play_Bet_Timestamp)='"+date+"' and  Play_Bet_Type=1 and Play_Bet_Status in (201,202,203)) as 'singebets amount'," +
                     "(select ifnull(sum(Play_Bet_Possible_Winning),0) from player_bets where date(Play_Bet_Timestamp)='"+date+"' and  Play_Bet_Type=1 and  Play_Bet_Status=202) as 'singlebets payout'," +
@@ -258,7 +259,7 @@ public class DailySummary extends HttpServlet {
                     dataObj  = new JSONObject();
                     System.out.println("date====="+date);
                     dataQuery = "select count(distinct (msisdn)) as 'registations'," +
-                    "(select count(distinct(Play_Bet_Mobile)) from player_bets,player where DATE(Play_Bet_Timestamp) ='"+date+"' and  Play_Bet_Mobile=msisdn  and DATE(registration_date)=DATE(Play_Bet_Timestamp) )as 'bettors'," +
+                    "(select count(distinct(Play_Bet_Mobile)) from player_bets where DATE(Play_Bet_Timestamp) ='"+date+"'  )as 'bettors'," +
                     "(select count(Play_Bet_ID) from player_bets where date(Play_Bet_Timestamp)='"+date+"' and  Play_Bet_Type=1 and Play_Bet_Status in (201,202,203)) as 'singlebets'," +
                     "(select ifnull(sum(Play_Bet_Stake),0) from player_bets where date(Play_Bet_Timestamp)='"+date+"' and  Play_Bet_Type=1 and Play_Bet_Status in (201,202,203)) as 'singebets amount'," +
                     "(select ifnull(sum(Play_Bet_Possible_Winning),0) from player_bets where date(Play_Bet_Timestamp)='"+date+"' and  Play_Bet_Type=1 and  Play_Bet_Status=202) as 'singlebets payout'," +
@@ -416,17 +417,14 @@ public class DailySummary extends HttpServlet {
         public String[] initDates() 
         {
             String []data=null;
-            
+
             try 
             {
 
-                Date startDate = new Date();//sdf.parse(fromDate);
-                long curTime = startDate.getTime();
-                long interval = (24 * 1000 * 60 * 60)*5;
-                curTime += interval;
-                String todate=sdf.format(new Date(curTime));
-                String fromdate=sdf.format(startDate);
-                
+                String todate=LocalDate.now().toString();
+
+                String fromdate=LocalDate.now().plusDays(-14).toString();
+
                 data=new String[]{fromdate,todate};//fromdate+"#"+todate ;
 
             } catch (Exception ex) {
@@ -435,6 +433,7 @@ public class DailySummary extends HttpServlet {
 
         return data;
         }
+      
       
       
 

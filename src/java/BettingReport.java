@@ -90,6 +90,37 @@ public class BettingReport extends HttpServlet {
                    }
                    
                    
+                   if(function.equals("getPlayerBettingReport"))
+                   {
+                       String[]data=maindata.split("#");
+                       String player_id=data[0];
+                       String player_mobile=data[1];
+                       
+                       if(player_mobile.startsWith("07") || player_mobile.startsWith("01"))
+                       {
+                          player_mobile="254"+player_mobile.substring(1);
+                       }
+                       
+                       responseobj=getPlayerBettingReport("","",player_mobile);
+                   }
+                   
+                   if(function.equals("filterPlayerBettingReport"))
+                   {
+                       String[]data=maindata.split("#");
+                       String player_id=data[0];
+                       String player_mobile=data[1];
+                       String from=data[2];
+                       String to=data[3];  
+                       
+                       if(player_mobile.startsWith("07") || player_mobile.startsWith("01"))
+                       {
+                          player_mobile="254"+player_mobile.substring(1);
+                       }
+                       
+                       responseobj=getPlayerBettingReport(from,to,player_mobile);
+                   }
+                   
+                   
              }catch (Exception ex) { ex.getMessage();}
             
              PrintWriter out = resp.getWriter(); 
@@ -288,16 +319,17 @@ public class BettingReport extends HttpServlet {
         
         
         
-        
-        
-        public JSONArray filterBettingReport(String fromDate,String toDate,String transtype,String transstatus)
+        public JSONArray getPlayerBettingReport(String fromDate,String toDate,String mobile)
         {
                   
             String res="0.00";
             String dataQuery = "";
             JSONObject dataObj  = null;
             JSONArray dataArray = new JSONArray();
+            JSONArray respoArray = new JSONArray();
             DecimalFormat decimalFormat = new DecimalFormat("0.00");
+            int totalBetStake=0;
+            int totalWinnings=0;
             
             try( Connection conn = new DBManager(type).getDBConnection();
             Statement stmt = conn.createStatement();)
@@ -305,12 +337,23 @@ public class BettingReport extends HttpServlet {
 
                 ResultSet rs=null;
                 
-                dataQuery = "select Play_Bet_Timestamp, Play_Bet_Slip_ID, (case when Play_Bet_Status=200 then 'Pending'  when Play_Bet_Status=201 then 'Placed' when Play_Bet_Status=202 then 'Win' when Play_Bet_Status=203 then 'Loss' when Play_Bet_Status=204 then 'Rejected' when Play_Bet_Status=205 then 'Cancelled' end)as 'bet_status', "+
+                if(fromDate.equals("")&& fromDate.equals(""))
+                {
+                    dataQuery = "select Play_Bet_Timestamp, Play_Bet_Slip_ID, (case when Play_Bet_Status=200 then 'Pending'  when Play_Bet_Status=201 then 'Placed' when Play_Bet_Status=202 then 'Win' when Play_Bet_Status=203 then 'Loss' when Play_Bet_Status=204 then 'Rejected' when Play_Bet_Status=205 then 'Cancelled' end)as 'bet_status', "+
+                            " Chan_Mode_Name , Play_Bet_Mobile, Play_Bet_Stake, Play_Bet_Bonus_Stake , Play_Bet_Possible_Winning, " +
+                            "Play_Bet_Group_ID, Play_Bet_Possible_BonusWinning  from player_bets ,channels_used where  Chan_Table_ID = play_bet_Channel  " +
+                            "and play_Bet_Type in (0,1,2,3)  and Play_Bet_Status in (201, 202, 203) and  player_bets.Play_Bet_Mobile='"+mobile+"' order by Play_Bet_Timestamp desc ";        
+                }
+                else
+                {
+                    dataQuery = "select Play_Bet_Timestamp, Play_Bet_Slip_ID, (case when Play_Bet_Status=200 then 'Pending'  when Play_Bet_Status=201 then 'Placed' when Play_Bet_Status=202 then 'Win' when Play_Bet_Status=203 then 'Loss' when Play_Bet_Status=204 then 'Rejected' when Play_Bet_Status=205 then 'Cancelled' end)as 'bet_status', "+
                             " Chan_Mode_Name , Play_Bet_Mobile, Play_Bet_Stake, Play_Bet_Bonus_Stake , Play_Bet_Possible_Winning, " +
                             "Play_Bet_Group_ID, Play_Bet_Possible_BonusWinning  from player_bets ,channels_used where  Chan_Table_ID = play_bet_Channel and  date(Play_Bet_Timestamp) between   '"+fromDate+"' and '"+toDate+"'  " +
-                            "and play_Bet_Type in (0,1,2,3)  and Play_Bet_Status in (201, 202, 203, 204, 205, 206) order by Play_Bet_Timestamp desc ";
+                            "and play_Bet_Type in (0,1,2,3)  and Play_Bet_Status in (201, 202, 203) and  player_bets.Play_Bet_Mobile='"+mobile+"' order by Play_Bet_Timestamp desc ";                
+                }
                 
-                System.out.println("getBettingReport==="+dataQuery);
+               
+                System.out.println("getPlayerBettingReport==="+dataQuery);
                 
                 rs = stmt.executeQuery(dataQuery);
   
@@ -330,9 +373,9 @@ public class BettingReport extends HttpServlet {
                     String betbonuspossiblewinning = rs.getString(10);//bet rm possible win
 
 
-
                     String settled_rm="0.00",settled_bm="0.00",openbet_bm="0.00",ggr_rm="0.00",ngr_rm="0.00",ngrtax_rm="0.00",taxedngr_rm="0.00",bonusamountopen="0.00",bonusmoneysettled="0.00",openbet_rm="0.00",winamount_rm="0.00",winamount_bm="0.00",
                     ggr_bm="0.00",ngr_bm="0.00",refund_rm="0.00",taxedwinamount_rm="0.00",refund_bm="0.00",winning_tax="0.00",ngr_tax="0.00";
+
                     if (betstatus.equalsIgnoreCase("Placed")) 
                     {
                         openbet_rm = String.valueOf(betstake); // open rm
@@ -343,9 +386,11 @@ public class BettingReport extends HttpServlet {
                         settled_bm = "0.00"; // settled bm
                         winamount_bm = "0.00"; // win bm
                         ggr_bm = "0.00"; // ggr bm
-                        ggr_rm = "0.00"; // ngr 
+                        ngr_rm = "0.00"; // ngr 
                         refund_rm = "0.00"; // rm refund
                         refund_bm = "0.00"; // bm refund
+                        
+                        totalBetStake+=Integer.valueOf(betstake);
                     } 
                     else if (betstatus.equalsIgnoreCase("Win")) 
                     {
@@ -365,15 +410,17 @@ public class BettingReport extends HttpServlet {
                         ggr_bm = String.valueOf(Integer.valueOf(betbonusstake)); // ggr bm
                         refund_rm = "0.00"; // rm refund
                         refund_bm = "0.00"; // bm refund
+                        
+                        totalWinnings+=(int) taxedamount_won;
                     } 
                     else if (betstatus.equalsIgnoreCase("Loss"))
                     {
                         openbet_rm = "0.00"; // open rm
                         settled_rm = String.valueOf(betstake); // settled rm
                         winamount_rm = "0.00"; // win rm
-                        ggr_rm = String.valueOf(betstake); // ggr rm
+                        ggr_rm = String.valueOf(settled_rm); // ggr rm
                         
-                        double NGR=Double.valueOf(settled_rm) - Double.valueOf(winamount_rm);
+                        double NGR=Double.valueOf(ggr_rm) - Double.valueOf(winamount_rm);
                         double NGR_Tax=NGR*0.15;
                         double fin_TaxedNGR=NGR-NGR_Tax;
                         
@@ -398,7 +445,7 @@ public class BettingReport extends HttpServlet {
                         settled_bm = "0.00"; // settled bm
                         winamount_bm = "0.00"; // win bm
                         ggr_bm = "0.00"; // ggr bm
-                        ggr_rm = "0.00"; // ngr 
+                        ngr_rm = "0.00"; // ngr 
                         refund_rm = String.valueOf(betstake); // rm refund
                         refund_bm = String.valueOf(betbonusstake);  // bm refund
                     } 
@@ -412,11 +459,11 @@ public class BettingReport extends HttpServlet {
                         settled_bm = "0.00"; // settled bm
                         winamount_bm = "0.00"; // win bm
                         ggr_bm = "0.00"; // ggr bm
-                        ggr_rm = "0.00"; // ngr 
+                        ngr_rm = "0.00"; // ngr 
                         refund_rm = String.valueOf(betstake); // rm refund
                         refund_bm = String.valueOf(betbonusstake);  // bm refund
                     } 
-                    else if (betstatus.equalsIgnoreCase("200")) 
+                    else if (betstatus.equalsIgnoreCase("Pending")) 
                     {
                         openbet_rm = "0.00"; // open rm
                         settled_rm = String.valueOf(betstake); // settled rm
@@ -426,12 +473,12 @@ public class BettingReport extends HttpServlet {
                         settled_bm = String.valueOf(betstake); // settled bm
                         winamount_bm = "0.00"; // win bm
                         ggr_bm = "0.00"; // ggr bm
-                        ggr_rm = "0.00"; // ngr 
+                        ngr_rm = "0.00"; // ngr 
                         refund_rm = String.valueOf(betstake); // rm refund
                         refund_bm = String.valueOf(betbonusstake);  // bm refund
                     }
 
-                     dataObj.put("BetDate", betdate);
+                    dataObj.put("BetDate", betdate);
                     dataObj.put("BetSlipID", betslip_id);
                     dataObj.put("BetStatus", betstatus);
                     dataObj.put("BetChannel", betchannel);
@@ -454,12 +501,26 @@ public class BettingReport extends HttpServlet {
 
                     dataArray.put(dataObj);
                 }
-                    
-                    
                 
                 
-                  
-                //System.out.println("\n\n\n"+dataArray);
+                JSONObject dataObj1  = new JSONObject();
+                JSONArray dataArray1 = new JSONArray();
+                String query1=" select ifnull(sum(Acc_Amount),0) ,registration_date  from user_accounts,player where Acc_Mobile='"+mobile+"' and msisdn='"+mobile+"'  group by Acc_Mobile";
+                rs = stmt.executeQuery(query1);
+                while (rs.next())
+                {
+                    dataObj1.put("Balance", rs.getString(1));
+                    dataObj1.put("RegistrationDate", rs.getString(2));
+                    dataObj1.put("TotalBetStake", String.valueOf(totalBetStake));
+                    dataObj1.put("TotalWinnings", String.valueOf(totalWinnings));
+                    
+                    dataArray1.put(dataObj1);
+                    
+                }
+                 
+                respoArray.put(dataArray);
+                respoArray.put(dataArray1);
+                
                    
 
             rs.close();
@@ -471,9 +532,10 @@ public class BettingReport extends HttpServlet {
 
             }
                     
-        return dataArray;
+        return respoArray;
         }
-      
+        
+        
       
         
         

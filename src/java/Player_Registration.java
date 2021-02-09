@@ -142,7 +142,7 @@ public class Player_Registration extends HttpServlet {
         {
                   
             String res="";
-            String dataQuery = "select id, msisdn, ifnull(`name`,'no name'), ifnull(email,'no email'), registration_date, Player_Balance, Bonus_Balance,"
+            String dataQuery = "select id, msisdn, ifnull(`name`,'no name'), ifnull(email,'no email'), registration_date, (select ifnull(sum(Acc_Amount),0) from user_accounts where Acc_Mobile = msisdn ), Bonus_Balance,"
                     + "(case when User_Channel=1 then'SMS' when User_Channel=2 then 'USSD' when User_Channel=3 then 'Web' end), "
                     + "(case when `status`=1 then 'Active' when `status`=0 then 'Inactive' end), " +
                     " (select ifnull(max(Acc_Date),'0') from user_accounts where Acc_Mobile = msisdn) as 'Last Deposit', " +
@@ -165,7 +165,7 @@ public class Player_Registration extends HttpServlet {
                              String mobile = "0"+rs.getString(2).substring(3);
                              String name = rs.getString(3);
                              String email = rs.getString(4);
-                             String regdate = rs.getString(5);
+                             String regdate = sdf.format(rs.getTimestamp(5));
                              String balanceRM = rs.getString(6);
                              String balanceBM = rs.getString(7);
                              String channel = rs.getString(8);
@@ -224,7 +224,7 @@ public class Player_Registration extends HttpServlet {
         {
                   
             String res="";
-            String dataQuery = "select id, msisdn, ifnull(`name`,'no name'), ifnull(email,'no email'), registration_date, Player_Balance, Bonus_Balance,"
+            String dataQuery = "select id, msisdn, ifnull(`name`,'no name'), ifnull(email,'no email'), registration_date, (select ifnull(sum(Acc_Amount),0) from user_accounts where Acc_Mobile = msisdn ), Bonus_Balance,"
                     + "(case when User_Channel=1 then'SMS' when User_Channel=2 then 'USSD' when User_Channel=3 then 'Web' end), "
                     + "(case when `status`=1 then 'Active' when `status`=0 then 'Inactive' end), " +
                     " (select ifnull(max(Acc_Date),'0') from user_accounts where Acc_Mobile = msisdn) as 'Last Deposit', " +
@@ -247,7 +247,7 @@ public class Player_Registration extends HttpServlet {
                              String mobile = "0"+rs.getString(2).substring(3);
                              String name = rs.getString(3);
                              String email = rs.getString(4);
-                             String regdate = rs.getString(5);
+                             String regdate = sdf.format(rs.getTimestamp(5));
                              String balanceRM = rs.getString(6);
                              String balanceBM = rs.getString(7);
                              String channel = rs.getString(8);

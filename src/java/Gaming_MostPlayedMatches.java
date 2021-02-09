@@ -124,7 +124,7 @@ public JSONArray getMostPlayed(String dateFrom,String dateTo)
             dataObj  = new JSONObject();
             
             String matchid = rs.getString(1);
-            String eventdate = rs.getString(2);
+            String eventdate = sdf.format(rs.getTimestamp(2));
             String sport = rs.getString(3);
             String tornament = rs.getString(4);
             String event = rs.getString(5);
@@ -195,7 +195,7 @@ public JSONArray filterMostPlayed(String dateFrom,String dateTo)
             dataObj  = new JSONObject();
             
             String matchid = rs.getString(1);
-            String eventdate = rs.getString(2);
+            String eventdate = sdf.format(rs.getTimestamp(2));
             String sport = rs.getString(3);
             String tornament = rs.getString(4);
             String event = rs.getString(5);

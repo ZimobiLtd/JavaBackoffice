@@ -284,11 +284,11 @@ public class DailyReport extends HttpServlet {
 
                 long endTime = startDate.getTime(); // create your endtime here, possibly using Calendar or Date
                 long curTime = endDate.getTime();
-                while (endTime <= curTime) 
+                while (curTime>=endTime) 
                 {
-                    System.out.println("==="+new Date(endTime));
-                    dates.add(sdf.format(new Date(endTime)));
-                    endTime += interval;
+                    System.out.println("==="+new Date(curTime));
+                    dates.add(sdf.format(new Date(curTime)));
+                    curTime -= interval;
                 }
 
             } catch (Exception ex) {

@@ -75,7 +75,7 @@ public class GamesHighlight extends HttpServlet {
                        String fromdate=respo[0];
                        String todate=respo[1];
                        System.out.println(fromdate+"==intidates=="+todate);
-                       responseobj=getgamesHighlits("2017-06-01" ,todate);
+                       responseobj=getgamesHighlits(fromdate,todate);
                    }
                    
                    
@@ -167,7 +167,7 @@ public class GamesHighlight extends HttpServlet {
                             + "Torna_Match_ID, Torna_Sys_Game_ID, (case when Torna_Match_Status=0 then 'Active' when Torna_Match_Status=1 then 'Inactive' end), "
                         + "(case when Torna_Cat_Game_Mode=1 then 'Todays Games' when Torna_Cat_Game_Mode=3 then 'Jackpot Games' when Torna_Cat_Game_Mode=2 then 'Todays Highlights' end),Torna_Cat_Game_Mode "
                             + "from tournament where Torna_Match_Event_Time between '" + fromDate + "' and '" + toDate + "' and "
-                            + "Torna_Match_Status = '0' and Torna_Match_Status='0' and Torna_Match_Stage !='Suspended' and Torna_Match_Stage !='Ended' and Torna_Match_Stage !='Deactivated' order by Torna_Cat_Game_Mode desc ";
+                            + "Torna_Match_Status = '0' and Torna_Match_Status='0' and Torna_Match_Stage !='Suspended' and Torna_Match_Stage !='Ended' and Torna_Match_Stage !='Deactivated' and date(Torna_Match_Event_Time)>=curdate() order by Torna_Cat_Game_Mode desc ";
                 
                 System.out.println("getgamesHighlits==="+dataQuery);
 
@@ -181,7 +181,7 @@ public class GamesHighlight extends HttpServlet {
                     String countryname = rs.getString(2);
                     String torna_name = rs.getString(3);
                     String event = rs.getString(4);
-                    String eventtime = rs.getString(5);
+                    String eventtime =sdf.format(rs.getTimestamp(5));
                     String torna_match_id = rs.getString(6);
                     String torna_sys_game_id = rs.getString(7);
                     String matchstatus = rs.getString(8);
@@ -240,7 +240,7 @@ public class GamesHighlight extends HttpServlet {
                             + "Torna_Match_ID, Torna_Sys_Game_ID, (case when Torna_Match_Status=0 then 'Active' when Torna_Match_Status=1 then 'Inactive' end), "
                         + "(case when Torna_Cat_Game_Mode=1 then 'Todays Games' when Torna_Cat_Game_Mode=3 then 'Jackpot Games' when Torna_Cat_Game_Mode=3 then 'Todays Highlights' end),Torna_Cat_Game_Mode "
                             + "from tournament where Torna_Match_Event_Time between '" + fromDate + "' and '" + toDate + "' and "
-                            + "Torna_Match_Status = '0'  "+filters+" and Torna_Match_Stage !='Suspended' and Torna_Match_Stage !='Ended' and Torna_Match_Stage !='Deactivated' order by Torna_Cat_Game_Mode desc ";
+                            + "Torna_Match_Status = '0'  "+filters+" and Torna_Match_Stage !='Suspended' and Torna_Match_Stage !='Ended' and Torna_Match_Stage !='Deactivated' and date(Torna_Match_Event_Time)>=curdate() order by Torna_Cat_Game_Mode desc ";
 
                 System.out.println("filtersgamesHighlits==="+dataQuery);
                 rs = stmt.executeQuery(dataQuery);
@@ -254,7 +254,7 @@ public class GamesHighlight extends HttpServlet {
                     String countryname = rs.getString(2);
                     String torna_name = rs.getString(3);
                     String event = rs.getString(4);
-                    String eventtime = rs.getString(5);
+                    String eventtime = sdf.format(rs.getTimestamp(5));
                     String torna_match_id = rs.getString(6);
                     String torna_sys_game_id = rs.getString(7);
                     String matchstatus = rs.getString(8);
@@ -400,9 +400,9 @@ public class GamesHighlight extends HttpServlet {
             try 
             {
 
-                String todate=LocalDate.now().toString();
+                String todate=LocalDate.now().plusDays(+14).toString();
 
-                String fromdate=LocalDate.now().plusDays(-7).toString();
+                String fromdate=LocalDate.now().toString();
 
                 data=new String[]{fromdate,todate};//fromdate+"#"+todate ;
 
