@@ -122,20 +122,17 @@ public class BclbReport extends HttpServlet {
                     System.out.println("getBCLBReport==="+dataQuery);
                     
                     rs = stmt.executeQuery(dataQuery);
-                    
-                    
-                    
                     while (rs.next())
                     {
                         String rptdate = date;
                         String totalsales = rs.getString(1);
                         String tickets = rs.getString(2);
                         String payouts = rs.getString(3);
+                        
+                        
                         String wins = String .valueOf(Integer.valueOf(totalsales)-Integer.valueOf(payouts));
                         double excise_tax=0.15*Double.valueOf(Integer.valueOf(totalsales)-Integer.valueOf(payouts));
-                        double withholding_tax=0.2*Double.valueOf(Integer.valueOf(wins));
                         String exciseduty = String.format("%.2f", excise_tax);
-                        String withholdingtax = String.format("%.2f", withholding_tax);
                         
                         dataObj.put("Report_Date", rptdate);
                         dataObj.put("Tickets", tickets);
@@ -143,9 +140,12 @@ public class BclbReport extends HttpServlet {
                         dataObj.put("NetSales", totalsales);
                         dataObj.put("Win_Loss", wins);
                         dataObj.put("ExciseDuty", exciseduty);
-                        dataObj.put("WitholdingTax", withholdingtax);
                         dataObj.put("BettingTax", "0");
+                        //dataObj.put("WitholdingTax", "0.00");
                     }
+                    double []taxData=getTaxData(conn,stmt,date);
+                    String withholdingtax = String.format("%.2f", taxData[0]);
+                    dataObj.put("WitholdingTax", withholdingtax);
                     
                     dataArray.put(dataObj);
                 }
@@ -166,6 +166,41 @@ public class BclbReport extends HttpServlet {
             }
                     
         return dataArray;
+        }
+        
+        
+        
+        public double[] getTaxData(Connection conn,Statement stmt,String date)
+        {
+            String dataQuery = "";double [] respo=null;
+            double betStake=0.0,possibleWinning=0.0,taxedpossibleWinning=0.0,withholdingTax=0.0;
+            
+            try
+            {
+
+                ResultSet rs=null;
+                    dataQuery = " select  Play_Bet_Stake,Play_Bet_Possible_Winning,Play_Bet_Possible_Winning - (Play_Bet_Possible_Winning - Play_Bet_Stake)*0.2, sum((Play_Bet_Possible_Winning - Play_Bet_Stake)*0.2) "
+                            + " from player_bets where DATE(Play_Bet_Timestamp) =  '"+date+"'  and Play_Bet_Status  in (202)  group by Play_Bet_ID";
+                    System.out.println("getBCLBReport==="+dataQuery);
+                    
+                    rs = stmt.executeQuery(dataQuery);
+                    while (rs.next())
+                    {
+                        betStake += Double.valueOf( rs.getString(1));
+                        possibleWinning += Double.valueOf( rs.getString(2));
+                        taxedpossibleWinning += Double.valueOf( rs.getString(3));
+                        withholdingTax += Double.valueOf( rs.getString(4));
+                    }
+                    respo=new double[] {withholdingTax};
+                    
+            rs.close();
+            }
+            catch(Exception ex)
+            {
+                System.out.println("Error getTaxData==="+ex.getMessage());
+            }
+                    
+        return respo;
         }
         
         
@@ -267,7 +302,7 @@ public class BclbReport extends HttpServlet {
                 long curTime = endDate.getTime();
                 while (curTime >= endTime) 
                 {
-                    System.out.println("==="+new Date(endTime));
+                    //System.out.println("==="+new Date(endTime));
                     dates.add(sdf.format(new Date(curTime)));
                     curTime -= interval;
                 }

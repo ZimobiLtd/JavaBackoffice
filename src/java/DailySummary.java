@@ -75,7 +75,7 @@ public class DailySummary extends HttpServlet {
                        String fromdate=respo[0];
                        String todate=respo[1];
                        System.out.println(fromdate+"==intidates=="+todate);
-                       responseobj=getDailySummary("2020-08-28" ,todate);
+                       responseobj=getDailySummary(fromdate ,todate);
                    }
                    
                    
@@ -152,21 +152,21 @@ public class DailySummary extends HttpServlet {
                         String registeredplayers_bettors = rs.getString(2);
                         String singlebets = rs.getString(3);
                         String singlebetsamount = rs.getString(4);
-                        double sp_payout=Double.valueOf(rs.getString(5))-(Double.valueOf(rs.getString(5))*0.2);
+                        double sp_payout=Double.valueOf(rs.getString(5))-(Double.valueOf(rs.getString(4))*0.2);
                         String singlebetspayout = String.format("%.2f", sp_payout);
                         String settledsinglebetsamount = rs.getString(6);
                         double singlebet_proft=Double.valueOf(settledsinglebetsamount) - Double.valueOf(singlebetspayout);
                         String sbProfits =String.format("%.2f", singlebet_proft);
                         String multibets=rs.getString(7);
                         String multibetsamount = rs.getString(8);
-                        double mb_payout=Double.valueOf(rs.getString(9))-(Double.valueOf(rs.getString(9))*0.2);
+                        double mb_payout=Double.valueOf(rs.getString(9))-(Double.valueOf(rs.getString(8))*0.2);
                         String multibetspayout = String.format("%.2f", mb_payout);
                         String settledmultibetsamount = rs.getString(10);
                         double multibet_proft=Double.valueOf(settledmultibetsamount) - Double.valueOf(multibetspayout);
                         String mbProfits = String.format("%.2f", multibet_proft);
                         String jpbets=rs.getString(11);
                         String jpbetsamount = rs.getString(12);
-                        double jp_payout=Double.valueOf(rs.getString(13))-(Double.valueOf(rs.getString(13))*0.2);
+                        double jp_payout=Double.valueOf(rs.getString(13))-(Double.valueOf(rs.getString(12))*0.2);
                         String jpbetspayout = String.format("%.2f", jp_payout);
                         String settledjpbetsamount = rs.getString(14);
                         double jackpot_proft=Double.valueOf(settledjpbetsamount) - Double.valueOf(jpbetspayout);
@@ -294,21 +294,21 @@ public class DailySummary extends HttpServlet {
                         String registeredplayers_bettors = rs.getString(2);
                         String singlebets = rs.getString(3);
                         String singlebetsamount = rs.getString(4);
-                        double sp_payout=Double.valueOf(rs.getString(5))-(Double.valueOf(rs.getString(5))*0.2);
+                        double sp_payout=Double.valueOf(rs.getString(5))-(Double.valueOf(rs.getString(4))*0.2);
                         String singlebetspayout = String.format("%.2f", sp_payout);
                         String settledsinglebetsamount = rs.getString(6);
                         double singlebet_proft=Double.valueOf(settledsinglebetsamount) - Double.valueOf(singlebetspayout);
                         String sbProfits =String.format("%.2f", singlebet_proft);
                         String multibets=rs.getString(7);
                         String multibetsamount = rs.getString(8);
-                        double mb_payout=Double.valueOf(rs.getString(9))-(Double.valueOf(rs.getString(9))*0.2);
+                        double mb_payout=Double.valueOf(rs.getString(9))-(Double.valueOf(rs.getString(8))*0.2);
                         String multibetspayout = String.format("%.2f", mb_payout);
                         String settledmultibetsamount = rs.getString(10);
                         double multibet_proft=Double.valueOf(settledmultibetsamount) - Double.valueOf(multibetspayout);
                         String mbProfits = String.format("%.2f", multibet_proft);
                         String jpbets=rs.getString(11);
                         String jpbetsamount = rs.getString(12);
-                        double jp_payout=Double.valueOf(rs.getString(13))-(Double.valueOf(rs.getString(13))*0.2);
+                        double jp_payout=Double.valueOf(rs.getString(13))-(Double.valueOf(rs.getString(12))*0.2);
                         String jpbetspayout = String.format("%.2f", jp_payout);
                         String settledjpbetsamount = rs.getString(14);
                         double jackpot_proft=Double.valueOf(settledjpbetsamount) - Double.valueOf(jpbetspayout);
@@ -389,20 +389,12 @@ public class DailySummary extends HttpServlet {
 
                 long endTime = startDate.getTime(); // create your endtime here, possibly using Calendar or Date
                 long curTime = endDate.getTime();
-                while (curTime >= endTime) 
+                while (curTime>=endTime) 
                 {
                     System.out.println("==="+new Date(curTime));
                     dates.add(sdf.format(new Date(curTime)));
                     curTime -= interval;
                 }
-                /*
-                while (endTime <= curTime) 
-                {
-                    System.out.println("==="+new Date(endTime));
-                    dates.add(sdf.format(new Date(endTime)));
-                    endTime += interval;
-                }
-                */
 
             } catch (Exception ex) {
 
@@ -423,7 +415,7 @@ public class DailySummary extends HttpServlet {
 
                 String todate=LocalDate.now().toString();
 
-                String fromdate=LocalDate.now().plusDays(-14).toString();
+                String fromdate=LocalDate.now().plusDays(-7).toString();
 
                 data=new String[]{fromdate,todate};//fromdate+"#"+todate ;
 

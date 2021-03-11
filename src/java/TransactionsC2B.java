@@ -11,7 +11,7 @@ import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.Statement;
 import java.text.SimpleDateFormat;
-import java.time.ZonedDateTime;
+import java.time.LocalDate;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
@@ -26,8 +26,8 @@ import org.json.JSONArray;
  *
  * @author jac
  */
-@WebServlet(urlPatterns = {"/DormantPlayers"})
-public class DormantPlayers extends HttpServlet {
+@WebServlet(urlPatterns = {"/TransactionsC2B"})
+public class TransactionsC2B extends HttpServlet {
 
     /**
      * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
@@ -61,47 +61,52 @@ public class DormantPlayers extends HttpServlet {
                        jb.append(line);
                    }
                    
-                   System.out.println("DormantPlayer===="+jb.toString());
+                   System.out.println("TransactionsC2B===="+jb.toString());
                    jsonobj = new JSONObject(jb.toString());
                    function=jsonobj.getString("function");
                    maindata=jsonobj.getString("data");
                    
                    
-                   if(function.equals("getDormantPlayers"))
+                   if(function.equals("getTransactionsC2B"))
                    {
                         String []respo=initDates();
                         String fromdate=respo[0];
                         String todate=respo[1];
-                        responseobj=getDormantPlayer(fromdate ,todate);
+                        responseobj=getTransactionsC2B(fromdate ,todate);
                    }
                    
                    
-                   if(function.equals("filterDormantPlayers"))
+                   if(function.equals("filterTransactionsC2B"))
                    {
-                        String [] data=maindata.split("#");
+                        String[]data=maindata.split("#");
                         String from=data[0];
                         String to=data[1];
-                        responseobj=getDormantPlayer(from ,to);                       
+                        String mobile=data[2];
+                        if(mobile.startsWith("07") || mobile.startsWith("01"))
+                        {
+                           mobile="254"+mobile.substring(1);
+                        }
+                       
+                       responseobj=filterTransactionsC2B(from,to,mobile);
                    }
-                   
-                   
                    
              }catch (Exception ex) { ex.getMessage();}
             
              PrintWriter out = resp.getWriter(); 
-            out.print(responseobj);
+             out.print(responseobj);
         }
     
     
-        public JSONArray getDormantPlayer(String from,String to)
+        
+        
+      
+      
+        public JSONArray getTransactionsC2B(String from,String to)
         {
                   
             String res="";
-            String dataQuery = "SELECT msisdn,NAME,email,registration_date,Player_Balance,Bonus_Balance, "
-                    + "(SELECT ifnull(max(Play_Bet_Timestamp),'0') FROM player_bets WHERE Play_Bet_Mobile=msisdn and date(Play_Bet_Timestamp) not between '" + from + "' and '" + to + "' GROUP BY  Play_Bet_Mobile)"
-                    + "FROM player "
-                             + "WHERE msisdn NOT  IN ( SELECT Play_Bet_Mobile FROM player_bets  where date(Play_Bet_Timestamp) between '" + from + "' and '" + to + "' ) and NAME is not null GROUP BY msisdn  limit 100  ";
-            System.out.println("getDormantPlayer==="+dataQuery);
+            String dataQuery = "select Trans_Id, Trans_Timestamp, Trans_Mobile, Trans_Amount, Trans_Mpesa_No,Trans_Acc_No from transactions_c2b where date(Trans_Timestamp) between '"+from+"' and '"+to+"' order by Trans_Timestamp desc ";
+            System.out.println("getTransactionsC2B==="+dataQuery);
             
             JSONObject dataObj  = null;
             JSONArray dataArray = new JSONArray();
@@ -111,40 +116,34 @@ public class DormantPlayers extends HttpServlet {
             {
 
                 ResultSet rs = stmt.executeQuery(dataQuery);
-
                 while (rs.next())
                 {
-                     String mobile =rs.getString(1);
-                     String name = rs.getString(2);
-                     String email = rs.getString(3);
-                     String regdate =sdf.format(rs.getTimestamp(4));
-                     String balanceRM = rs.getString(5);
-                     String balanceBM = rs.getString(6);
-                     String lastactivedate= rs.getString(7);
-                     
-                     dataObj  = new JSONObject();
-                     dataObj.put("Mobile", "0"+mobile.substring(3));
-                     dataObj.put("Name", name);
-                     dataObj.put("Email", email);
-                     dataObj.put("Registration_Date", regdate);
-                     dataObj.put("BalanceRM", balanceRM);
-                     dataObj.put("BalanceBM", balanceBM);
-                     dataObj.put("LastActiveDate", lastactivedate);
-                     dataArray.put(dataObj);
-                }
+                    String trans_id = rs.getString(1);
+                    String trans_date = sdf.format(rs.getTimestamp(2));
+                    String trans_mobile = "0"+rs.getString(3).substring(3);
+                    String trans_amnt = rs.getString(4);
+                    String mpesa_code = rs.getString(5);
+                    String trans_acc = rs.getString(6);
 
+                    dataObj  = new JSONObject();
+                    dataObj.put("Trans_ID", trans_id);
+                    dataObj.put("Trans_Date", trans_date);
+                    dataObj.put("Trans_Mobile", trans_mobile);
+                    dataObj.put("Trans_Amount", trans_amnt);
+                    dataObj.put("Trans_MpesaCode", mpesa_code);
+                    dataObj.put("Trans_Account", trans_acc);
+                    dataArray.put(dataObj);
+                }
                 if(dataArray.length()==0)
                 {
                     dataObj  = new JSONObject();
-                     dataObj.put("ID", "0");
-                     dataObj.put("Mobile", "0");
-                     dataObj.put("Name", "0");
-                     dataObj.put("Email", "0");
-                     dataObj.put("Registration_Date", "0");
-                     dataObj.put("BalanceRM", "0");
-                     dataObj.put("BalanceBM", "0");
-                     dataObj.put("LastActiveDate", "0");
-                     dataArray.put(dataObj);
+                    dataObj.put("Trans_ID", "0");
+                    dataObj.put("Trans_Date", "0");
+                    dataObj.put("Trans_Mobile", "0");
+                    dataObj.put("Trans_Amount", "0");
+                    dataObj.put("Trans_MpesaCode", "0");
+                    dataObj.put("Trans_Account", "0");
+                    dataArray.put(dataObj);
                 }
                    
 
@@ -162,29 +161,68 @@ public class DormantPlayers extends HttpServlet {
         
         
         
-        // return record count in a result set
-        public String execute( Connection conn,Statement stmt, String query) 
+        
+        
+        
+        public JSONArray filterTransactionsC2B(String from,String to,String mobile)
         {
-            String data="";
-            System.out.println("getDormantPlayer execute===="+query);
-            try {
+                  
+            String res="";
+            String dataQuery = "select Trans_Id, Trans_Timestamp, Trans_Mobile, Trans_Amount, Trans_Mpesa_No,Trans_Acc_No from transactions_c2b where date(Trans_Timestamp) between '"+from+"' and '"+to+"' and Trans_Mobile='"+mobile+"' order by Trans_Timestamp desc ";
+            
+            System.out.println("filterTransactionsC2B==="+dataQuery);
+            
+            JSONObject dataObj  = null;
+            JSONArray dataArray = new JSONArray();
+            
+            try( Connection conn = new DBManager(type).getDBConnection();
+            Statement stmt = conn.createStatement();)
+            {
 
-                ResultSet rs = (ResultSet) stmt.executeQuery(query);
+                    ResultSet rs = stmt.executeQuery(dataQuery);
+                    while (rs.next())
+                    {
+                        String trans_id = rs.getString(1);
+                        String trans_date = sdf.format(rs.getTimestamp(2));
+                        String trans_mobile = "0"+rs.getString(3).substring(3);
+                        String trans_amnt = rs.getString(4);
+                        String mpesa_code = rs.getString(5);
+                        String trans_acc = rs.getString(6);
 
-                while (rs.next()) 
-                {
-                    data = rs.getString(1);
-                }
-             rs.close();    
-            } catch (Exception ex) {
-                System.err.println("execute error .... " + ex.getMessage());
+                        dataObj  = new JSONObject();
+                        dataObj.put("Trans_ID", trans_id);
+                        dataObj.put("Trans_Date", trans_date);
+                        dataObj.put("Trans_Mobile", trans_mobile);
+                        dataObj.put("Trans_Amount", trans_amnt);
+                        dataObj.put("Trans_MpesaCode", mpesa_code);
+                        dataObj.put("Trans_Account", trans_acc);
+                        dataArray.put(dataObj);
+                    }
+                    if(dataArray.length()==0)
+                    {
+                        dataObj  = new JSONObject();
+                        dataObj.put("Trans_ID", "0");
+                        dataObj.put("Trans_Date", "0");
+                        dataObj.put("Trans_Mobile", "0");
+                        dataObj.put("Trans_Amount", "0");
+                        dataObj.put("Trans_MpesaCode", "0");
+                        dataObj.put("Trans_Account", "0");
+                        dataArray.put(dataObj);
+                    }
+
+            rs.close();
+            stmt.close();
+            conn.close();
             }
-           
-            return data;
+            catch(Exception e)
+            {
+
+            }
+                    
+        return dataArray;
         }
       
-        
-        
+      
         
         public String[] initDates() 
         {
@@ -193,12 +231,9 @@ public class DormantPlayers extends HttpServlet {
             try 
             {
 
-                Date startDate = new Date();//sdf.parse(fromDate);
-                long curTime = startDate.getTime();
-                long interval = (24 * 1000 * 60 * 60)*5;
-                curTime -= interval;
-                String fromdate=sdf.format(new Date(curTime));
-                String todate=sdf.format(startDate);
+                String todate=LocalDate.now().toString();
+                
+                String fromdate=LocalDate.now().plusDays(-1).toString();
 
                 data=new String[]{fromdate,todate};//fromdate+"#"+todate ;
 

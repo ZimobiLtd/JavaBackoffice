@@ -73,8 +73,7 @@ throws ServletException, IOException {
         String []respo=initDates();
         String fromdate=respo[0];
         String todate=respo[1];
-        System.out.println(fromdate+"==intidates=="+todate);
-        responseobj=getTopWinners("2017-09-30" ,"2020-10-31");
+        responseobj=getTopWinners(fromdate ,todate);
     }
    
    
@@ -115,7 +114,7 @@ public JSONArray getTopWinners(String fromDate,String toDate)
 
         dataQuery = "SELECT DISTINCT Play_Bet_Mobile,Play_Bet_Stake,MAX(Play_Bet_Possible_Winning) AS 'Payout' ," +
                     "-MAX(Play_Bet_Possible_Winning - Play_Bet_Stake) AS 'Net' FROM player_bets " +
-                    "WHERE Play_Bet_Status = 202 AND DATE(Play_Bet_Timestamp) BETWEEN   '"+fromDate+"' AND  '"+toDate+"' " +
+                    "WHERE Play_Bet_Status = 202 AND date(Play_Bet_Timestamp) BETWEEN   '"+fromDate+"' AND  '"+toDate+"' " +
                     "GROUP BY Play_Bet_Mobile ORDER BY (Play_Bet_Possible_Winning - Play_Bet_Stake) asc  ";
 
         System.out.println("getTopWinners==="+dataQuery);

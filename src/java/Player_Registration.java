@@ -41,7 +41,7 @@ public class Player_Registration extends HttpServlet {
         Connection conn;
         String response,username ,password,function,maindata;
         String type="betting";JSONObject jsonobj=null;JSONArray responseobj  = null;
-        public static SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm");
+        public static SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
         protected void processRequest(HttpServletRequest req, HttpServletResponse resp)
         throws ServletException, IOException {
             resp.setContentType("text/json;charset=UTF-8");
@@ -72,7 +72,7 @@ public class Player_Registration extends HttpServlet {
                         String []respo=initDates();
                         String fromdate=respo[0];
                         String todate=respo[1];
-                        responseobj=getPlayerRegistrations("2017-05-23" ,"2020-12-31");
+                        responseobj=getPlayerRegistrations(fromdate,todate);
                    }
                    
                    
@@ -143,11 +143,11 @@ public class Player_Registration extends HttpServlet {
                   
             String res="";
             String dataQuery = "select id, msisdn, ifnull(`name`,'no name'), ifnull(email,'no email'), registration_date, (select ifnull(sum(Acc_Amount),0) from user_accounts where Acc_Mobile = msisdn ), Bonus_Balance,"
-                    + "(case when User_Channel=1 then'SMS' when User_Channel=2 then 'USSD' when User_Channel=3 then 'Web' end), "
-                    + "(case when `status`=1 then 'Active' when `status`=0 then 'Inactive' end), " +
+                    + "(case when User_Channel=1 then'USSD' when User_Channel=2 then 'SMS' when User_Channel=3 then 'Web' end), "
+                    + "(case when `status`=1 then 'Inactive' when `status`=0 then 'Active' end), " +
                     " (select ifnull(max(Acc_Date),'0') from user_accounts where Acc_Mobile = msisdn) as 'Last Deposit', " +
                     " (select count(Play_Bet_ID) from player_bets where Play_Bet_Mobile = msisdn and Play_Bet_Status <> 206) as 'Bets Count' " +
-                    " from player where registration_date between '"+from+"' and '"+to+"' order by registration_date desc limit 100 ";
+                    " from player where date(registration_date) between '"+from+"' and '"+to+"' order by registration_date desc ";
             System.out.println("getPlayerRegistrations==="+dataQuery);
             
             JSONObject dataObj  = null;
@@ -191,18 +191,8 @@ public class Player_Registration extends HttpServlet {
                         if(dataArray.length()==0)
                         {
                             dataObj  = new JSONObject();
-                             dataObj.put("ID", "0");
-                             dataObj.put("Mobile", "0");
-                             dataObj.put("Name", "0");
-                             dataObj.put("Email", "0");
-                             dataObj.put("Registration_Date", "0");
-                             dataObj.put("BalanceRM", "0");
-                             dataObj.put("BalanceBM", "0");
-                             dataObj.put("Registration_Channel", "0");
-                             dataObj.put("LastDeposit_Date", "0");
-                             dataObj.put("BetsCount", "0");
-                             dataObj.put("Status", "0");
-                             dataArray.put(dataObj);
+                            //dataObj.put("error", "Player not found");
+                            dataArray.put(dataObj);
                         }
                    
 
@@ -225,11 +215,11 @@ public class Player_Registration extends HttpServlet {
                   
             String res="";
             String dataQuery = "select id, msisdn, ifnull(`name`,'no name'), ifnull(email,'no email'), registration_date, (select ifnull(sum(Acc_Amount),0) from user_accounts where Acc_Mobile = msisdn ), Bonus_Balance,"
-                    + "(case when User_Channel=1 then'SMS' when User_Channel=2 then 'USSD' when User_Channel=3 then 'Web' end), "
-                    + "(case when `status`=1 then 'Active' when `status`=0 then 'Inactive' end), " +
+                    + "(case when User_Channel=1 then'USSD' when User_Channel=2 then 'SMS' when User_Channel=3 then 'Web' end), "
+                    + "(case when `status`=1 then 'Inactive' when `status`=0 then 'Active' end), " +
                     " (select ifnull(max(Acc_Date),'0') from user_accounts where Acc_Mobile = msisdn) as 'Last Deposit', " +
                     " (select count(Play_Bet_ID) from player_bets where Play_Bet_Mobile = msisdn and Play_Bet_Status <> 206) as 'Bets Count' " +
-                    " from player where msisdn='"+mobile_no+"' order by registration_date desc limit 100 ";
+                    " from player where msisdn='"+mobile_no+"' order by registration_date desc ";
             System.out.println("getPlayerRegistrations==="+dataQuery);
             
             JSONObject dataObj  = null;
@@ -273,18 +263,8 @@ public class Player_Registration extends HttpServlet {
                         if(dataArray.length()==0)
                         {
                             dataObj  = new JSONObject();
-                             dataObj.put("ID", "0");
-                             dataObj.put("Mobile", "0");
-                             dataObj.put("Name", "0");
-                             dataObj.put("Email", "0");
-                             dataObj.put("Registration_Date", "0");
-                             dataObj.put("BalanceRM", "0");
-                             dataObj.put("BalanceBM", "0");
-                             dataObj.put("Registration_Channel", "0");
-                             dataObj.put("LastDeposit_Date", "0");
-                             dataObj.put("BetsCount", "0");
-                             dataObj.put("Status", "0");
-                             dataArray.put(dataObj);
+                            //dataObj.put("error", "Player not found");
+                            dataArray.put(dataObj);
                         }
                    
 
@@ -314,7 +294,7 @@ public class Player_Registration extends HttpServlet {
             Statement stmt = conn.createStatement();)
             {
                 
-                dataQuery= " update player set `status` =0 where msisdn = '"+mobile+"' ";
+                dataQuery= " update player set `status` =1 where msisdn = '"+mobile+"' ";
                 stmt.executeUpdate(dataQuery);
                 
                 
@@ -346,7 +326,7 @@ public class Player_Registration extends HttpServlet {
             Statement stmt = conn.createStatement();)
             {
                 
-                dataQuery= " update player set  `status` =1 where msisdn = '"+mobile+"' ";
+                dataQuery= " update player set  `status` =0 where msisdn = '"+mobile+"' ";
                 stmt.executeUpdate(dataQuery);
                 
                 
@@ -377,7 +357,7 @@ public class Player_Registration extends HttpServlet {
 
                 Date startDate = new Date();//sdf.parse(fromDate);
                 long curTime = startDate.getTime();
-                long interval = (24 * 1000 * 60 * 60)*5;
+                long interval = (24 * 1000 * 60 * 60)*10;
                 curTime -= interval;
                 String fromdate=sdf.format(new Date(curTime));
                 String todate=sdf.format(startDate);

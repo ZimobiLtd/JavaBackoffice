@@ -40,7 +40,7 @@ public class DashBoard extends HttpServlet {
         Connection conn;
         String response,username ,password,function,maindata;
         String type="betting";JSONObject jsonobj=null;JSONArray responseobj  = null;
-        public static SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm");
+        public static SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
         protected void processRequest(HttpServletRequest req, HttpServletResponse resp)
         throws ServletException, IOException {
             resp.setContentType("text/json;charset=UTF-8");
@@ -169,43 +169,43 @@ public class DashBoard extends HttpServlet {
         JSONObject main = new JSONObject();
         
         dataQueryTurnover = "select ifnull(sum(Play_Bet_Stake),0), ifnull(sum(Play_Bet_Bonus_Stake),0) from player_bets where Play_Bet_Status in (201,202,203)"
-                + " and  Play_Bet_Timestamp between '" + fromDate + "' and '" + toDate + "'";
+                + " and  date(Play_Bet_Timestamp) between '" + fromDate + "' and '" + toDate + "'";
 
         dataQueryOpenBetsTurnOver = "select ifnull(sum(Play_Bet_Stake),0), ifnull(sum(Play_Bet_Bonus_Stake),0) from player_bets where Play_Bet_Status in (201) "
-                + " and  Play_Bet_Timestamp between '" + fromDate + "' and '" + toDate + "'";
+                + " and  date(Play_Bet_Timestamp) between '" + fromDate + "' and '" + toDate + "'";
         
         dataQuerySettledBetsTurnOver = "select ifnull(sum(Play_Bet_Stake),0), ifnull(sum(Play_Bet_Bonus_Stake),0) from player_bets where Play_Bet_Status in (202,203) "
-                + " and  Play_Bet_Timestamp between '" + fromDate + "' and '" + toDate + "'";
+                + " and  date(Play_Bet_Timestamp) between '" + fromDate + "' and '" + toDate + "'";
         
         dataQueryWonBetsTurnOver = "select ifnull(sum(Play_Bet_Stake),0), ifnull(sum(Play_Bet_Bonus_Stake),0) from player_bets where Play_Bet_Status in (202) "
-                + " and  Play_Bet_Timestamp between '" + fromDate + "' and '" + toDate + "'";
+                + " and  date(Play_Bet_Timestamp) between '" + fromDate + "' and '" + toDate + "'";
 
         dataQueryWinnings = "select ifnull(sum(Play_Bet_Possible_Winning),0) from player_bets where Play_Bet_Status in (202) "
-                + " and  Play_Bet_Timestamp between '" + fromDate + "' and '" + toDate + "'";
+                + " and  date(Play_Bet_Timestamp) between '" + fromDate + "' and '" + toDate + "'";
 
-        registrations="select count(id),(select count(id) from player where registration_date between  '" + fromDate + "' and '" + toDate + "' and user_channel=2), "
-                    + "(select count(id) from player where registration_date between  '" + fromDate + "' and '" + toDate + "' and user_channel=3), "
-                    + "(select count(id) from player where registration_date between  '" + fromDate + "' and '" + toDate + "' and user_channel=4) "
-                    + "from player where registration_date between  '" + fromDate + "' and '" + toDate + "' and user_channel=1 ";
+        registrations="select count(id),(select count(id) from player where date(registration_date) between  '" + fromDate + "' and '" + toDate + "' and user_channel=2), "
+                    + "(select count(id) from player where date(registration_date) between  '" + fromDate + "' and '" + toDate + "' and user_channel=3), "
+                    + "(select count(id) from player where date(registration_date) between  '" + fromDate + "' and '" + toDate + "' and user_channel=4) "
+                    + "from player where date(registration_date) between  '" + fromDate + "' and '" + toDate + "' and user_channel=1 ";
 
         dataQueryDeposit = "SELECT count(Acc_ID),ifnull(sum(Acc_Amount),0) FROM user_accounts "
-                + "WHERE Acc_Trans_Type = 1 and  Acc_Date between '" + fromDate + "' and '" + toDate + "'";
+                + "WHERE Acc_Trans_Type = 1 and  date(Acc_Date) between '" + fromDate + "' and '" + toDate + "'";
 
         dataQueryWithdrawals = "SELECT  count(Acc_ID),ifnull(sum(Acc_Amount),0) FROM user_accounts "
-               + "WHERE Acc_Trans_Type = 2 and  Acc_Date between '" + fromDate + "' and '" + toDate + "'";
+               + "WHERE Acc_Trans_Type = 2 and  date(Acc_Date) between '" + fromDate + "' and '" + toDate + "'";
 
-        dataQueryBalance = "select count(id),ifnull(sum(Player_Balance),0) from player where Player_Balance > 0 and registration_date between '" + fromDate + "' and '" + toDate + "' ";
+        dataQueryBalance = "select count(id),ifnull(sum(Player_Balance),0) from player where Player_Balance > 0 and date(registration_date) between '" + fromDate + "' and '" + toDate + "' ";
 
-        bonusbalancesum = "select count(id),ifnull(sum(Bonus_Balance),0) from player where Bonus_Balance > 0 and registration_date between '" + fromDate + "' and '" + toDate + "' ";
+        bonusbalancesum = "select count(id),ifnull(sum(Bonus_Balance),0) from player where Bonus_Balance > 0 and date(registration_date) between '" + fromDate + "' and '" + toDate + "' ";
 
-        dataQueryBetsByStatus = "select Play_Bet_Status,count(Play_Bet_ID) from player_bets where Play_Bet_Timestamp between '" + fromDate + "' and '" + toDate + "' GROUP BY Play_Bet_Status";
+        dataQueryBetsByStatus = "select Play_Bet_Status,count(Play_Bet_ID) from player_bets where date(Play_Bet_Timestamp) between '" + fromDate + "' and '" + toDate + "' GROUP BY Play_Bet_Status";
         
-        dataQueryBetsByChannel="select count(Play_Bet_Slip_ID),(select count(Play_Bet_Slip_ID) from player_bets where Play_Bet_Timestamp between '" + fromDate + "' and '" + toDate + "' and Play_Bet_Channel = 2), "
-                + "(select count(Play_Bet_Slip_ID) from player_bets where Play_Bet_Timestamp between '" + fromDate + "' and '" + toDate + "' and Play_Bet_Channel = 3), "
-                + "(select count(Play_Bet_Slip_ID) from player_bets where Play_Bet_Timestamp between '" + fromDate + "' and '" + toDate + "' and Play_Bet_Channel = 4) "
-                + "from player_bets where Play_Bet_Timestamp between '" + fromDate + "' and '" + toDate + "' and Play_Bet_Channel = 1 " ;
+        dataQueryBetsByChannel="select count(Play_Bet_Slip_ID),(select count(Play_Bet_Slip_ID) from player_bets where date(Play_Bet_Timestamp) between '" + fromDate + "' and '" + toDate + "' and Play_Bet_Channel = 2), "
+                + "(select count(Play_Bet_Slip_ID) from player_bets where date(Play_Bet_Timestamp) between '" + fromDate + "' and '" + toDate + "' and Play_Bet_Channel = 3), "
+                + "(select count(Play_Bet_Slip_ID) from player_bets where date(Play_Bet_Timestamp) between '" + fromDate + "' and '" + toDate + "' and Play_Bet_Channel = 4) "
+                + "from player_bets where date(Play_Bet_Timestamp) between '" + fromDate + "' and '" + toDate + "' and Play_Bet_Channel = 1 " ;
 
-        dataQueryBetsByBetType="select ifnull(Play_Bet_Type,0), ifnull(count(Play_Bet_Type),0) from player_bets  where Play_Bet_Timestamp between '" + fromDate + "' and '" + toDate + "' GROUP BY Play_Bet_Type";
+        dataQueryBetsByBetType="select ifnull(Play_Bet_Type,0), ifnull(count(Play_Bet_Type),0) from player_bets  where date(Play_Bet_Timestamp) between '" + fromDate + "' and '" + toDate + "' GROUP BY Play_Bet_Type";
         
         
         String financequeries=dataQueryDeposit+"#"+dataQueryWithdrawals+"#"+dataQueryBalance+"#"+bonusbalancesum;
@@ -295,8 +295,8 @@ public class DashBoard extends HttpServlet {
                 
                 dataObj  = new JSONObject();
                 
-                double win_tax=Double.valueOf(totalWinnings)*0.2;
-                double taxedamount_won=Double.valueOf(totalWinnings)-win_tax;
+                //double win_tax=Double.valueOf(totalWinnings)*0.2;
+                double taxedamount_won=Double.valueOf(totalWinnings);//-win_tax;
                 
                 dataObj.put("TotalTurnover", totalTurnoverRM);
                 dataObj.put("TurnoverRM", totalTurnoverRM);

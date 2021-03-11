@@ -30,7 +30,7 @@ import org.json.JSONArray;
  * @author jac
  */
 @WebServlet(urlPatterns = {"/BettingReport"})
-public class BettingReport extends HttpServlet {
+public class PlayersBettingReport extends HttpServlet {
 
     /**
      * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
@@ -44,7 +44,7 @@ public class BettingReport extends HttpServlet {
         Connection conn;
         String response,username ,password,function,maindata;
         String type="betting";JSONObject jsonobj=null;JSONArray responseobj  = null;
-        public static SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm");
+        public static SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
         protected void processRequest(HttpServletRequest req, HttpServletResponse resp)
         throws ServletException, IOException {
             resp.setContentType("text/json;charset=UTF-8");
@@ -58,72 +58,174 @@ public class BettingReport extends HttpServlet {
             try 
             {
 
-                   BufferedReader reader = req.getReader();
-                   while ((line = reader.readLine()) != null)
-                   {
-                       jb.append(line);
-                   }
-                   
-                   System.out.println("BettingReport===="+jb.toString());
-                   jsonobj = new JSONObject(jb.toString());
-                   function=jsonobj.getString("function");
-                   maindata=jsonobj.getString("data");
-                   
-                   
-                   if(function.equals("getBettingReport"))
-                   {
-                       String []respo=initDates();
-                       String fromdate=respo[0];
-                       String todate=respo[1];
-                       
-                       responseobj=getBettingReport("2017-10-23" ,"2020-10-25");
-                   }
-                   
-                   
-                   if(function.equals("filterBettingReport"))
-                   {
-                       String[]data=maindata.split("#");
-                       String from=data[0];
-                       String to=data[1];  
-                       
-                       responseobj=getBettingReport(from ,to);
-                   }
-                   
-                   
-                   if(function.equals("getPlayerBettingReport"))
-                   {
-                       String[]data=maindata.split("#");
-                       String player_id=data[0];
-                       String player_mobile=data[1];
-                       
-                       if(player_mobile.startsWith("07") || player_mobile.startsWith("01"))
-                       {
-                          player_mobile="254"+player_mobile.substring(1);
-                       }
-                       
-                       responseobj=getPlayerBettingReport("","",player_mobile);
-                   }
-                   
-                   if(function.equals("filterPlayerBettingReport"))
-                   {
-                       String[]data=maindata.split("#");
-                       String player_id=data[0];
-                       String player_mobile=data[1];
-                       String from=data[2];
-                       String to=data[3];  
-                       
-                       if(player_mobile.startsWith("07") || player_mobile.startsWith("01"))
-                       {
-                          player_mobile="254"+player_mobile.substring(1);
-                       }
-                       
-                       responseobj=getPlayerBettingReport(from,to,player_mobile);
-                   }
-                   
-                   
-             }catch (Exception ex) { ex.getMessage();}
-            
-             PrintWriter out = resp.getWriter(); 
+                BufferedReader reader = req.getReader();
+                while ((line = reader.readLine()) != null)
+                {
+                    jb.append(line);
+                }
+
+                System.out.println("BettingReport===="+jb.toString());
+                jsonobj = new JSONObject(jb.toString());
+                function=jsonobj.getString("function");
+                maindata=jsonobj.getString("data");
+
+
+                if(function.equals("getBettingReport"))
+                {
+                    String []respo=initDates();
+                    String fromdate=respo[0];
+                    String todate=respo[1];
+
+                    responseobj=getBettingReport(fromdate ,todate);
+                }
+
+
+                if(function.equals("filterBettingReport"))
+                {
+                    String[]data=maindata.split("#");
+                    String from=data[0];
+                    String to=data[1];  
+
+                    responseobj=getBettingReport(from ,to);
+                }
+
+
+                if(function.equals("getPlayerBettingReport"))
+                {
+                    String[]data=maindata.split("#");
+                    String player_mobile=data[0];
+
+                    if(player_mobile.startsWith("07") || player_mobile.startsWith("01"))
+                    {
+                       player_mobile="254"+player_mobile.substring(1);
+                    }
+
+                    responseobj=getPlayerBettingReport("","",player_mobile);
+                }
+                
+                
+                if(function.equals("filterPlayerBettingReport"))
+                {
+                    String[]data=maindata.split("#");
+                    String player_mobile=data[0];
+                    String from=data[1];
+                    String to=data[2];  
+
+                    if(player_mobile.startsWith("07") || player_mobile.startsWith("01"))
+                    {
+                       player_mobile="254"+player_mobile.substring(1);
+                    }
+
+                    responseobj=getPlayerBettingReport(from,to,player_mobile);
+                }
+
+                
+                if(function.equals("getPlayerTransactionsReport"))
+                {
+                    String[]data=maindata.split("#");
+                    String player_mobile=data[0];
+                    
+                    String []respo=initDates();
+                    String fromdate=respo[0];
+                    String todate=respo[1];
+
+                    if(player_mobile.startsWith("07") || player_mobile.startsWith("01"))
+                    {
+                       player_mobile="254"+player_mobile.substring(1);
+                    }
+
+                    responseobj=getPlayerTransactions(fromdate,todate,player_mobile);
+                }
+                
+                if(function.equals("filterPlayerTransactionsReport"))
+                {   
+                    String[]data=maindata.split("#");
+                    String from=data[0];
+                    String to=data[1];
+                    String transtype=data[2];
+                    String transstatus=data[3]; 
+                    String player_mobile=data[4];
+                    if(player_mobile.startsWith("07") || player_mobile.startsWith("01"))
+                    {
+                       player_mobile="254"+player_mobile.substring(1);
+                    }
+                    String trans_type="",trans_status="";
+                    //Acc_Trans_Type =1 then 'Deposit' when Acc_Trans_Type=2 then 'User Withdrawal'  when Acc_Trans_Type=8 then 'Withdrawal Charge' 
+                    //when Acc_Trans_Type=3 then 'GoldenRace Bet Withdrawal' when Acc_Trans_Type=4 then 'Bet Withdrawal'  end) as 'Trans_Type'
+                    if(transtype.equals("Deposit"))//Deposit,User Withdrawal,Withdrawal Charge,GoldenRace Bet Withdrawal,Bet Withdrawal
+                    {
+                        trans_type="1";
+                    }
+                    else if(transtype.equals("User Withdrawal"))
+                    {
+                        trans_type="2";
+                    }
+                    else if(transtype.equals("Withdrawal Charge"))
+                    {
+                        trans_type="8";
+                    }
+                    else if(transtype.equals("GoldenRace Bet Withdrawal"))
+                    {
+                        trans_type="3";
+                    }
+                    else if(transtype.equals("Bet Withdrawal"))
+                    {
+                        trans_type="4";
+                    }
+                    else
+                    {
+                       trans_type="All"; 
+                    }
+
+
+                    if(transstatus.equalsIgnoreCase("Processed"))
+                    {
+                        trans_status="0";
+                    }
+                    else if(transstatus.equalsIgnoreCase("Pending"))
+                    {
+                        trans_status="1";
+                    }
+                    else if(transstatus.equalsIgnoreCase("Failed"))
+                    {
+                        trans_status="2";
+                    }
+                    else
+                    {
+                       trans_status="All"; 
+                    }
+
+
+
+
+                    if(trans_type.equals("All") && trans_status.equals("All"))
+                    {
+                        responseobj=getPlayerTransactions(from,to,player_mobile);
+                    }
+                    else if(!trans_type.equals("All") && trans_status.equals("All"))
+                    {
+                        trans_type="Acc_Trans_Type="+trans_type;
+                        trans_status="Acc_Status in (0,1,2,3,4,8)";
+                        responseobj=filterPlayerTransactions(from,to,trans_type,trans_status,player_mobile);
+                    }
+                    else if(trans_type.equals("All") && !trans_status.equals("All"))
+                    {
+                        trans_type="Acc_Trans_Type in(0,1,2,3,4,8)";
+                        trans_status="Acc_Status ="+trans_status;
+                        responseobj=filterPlayerTransactions(from,to,trans_type,trans_status,player_mobile);
+                    }
+                    else
+                    {
+                        trans_type="Acc_Trans_Type ="+trans_type;
+                        trans_status="Acc_Status ="+trans_status;
+                        responseobj=filterPlayerTransactions(from,to,trans_type,trans_status,player_mobile);
+                    }
+
+                }
+
+            }catch (Exception ex) { ex.getMessage();}
+
+            PrintWriter out = resp.getWriter(); 
             out.print(responseobj);
         }
     
@@ -155,11 +257,9 @@ public class BettingReport extends HttpServlet {
                 System.out.println("getBettingReport==="+dataQuery);
                 
                 rs = stmt.executeQuery(dataQuery);
-  
                 while (rs.next())
                 {
                     dataObj  = new JSONObject();
-
                     String betdate = sdf.format(rs.getTimestamp(1));
                     String betslip_id = rs.getString(2);
                     String betstatus = rs.getString(3);
@@ -174,7 +274,6 @@ public class BettingReport extends HttpServlet {
 
                     String settled_rm="0.00",settled_bm="0.00",openbet_bm="0.00",ggr_rm="0.00",ngr_rm="0.00",ngrtax_rm="0.00",taxedngr_rm="0.00",bonusamountopen="0.00",bonusmoneysettled="0.00",openbet_rm="0.00",winamount_rm="0.00",winamount_bm="0.00",
                     ggr_bm="0.00",ngr_bm="0.00",refund_rm="0.00",taxedwinamount_rm="0.00",refund_bm="0.00",winning_tax="0.00",ngr_tax="0.00";
-
                     if (betstatus.equalsIgnoreCase("Placed")) 
                     {
                         openbet_rm = String.valueOf(betstake); // open rm
@@ -194,8 +293,8 @@ public class BettingReport extends HttpServlet {
                         openbet_rm = "0.00"; // open rm
                         settled_rm = String.valueOf(betstake); // settled rm
                         
-                        double win_tax=Integer.valueOf(betpossiblewinning)*0.2;
-                        double taxedamount_won=Double.valueOf(betpossiblewinning)-win_tax;
+                        double win_tax=( Integer.valueOf(betpossiblewinning) - Integer.valueOf(betstake) )  *0.2;
+                        double taxedamount_won=Double.valueOf(betpossiblewinning) -win_tax;
                         
                         taxedwinamount_rm=String.format("%.2f", taxedamount_won);
                         winning_tax=String.format("%.2f", win_tax);// win_tax rm
@@ -214,15 +313,7 @@ public class BettingReport extends HttpServlet {
                         settled_rm = String.valueOf(betstake); // settled rm
                         winamount_rm = "0.00"; // win rm
                         ggr_rm = String.valueOf(settled_rm); // ggr rm
-                        
-                        double NGR=Double.valueOf(ggr_rm) - Double.valueOf(winamount_rm);
-                        double NGR_Tax=NGR*0.15;
-                        double fin_TaxedNGR=NGR-NGR_Tax;
-                        
-                        
-                        ngr_tax=String.format("%.2f", NGR_Tax);// ngr_tax
-                        ngr_rm = String.format("%.2f", NGR); // ngr 
-                        taxedngr_rm = String.format("%.2f", fin_TaxedNGR); // ngr 
+                        ngr_rm = betstake; // ngr 
                         openbet_bm = "0.00"; // open bm
                         settled_bm = String.valueOf(betbonusstake); // settled bm
                         winamount_bm = "0.00"; // win bm
@@ -296,12 +387,13 @@ public class BettingReport extends HttpServlet {
 
                     dataArray.put(dataObj);
                 }
-                    
-                    
                 
-                
-                  
-                //System.out.println("\n\n\n"+dataArray);
+                if(dataArray.length()==0)
+                {
+                    dataObj  = new JSONObject();
+                    //dataObj.put("error", "Player not found");
+                    dataArray.put(dataObj);
+                }
                    
 
             rs.close();
@@ -397,8 +489,8 @@ public class BettingReport extends HttpServlet {
                         openbet_rm = "0.00"; // open rm
                         settled_rm = String.valueOf(betstake); // settled rm
                         
-                        double win_tax=Integer.valueOf(betpossiblewinning)*0.2;
-                        double taxedamount_won=Double.valueOf(betpossiblewinning)-win_tax;
+                        double win_tax=( Double.valueOf(betpossiblewinning) - Double.valueOf(betstake) )  *0.2;
+                        double taxedamount_won=Double.valueOf(betpossiblewinning) -win_tax;
                         
                         taxedwinamount_rm=String.format("%.2f", taxedamount_won);
                         winning_tax=String.format("%.2f", win_tax);// win_tax rm
@@ -419,15 +511,7 @@ public class BettingReport extends HttpServlet {
                         settled_rm = String.valueOf(betstake); // settled rm
                         winamount_rm = "0.00"; // win rm
                         ggr_rm = String.valueOf(settled_rm); // ggr rm
-                        
-                        double NGR=Double.valueOf(ggr_rm) - Double.valueOf(winamount_rm);
-                        double NGR_Tax=NGR*0.15;
-                        double fin_TaxedNGR=NGR-NGR_Tax;
-                        
-                        
-                        ngr_tax=String.format("%.2f", NGR_Tax);// ngr_tax
-                        ngr_rm = String.format("%.2f", NGR); // ngr 
-                        taxedngr_rm = String.format("%.2f", fin_TaxedNGR); // ngr 
+                        ngr_rm = betstake; // ngr 
                         openbet_bm = "0.00"; // open bm
                         settled_bm = String.valueOf(betbonusstake); // settled bm
                         winamount_bm = "0.00"; // win bm
@@ -501,18 +585,25 @@ public class BettingReport extends HttpServlet {
 
                     dataArray.put(dataObj);
                 }
+                if(dataArray.length()==0)
+                {
+                    dataObj  = new JSONObject();
+                    dataArray.put(dataObj);
+                }
                 
                 
                 JSONObject dataObj1  = new JSONObject();
                 JSONArray dataArray1 = new JSONArray();
-                String query1=" select ifnull(sum(Acc_Amount),0) ,registration_date  from user_accounts,player where Acc_Mobile='"+mobile+"' and msisdn='"+mobile+"'  group by Acc_Mobile";
+                String query1=" select ifnull(sum(Acc_Amount),0) ,date(registration_date) ,(select ifnull(sum(Acc_Amount),0) from user_accounts where Acc_Trans_Type=4  and Acc_Mobile='"+mobile+"' ) as 'total betstake' ," +
+                              "(select ifnull(sum(Acc_Amount),0) from user_accounts where Acc_Mpesa_Trans_No like 'BET%'  and Acc_Mobile='"+mobile+"' ) as 'total win' from user_accounts,player where Acc_Mobile='"+mobile+"' and msisdn='"+mobile+"'  group by Acc_Mobile";
+                System.out.println("getPlayerAcc==="+query1);
                 rs = stmt.executeQuery(query1);
                 while (rs.next())
                 {
                     dataObj1.put("Balance", rs.getString(1));
                     dataObj1.put("RegistrationDate", rs.getString(2));
-                    dataObj1.put("TotalBetStake", String.valueOf(totalBetStake));
-                    dataObj1.put("TotalWinnings", String.valueOf(totalWinnings));
+                    dataObj1.put("TotalBetStake", rs.getString(3).replace("-", "") );//String.format("%.2f", Double.valueOf(rs.getString(2)))
+                    dataObj1.put("TotalWinnings", rs.getString(4) );//String.format("%.2f", Double.valueOf(rs.getString(3)))
                     
                     dataArray1.put(dataObj1);
                     
@@ -536,9 +627,167 @@ public class BettingReport extends HttpServlet {
         }
         
         
+        
+        
+        public JSONArray getPlayerTransactions(String from,String to,String mobile)
+        {
+                  
+            String res="";
+            String dataQuery = "select Acc_Id, Acc_Date, Acc_Mobile, Acc_Amount, Acc_Mpesa_Trans_No, ifnull(Acc_Comment,'Success'),if(Acc_Status =0,'Processed','Pending'),"
+                             + "(CASE when Acc_Trans_Type =1 then 'Deposit' when Acc_Trans_Type=2 then 'User Withdrawal'  when Acc_Trans_Type=8 then 'Withdrawal Charge' when Acc_Trans_Type=3 then 'GoldenRace Bet Withdrawal' when Acc_Trans_Type=4 then 'Bet Withdrawal'  end) as 'Trans_Type'"
+                             + ",ifnull(Acc_Gateway,'Mpesa') from user_accounts where  date(Acc_Date) between '"+from+"' and '"+to+"' and Acc_Mobile='"+mobile+"' order by Acc_Date desc ";
+            System.out.println("getTransactions==="+dataQuery);
+            
+            JSONObject dataObj  = null;
+            JSONArray dataArray = new JSONArray();
+            
+            try( Connection conn = new DBManager(type).getDBConnection();
+            Statement stmt = conn.createStatement();)
+            {
+
+                ResultSet rs = stmt.executeQuery(dataQuery);
+
+                while (rs.next())
+                {
+                    String trans_id = rs.getString(1);
+                    String trans_date = sdf.format(rs.getTimestamp(2));
+                    String trans_mobile = rs.getString(3);
+                    String trans_amnt = rs.getString(4);
+                    String mpesa_code = rs.getString(5);
+                    String trans_comment = rs.getString(6);
+                    String trans_status = rs.getString(7);
+                    String transtype = rs.getString(8);
+                    String transgateway = rs.getString(9);
+
+                    dataObj  = new JSONObject();
+                    dataObj.put("Trans_ID", trans_id);
+                    dataObj.put("Trans_Date", trans_date);
+                    dataObj.put("Trans_Mobile", trans_mobile);
+                    dataObj.put("Trans_Amount", trans_amnt);
+                    dataObj.put("Trans_MpesaCode", mpesa_code);
+                    dataObj.put("Trans_Comment", trans_comment);
+                    dataObj.put("Trans_Status", trans_status);
+                    dataObj.put("Trans_Type", transtype);
+                    dataObj.put("Trans_Gateway", transgateway);
+                    dataArray.put(dataObj);
+                }
+                
+                if(dataArray.length()==0)
+                {
+                    dataObj  = new JSONObject();
+                    dataObj.put("Trans_ID", "0");
+                    dataObj.put("Trans_Date", "0");
+                    dataObj.put("Trans_Mobile", "0");
+                    dataObj.put("Trans_Amount", "0");
+                    dataObj.put("Trans_MpesaCode", "0");
+                    dataObj.put("Trans_Comment", "0");
+                    dataObj.put("Trans_Status", "0");
+                    dataObj.put("Trans_Type", "0");
+                    dataObj.put("Trans_Gateway", "0");
+                    dataArray.put(dataObj);
+                }
+                
+                if(dataArray.length()==0)
+                {
+                    dataObj  = new JSONObject();
+                    //dataObj.put("error", "Player not found");
+                    dataArray.put(dataObj);
+                }
+                   
+
+            rs.close();
+            stmt.close();
+            conn.close();
+            }
+            catch(Exception e)
+            {
+
+            }
+                    
+        return dataArray;
+        }
+        
+        
+        
+        
+        public JSONArray filterPlayerTransactions(String from,String to,String transtype,String transstatus,String mobile)
+        {
+                  
+            String res="";
+            String dataQuery = "select Acc_Id, Acc_Date, Acc_Mobile, Acc_Amount, Acc_Mpesa_Trans_No, ifnull(Acc_Comment,'Success'),if(Acc_Status =0,'Processed','Pending'),"
+                             + "(CASE when Acc_Trans_Type =1 then 'Deposit' when Acc_Trans_Type=2 then 'User Withdrawal'  when Acc_Trans_Type=8 then 'Withdrawal Charge' when Acc_Trans_Type=3 then 'GoldenRace Bet Withdrawal' when Acc_Trans_Type=4 then 'Bet Withdrawal'   end) as 'Trans_Type',ifnull(Acc_Gateway,'Mpesa') "
+                             + "from user_accounts where Acc_Mobile='"+mobile+"'  and date(Acc_Date) between '"+from+"' and '"+to+"' and "+transtype+" and "+transstatus+" order by Acc_Date desc ";
+            
+            System.out.println("filterTransactions==="+dataQuery);
+            
+            JSONObject dataObj  = null;
+            JSONArray dataArray = new JSONArray();
+            
+            try( Connection conn = new DBManager(type).getDBConnection();
+            Statement stmt = conn.createStatement();)
+            {
+
+                    ResultSet rs = stmt.executeQuery(dataQuery);
+                    while (rs.next())
+                    {
+                        String trans_id = rs.getString(1);
+                        String trans_date = sdf.format(rs.getTimestamp(2));
+                        String trans_mobile = rs.getString(3);
+                        String trans_amnt = rs.getString(4);
+                        String mpesa_code = rs.getString(5);
+                        String trans_comment = rs.getString(6);
+                        String trans_status = rs.getString(7);
+                        String trans_type = rs.getString(8);
+                        String trans_gateway = rs.getString(9);
+
+                        dataObj  = new JSONObject();
+                        dataObj.put("Trans_ID", trans_id);
+                        dataObj.put("Trans_Date", trans_date);
+                        dataObj.put("Trans_Mobile", trans_mobile);
+                        dataObj.put("Trans_Amount", trans_amnt);
+                        dataObj.put("Trans_MpesaCode", mpesa_code);
+                        dataObj.put("Trans_Comment", trans_comment);
+                        dataObj.put("Trans_Status", trans_status);
+                        dataObj.put("Trans_Type", trans_type);
+                        dataObj.put("Trans_Gateway", trans_gateway);
+                        dataArray.put(dataObj);
+                    }
+                    if(dataArray.length()==0)
+                    {
+                        dataObj  = new JSONObject();
+                        dataObj.put("Trans_ID", "0");
+                        dataObj.put("Trans_Date", "0");
+                        dataObj.put("Trans_Mobile", "0");
+                        dataObj.put("Trans_Amount", "0");
+                        dataObj.put("Trans_MpesaCode", "0");
+                        dataObj.put("Trans_Comment", "0");
+                        dataObj.put("Trans_Status", "0");
+                        dataObj.put("Trans_Type", "0");
+                        dataObj.put("Trans_Gateway", "0");
+                        dataArray.put(dataObj);
+                    }
+                    
+                    if(dataArray.length()==0)
+                    {
+                        dataObj  = new JSONObject();
+                        //dataObj.put("error", "Player not found");
+                        dataArray.put(dataObj);
+                    }
+
+            rs.close();
+            stmt.close();
+            conn.close();
+            }
+            catch(Exception e)
+            {
+
+            }
+                    
+        return dataArray;
+        }
+        
+        
       
-        
-        
         
         public  ArrayList<String> loopdate(String fromDate, String toDate) 
         {
@@ -569,25 +818,25 @@ public class BettingReport extends HttpServlet {
         
         
         
-    public String[] initDates() 
-    {
-        String []data=null;
-
-        try 
+        public String[] initDates() 
         {
+            String []data=null;
 
-            String todate=LocalDate.now().toString();
+            try 
+            {
 
-            String fromdate=LocalDate.now().plusDays(-30).toString();
+                String todate=LocalDate.now().toString();
 
-            data=new String[]{fromdate,todate};//fromdate+"#"+todate ;
+                String fromdate=LocalDate.now().plusDays(-30).toString();
 
-        } catch (Exception ex) {
+                data=new String[]{fromdate,todate};//fromdate+"#"+todate ;
 
+            } catch (Exception ex) {
+
+            }
+
+        return data;
         }
-
-    return data;
-    }
       
       
 

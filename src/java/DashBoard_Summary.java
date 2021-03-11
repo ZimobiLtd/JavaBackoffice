@@ -40,7 +40,7 @@ public class DashBoard_Summary extends HttpServlet {
         Connection conn;
         String response,username ,password,function,maindata;
         String type="betting";JSONObject jsonobj=null;JSONArray responseobj  = null;
-        public static SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm");
+        public static SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
         protected void processRequest(HttpServletRequest req, HttpServletResponse resp)
         throws ServletException, IOException {
             resp.setContentType("text/json;charset=UTF-8");
@@ -119,9 +119,12 @@ public class DashBoard_Summary extends HttpServlet {
         
         
         ResultSet rs=null;
-        String depositAccBal="0";
+        String c2bDepositAccBal="0";
+        String betWinDepositAccBal="0";
         String depositPlayers="0";
-        String withdrawAccBal="0";
+        String b2cwithdrawAccBal="0";
+        String wallet2BetwithdrawAccBal="0";
+        String betsWonAccBal="0";
         String withdrawPlayers="0";
         String playersRMBalance="0";
         String playersRMCount="0";
@@ -167,43 +170,47 @@ public class DashBoard_Summary extends HttpServlet {
         JSONObject main = new JSONObject();
         
         dataQueryTurnover = "select ifnull(sum(Play_Bet_Stake),0), ifnull(sum(Play_Bet_Bonus_Stake),0) from player_bets where Play_Bet_Status in (201,202,203)"
-                            + " and  Play_Bet_Timestamp between '" + fromDate + "' and '" + toDate + "'";
+                            + " and  date(Play_Bet_Timestamp) between '" + fromDate + "' and '" + toDate + "'";
 
         dataQueryOpenBetsTurnOver = "select ifnull(sum(Play_Bet_Stake),0), ifnull(sum(Play_Bet_Bonus_Stake),0) from player_bets where Play_Bet_Status in (201) "
-                + " and  Play_Bet_Timestamp between '" + fromDate + "' and '" + toDate + "'";
+                + " and  date(Play_Bet_Timestamp) between '" + fromDate + "' and '" + toDate + "'";
         
         dataQuerySettledBetsTurnOver = "select ifnull(sum(Play_Bet_Stake),0), ifnull(sum(Play_Bet_Bonus_Stake),0) from player_bets where Play_Bet_Status in (202,203) "
-                + " and  Play_Bet_Timestamp between '" + fromDate + "' and '" + toDate + "'";
+                + " and  date(Play_Bet_Timestamp) between '" + fromDate + "' and '" + toDate + "'";
         
         dataQueryWonBetsTurnOver = "select ifnull(sum(Play_Bet_Stake),0), ifnull(sum(Play_Bet_Bonus_Stake),0) from player_bets where Play_Bet_Status in (202) "
-                + " and  Play_Bet_Timestamp between '" + fromDate + "' and '" + toDate + "'";
+                + " and  date(Play_Bet_Timestamp) between '" + fromDate + "' and '" + toDate + "'";
 
         dataQueryWinnings = "select ifnull(sum(Play_Bet_Possible_Winning),0) from player_bets where Play_Bet_Status in (202) "
-                + " and  Play_Bet_Timestamp between '" + fromDate + "' and '" + toDate + "'";
+                + " and  date(Play_Bet_Timestamp) between '" + fromDate + "' and '" + toDate + "'";
+        //sms,ussd,web,app
+        registrations="select count(id),(select count(id) from player where date(registration_date) between  '" + fromDate + "' and '" + toDate + "' and user_channel=2), "
+                    + "(select count(id) from player where date(registration_date) between  '" + fromDate + "' and '" + toDate + "' and user_channel=3), "
+                    + "(select count(id) from player where date(registration_date) between  '" + fromDate + "' and '" + toDate + "' and user_channel=4) "
+                    + "from player where date(registration_date) between  '" + fromDate + "' and '" + toDate + "' and user_channel=1 ";
 
-        registrations="select count(id),(select count(id) from player where registration_date between  '" + fromDate + "' and '" + toDate + "' and user_channel=2), "
-                    + "(select count(id) from player where registration_date between  '" + fromDate + "' and '" + toDate + "' and user_channel=3), "
-                    + "(select count(id) from player where registration_date between  '" + fromDate + "' and '" + toDate + "' and user_channel=4) "
-                    + "from player where registration_date between  '" + fromDate + "' and '" + toDate + "' and user_channel=1 ";
+        dataQueryDeposit = "SELECT count(Acc_ID),ifnull(sum(Acc_Amount),0) as 'mpesa deposits',"
+                + "(select ifnull(sum(Acc_Amount),0) from user_accounts where Acc_Trans_Type = 1 and  date(Acc_Date) between '" + fromDate + "' and '" + toDate + "' and Acc_Mpesa_Trans_No like 'BET%') as 'bet win deposit' "
+                + "FROM user_accounts where Acc_Trans_Type = 1 and  date(Acc_Date) between '" + fromDate + "' and '" + toDate + "' and Acc_Mpesa_Trans_No not like 'BET%' ";
 
-        dataQueryDeposit = "SELECT count(Acc_ID),ifnull(sum(Acc_Amount),0) FROM user_accounts "
-                + "WHERE Acc_Trans_Type = 1 and  Acc_Date between '" + fromDate + "' and '" + toDate + "'";
+        dataQueryWithdrawals = "SELECT  count(Acc_ID),ifnull(sum(Acc_Amount),0) as 'user b2c withdrawal', "
+                             + "(select ifnull(sum(Acc_Amount),0) from user_accounts where Acc_Trans_Type = 4 and  date(Acc_Date) between '" + fromDate + "' and '" + toDate + "' ) as 'bet withdrawal' , "
+                             + "(select sum(Play_Bet_Possible_Winning) from player_bets where date(Play_Bet_Timestamp) between '" + fromDate + "' and '" + toDate + "' and Play_Bet_Status=202) as 'bets won' "
+                             + "FROM user_accounts where Acc_Trans_Type = 2 and  date(Acc_Date) between '" + fromDate + "' and '" + toDate + "'";
 
-        dataQueryWithdrawals = "SELECT  count(Acc_ID),ifnull(sum(Acc_Amount),0) FROM user_accounts "
-               + "WHERE Acc_Trans_Type = 2 and  Acc_Date between '" + fromDate + "' and '" + toDate + "'";
+        dataQueryBalance = "select count(id),ifnull(sum(Player_Balance),0) from player where Player_Balance > 0 and date(registration_date) between '" + fromDate + "' and '" + toDate + "' ";
 
-        dataQueryBalance = "select count(id),ifnull(sum(Player_Balance),0) from player where Player_Balance > 0 and registration_date between '" + fromDate + "' and '" + toDate + "' ";
+        bonusbalancesum = "select count(id),ifnull(sum(Bonus_Balance),0) from player where Bonus_Balance > 0 and date(registration_date) between '" + fromDate + "' and '" + toDate + "' ";
 
-        bonusbalancesum = "select count(id),ifnull(sum(Bonus_Balance),0) from player where Bonus_Balance > 0 and registration_date between '" + fromDate + "' and '" + toDate + "' ";
-
-        dataQueryBetsByStatus = "select Play_Bet_Status,count(Play_Bet_ID) from player_bets where Play_Bet_Timestamp between '" + fromDate + "' and '" + toDate + "' GROUP BY Play_Bet_Status";
+        dataQueryBetsByStatus = "select Play_Bet_Status,count(Play_Bet_ID) from player_bets where date(Play_Bet_Timestamp) between '" + fromDate + "' and '" + toDate + "' GROUP BY Play_Bet_Status";
         
-        dataQueryBetsByChannel="select count(Play_Bet_Slip_ID),(select count(Play_Bet_Slip_ID) from player_bets where Play_Bet_Timestamp between '" + fromDate + "' and '" + toDate + "' and Play_Bet_Channel = 2), "
-                + "(select count(Play_Bet_Slip_ID) from player_bets where Play_Bet_Timestamp between '" + fromDate + "' and '" + toDate + "' and Play_Bet_Channel = 3), "
-                + "(select count(Play_Bet_Slip_ID) from player_bets where Play_Bet_Timestamp between '" + fromDate + "' and '" + toDate + "' and Play_Bet_Channel = 4) "
-                + "from player_bets where Play_Bet_Timestamp between '" + fromDate + "' and '" + toDate + "' and Play_Bet_Channel = 1 " ;
+        //sms,ussd,web,bet
+        dataQueryBetsByChannel="select count(Play_Bet_Slip_ID),(select count(Play_Bet_Slip_ID) from player_bets where date(Play_Bet_Timestamp) between '" + fromDate + "' and '" + toDate + "' and Play_Bet_Channel = 1), "
+                + "(select count(Play_Bet_Slip_ID) from player_bets where date(Play_Bet_Timestamp) between '" + fromDate + "' and '" + toDate + "' and Play_Bet_Channel = 3), "
+                + "(select count(Play_Bet_Slip_ID) from player_bets where date(Play_Bet_Timestamp) between '" + fromDate + "' and '" + toDate + "' and Play_Bet_Channel = 4) "
+                + "from player_bets where date(Play_Bet_Timestamp) between '" + fromDate + "' and '" + toDate + "' and Play_Bet_Channel = 2 " ;
 
-        dataQueryBetsByBetType="select Play_Bet_Type, count(Play_Bet_Type) from player_bets  where Play_Bet_Timestamp between '" + fromDate + "' and '" + toDate + "' GROUP BY Play_Bet_Type";
+        dataQueryBetsByBetType="select Play_Bet_Type, count(Play_Bet_Type) from player_bets  where date(Play_Bet_Timestamp) between '" + fromDate + "' and '" + toDate + "' GROUP BY Play_Bet_Type";
         
         
         String financequeries=dataQueryDeposit+"#"+dataQueryWithdrawals+"#"+dataQueryBalance+"#"+bonusbalancesum;
@@ -216,7 +223,7 @@ public class DashBoard_Summary extends HttpServlet {
                 
                 for(int i=0;i<collection.length;i++)
                 {
-                    System.out.println(i+"dataQueryDeposit==="+collection[i]);
+                    System.out.println(i+"financeQuery==="+collection[i]);
                     rs = stmt.executeQuery(collection[i]); 
                     while (rs.next()) 
                     {
@@ -224,11 +231,14 @@ public class DashBoard_Summary extends HttpServlet {
                         {
                             case 0:
                                depositPlayers=rs.getString(1);
-                               depositAccBal=String.valueOf((Math.round(Double.valueOf(rs.getString(2)).intValue())));
+                               c2bDepositAccBal=String.valueOf((Math.round(Double.valueOf(rs.getString(2)).intValue())));
+                               betWinDepositAccBal=String.valueOf((Math.round(Double.valueOf(rs.getString(3)).intValue())));
                             break;
                             case 1:
                                withdrawPlayers=rs.getString(1);
-                               withdrawAccBal=String.valueOf((Math.round(Double.valueOf(rs.getString(2)).intValue())));
+                               b2cwithdrawAccBal=String.valueOf((Math.round(Double.valueOf(rs.getString(2)).intValue())));
+                               wallet2BetwithdrawAccBal=String.valueOf((Math.round(Double.valueOf(rs.getString(3)).intValue())));
+                               betsWonAccBal=String.valueOf((Math.round(Double.valueOf(rs.getString(4)).intValue())));
                             break;
                             case 2:
                                 playersRMCount=rs.getString(1); 
@@ -246,14 +256,11 @@ public class DashBoard_Summary extends HttpServlet {
                 }
                 
                 dataObj  = new JSONObject();
-                //dataObj.put("DepositCount", depositPlayers);
-                dataObj.put("DepositsValue", depositAccBal);
-                //dataObj.put("WithdrawalCount", withdrawPlayers);
-                dataObj.put("WithdrawalValue", withdrawAccBal);
-                //dataObj.put("RMBalanceCount", playersRMCount);
-                //dataObj.put("RMBalanceValue", playersRMBalance);
-                //dataObj.put("BMBalanceCount", playersBMCount);
-                //dataObj.put("BMBalanceValue", playersBMBalance);
+                dataObj.put("C2BDepositsValue", c2bDepositAccBal);
+                dataObj.put("BetWinDepositsValue", betWinDepositAccBal);
+                dataObj.put("B2CWithdrawalValue", b2cwithdrawAccBal.replace("-", ""));
+                dataObj.put("TotalBetStake", wallet2BetwithdrawAccBal.replace("-", ""));
+                dataObj.put("TotalBetsWonAmount", betsWonAccBal);
                 
                 main.put("Finance_Summary", dataObj);
                 
@@ -262,7 +269,7 @@ public class DashBoard_Summary extends HttpServlet {
                 collection=profitqueries.split("#");
                 for(int i=0;i<collection.length;i++)
                 {
-                   System.out.println(i+"profitquery==="+collection[i]);
+                   System.out.println(i+"profitQuery==="+collection[i]);
                     rs = stmt.executeQuery(collection[i]); 
                     while (rs.next()) 
                     {  
@@ -292,34 +299,30 @@ public class DashBoard_Summary extends HttpServlet {
                 }
                 
                 
-                double win_tax=Double.valueOf(totalWinnings)*0.2;
-                double taxedamount_won=Double.valueOf(totalWinnings)-win_tax;
-                
                 dataObj  = new JSONObject();
                 dataObj.put("TurnoverRM", totalTurnoverRM);
-                dataObj.put("TotalWinnings", taxedamount_won);
+                dataObj.put("TotalWinnings", totalWinnings);
                 
                 GGR = Double.valueOf(totalTurnoverRM) ;
-                double ngr_val =GGR - taxedamount_won;
+                double ngr_val =GGR - Double.valueOf(totalWinnings);
                 NGR=ngr_val-(ngr_val*0.15);
                 Profit=Double.valueOf(settledBetsTurnoverRM)-(Double.valueOf(wonBetsTurnoverRM)-Double.valueOf(wonBetsTurnoverRM)*0.15);
-                Loss=taxedamount_won;
+                
                 
                 dataObj.put("GGR", String.valueOf(GGR));
                 dataObj.put("NGR", String.valueOf(NGR));
                 dataObj.put("Profit",String.valueOf(Profit));
-                dataObj.put("Loss", String.valueOf(Loss));
+                dataObj.put("Loss", totalWinnings);
                 
                 main.put("Profit_Summary", dataObj);
                 
                 
-                
-                System.out.println("registrations==="+registrations);
+                System.out.println("regQuery==="+registrations);
                 rs = stmt.executeQuery(registrations); 
                 while (rs.next()) 
                 {
-                    SMS_Reg=rs.getString(1);
-                    USSD_Reg=rs.getString(2);
+                    USSD_Reg=rs.getString(1);
+                    SMS_Reg=rs.getString(2);
                     Web_Reg=rs.getString(3);
                     App_Reg=rs.getString(4);
                 }
@@ -336,7 +339,7 @@ public class DashBoard_Summary extends HttpServlet {
                 
                 
                 
-                System.out.println("dataQueryBetsByStatus==="+dataQueryBetsByStatus);
+                System.out.println("betsByStatusQuery==="+dataQueryBetsByStatus);
                 rs = stmt.executeQuery(dataQueryBetsByStatus); 
                 while (rs.next()) 
                 {
@@ -378,7 +381,7 @@ public class DashBoard_Summary extends HttpServlet {
                 
                 
                 
-                System.out.println("dataQueryBetsByChannel==="+dataQueryBetsByChannel);
+                System.out.println("betByChannelQuery==="+dataQueryBetsByChannel);
                 rs = stmt.executeQuery(dataQueryBetsByChannel); 
                 while (rs.next()) 
                 {
@@ -398,7 +401,7 @@ public class DashBoard_Summary extends HttpServlet {
                 
                 
                 
-                System.out.println("dataQueryBetsByBetType==="+dataQueryBetsByBetType);
+                System.out.println("betByTypeQuery==="+dataQueryBetsByBetType);
                 rs = stmt.executeQuery(dataQueryBetsByBetType);
                 while (rs.next()) 
                 {
@@ -433,7 +436,7 @@ public class DashBoard_Summary extends HttpServlet {
             stmt.close();
             conn.close();
         } catch (Exception ex) {
-            System.out.print("Error...getDashboardData..." + ex.getMessage());
+            System.out.print("Error getDashboardData===" + ex.getMessage());
         }
 
         

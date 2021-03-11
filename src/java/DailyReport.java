@@ -75,7 +75,7 @@ public class DailyReport extends HttpServlet {
                        String fromdate=respo[0];
                        String todate=respo[1];
                        System.out.println(fromdate+"==intidates=="+todate);
-                       responseobj=getDailyReport("2020-09-14" ,todate);
+                       responseobj=getDailyReport(fromdate ,todate);
                    }
                    
                    

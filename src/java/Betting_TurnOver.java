@@ -44,7 +44,7 @@ public class Betting_TurnOver extends HttpServlet {
         String response,username ,password,function,maindata;
         String type="betting";JSONObject jsonobj=null;JSONArray responseobj  = null;
         public static SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
-        public static SimpleDateFormat sdf1 = new SimpleDateFormat("yyyy-MM-dd HH:MM");
+        public static SimpleDateFormat sdf1 = new SimpleDateFormat("yyyy-MM-dd");
         protected void processRequest(HttpServletRequest req, HttpServletResponse resp)
         throws ServletException, IOException {
             resp.setContentType("text/json;charset=UTF-8");
@@ -243,7 +243,7 @@ public class Betting_TurnOver extends HttpServlet {
                     {
                         betstatus="Placed";//bet status
                         betpossiblewinningamount = rs.getString(7);//bet possible winning amount
-                        double winning_tax=Double.valueOf(betpossiblewinningamount)*0.2;
+                        double winning_tax=(Double.valueOf(betpossiblewinningamount)-Double.valueOf(betamount))*0.2;
                         taxedbetpossiblewinningamount=String.format("%.2f", (Double.valueOf(betpossiblewinningamount)-winning_tax)); 
                         possiblewinningamounttax=String.format("%.2f", winning_tax);
                         betsettledtime = rs.getString(8);// bet settled  date  sdf.format(rs.getTimestamp(8));
@@ -272,8 +272,8 @@ public class Betting_TurnOver extends HttpServlet {
                         cancellebet_rm = "0.00"; // rm cancelled
                         betwonamount_rm = rs.getString(7); // rm win
                         
-                        double winning_tax=Double.valueOf(betwonamount_rm)*0.2;
-                        taxedbetwonamount_rm=String.format("%.2f", (Double.valueOf(betwonamount_rm)-winning_tax));
+                        double winning_tax=(Double.valueOf(betwonamount_rm)-Double.valueOf(betamount))*0.2;
+                        taxedbetwonamount_rm=String.format("%.2f", Double.valueOf(betwonamount_rm)-winning_tax);
                         betwonamount_rm_tax=String.format("%.2f", winning_tax);
                         
                         openbetbonus_bm = rs.getString(9); // bonus money (bm) open
@@ -411,28 +411,6 @@ public class Betting_TurnOver extends HttpServlet {
                 if(dataArray.length()==0)
                 {
                     dataObj  = new JSONObject();
-                    dataObj.put("BetID", "0");
-                    dataObj.put("BetSlipID", "0");
-                    dataObj.put("BetMobile", "0");
-                    dataObj.put("BetDate", "0");
-                    dataObj.put("BetAmountRM", "0");
-                    dataObj.put("BetStatus", "0");
-                    dataObj.put("BetPossibleWinning", "0");
-                    dataObj.put("BetLastChangeDate", "0");
-                    dataObj.put("BetOpenRM", "0");
-                    dataObj.put("BetRejectedRM", "0");
-                    dataObj.put("BetCancelledRM", "0");
-                    dataObj.put("BetWonAmount", "0");
-                    dataObj.put("BetBonusOpenBM", "0");
-                    dataObj.put("BetBonusRejectedBM", "0");
-                    dataObj.put("BetBonusCancelledBM", "0");
-                    dataObj.put("BetBonusPossibleWinningBM", "0");
-                    dataObj.put("BetAmountBM", "0");
-                    dataObj.put("BetType", "0");
-                    dataObj.put("BetRMProcessed", "0");
-                    dataObj.put("BetBMProcessed", "0");
-                    dataObj.put("BetBonusAchieved", "0");
-
                     dataArray.put(dataObj);
                 }
                    
@@ -506,7 +484,7 @@ public class Betting_TurnOver extends HttpServlet {
                     {
                         betstatus="Placed";//bet status
                         betpossiblewinningamount = rs.getString(7);//bet possible winning amount
-                        double winning_tax=Double.valueOf(betpossiblewinningamount)*0.2;
+                        double winning_tax=(Double.valueOf(betpossiblewinningamount)-Double.valueOf(betamount))*0.2;
                         taxedbetpossiblewinningamount=String.format("%.2f", (Double.valueOf(betpossiblewinningamount)-winning_tax)); 
                         possiblewinningamounttax=String.format("%.2f", winning_tax);
                         betsettledtime = sdf.format(rs.getTimestamp(8));// bet settled  date  sdf.format(rs.getTimestamp(8));
@@ -535,8 +513,8 @@ public class Betting_TurnOver extends HttpServlet {
                         cancellebet_rm = "0.00"; // rm cancelled
                         betwonamount_rm = rs.getString(7); // rm win
                         
-                        double winning_tax=Double.valueOf(betwonamount_rm)*0.2;
-                        taxedbetwonamount_rm=String.format("%.2f", (Double.valueOf(betwonamount_rm)-winning_tax));
+                        double winning_tax=(Double.valueOf(betwonamount_rm)-Double.valueOf(betamount))*0.2;
+                        taxedbetwonamount_rm=String.format("%.2f", Double.valueOf(betwonamount_rm)-winning_tax);
                         betwonamount_rm_tax=String.format("%.2f", winning_tax);
                         
                         openbetbonus_bm = rs.getString(9); // bonus money (bm) open
@@ -675,28 +653,6 @@ public class Betting_TurnOver extends HttpServlet {
                 if(dataArray.length()==0)
                 {
                     dataObj  = new JSONObject();
-                    dataObj.put("BetID", "0");
-                    dataObj.put("BetSlipID", "0");
-                    dataObj.put("BetMobile", "0");
-                    dataObj.put("BetDate", "0");
-                    dataObj.put("BetAmountRM", "0");
-                    dataObj.put("BetStatus", "0");
-                    dataObj.put("BetPossibleWinning", "0");
-                    dataObj.put("BetLastChangeDate", "0");
-                    dataObj.put("BetOpenRM", "0");
-                    dataObj.put("BetRejectedRM", "0");
-                    dataObj.put("BetCancelledRM", "0");
-                    dataObj.put("BetWonAmount", "0");
-                    dataObj.put("BetBonusOpenBM", "0");
-                    dataObj.put("BetBonusRejectedBM", "0");
-                    dataObj.put("BetBonusCancelledBM", "0");
-                    dataObj.put("BetBonusPossibleWinningBM", "0");
-                    dataObj.put("BetAmountBM", "0");
-                    dataObj.put("BetType", "0");
-                    dataObj.put("BetRMProcessed", "0");
-                    dataObj.put("BetBMProcessed", "0");
-                    dataObj.put("BetBonusAchieved", "0");
-
                     dataArray.put(dataObj);
                 }
                 
@@ -761,7 +717,7 @@ public class Betting_TurnOver extends HttpServlet {
                     {
                         betstatus="Placed";//bet status
                         betpossiblewinningamount = rs.getString(7);//bet possible winning amount
-                        double winning_tax=Double.valueOf(betpossiblewinningamount)*0.2;
+                        double winning_tax=(Double.valueOf(betpossiblewinningamount)-Double.valueOf(betamount))*0.2;
                         taxedbetpossiblewinningamount=String.format("%.2f", (Double.valueOf(betpossiblewinningamount)-winning_tax)); 
                         possiblewinningamounttax=String.format("%.2f", winning_tax);
                         betsettledtime =sdf.format(rs.getTimestamp(8));// bet settled  date  sdf.format(rs.getTimestamp(8));
@@ -790,8 +746,8 @@ public class Betting_TurnOver extends HttpServlet {
                         cancellebet_rm = "0.00"; // rm cancelled
                         betwonamount_rm = rs.getString(7); // rm win
                         
-                        double winning_tax=Double.valueOf(betwonamount_rm)*0.2;
-                        taxedbetwonamount_rm=String.format("%.2f", (Double.valueOf(betwonamount_rm)-winning_tax));
+                        double winning_tax=(Double.valueOf(betwonamount_rm)-Double.valueOf(betamount))*0.2;
+                        taxedbetwonamount_rm=String.format("%.2f", Double.valueOf(betwonamount_rm)-winning_tax);
                         betwonamount_rm_tax=String.format("%.2f", winning_tax);
                         
                         openbetbonus_bm = rs.getString(9); // bonus money (bm) open
@@ -930,28 +886,6 @@ public class Betting_TurnOver extends HttpServlet {
                 if(dataArray.length()==0)
                 {
                     dataObj  = new JSONObject();
-                    dataObj.put("BetID", "0");
-                    dataObj.put("BetSlipID", "0");
-                    dataObj.put("BetMobile", "0");
-                    dataObj.put("BetDate", "0");
-                    dataObj.put("BetAmountRM", "0");
-                    dataObj.put("BetStatus", "0");
-                    dataObj.put("BetPossibleWinning", "0");
-                    dataObj.put("BetLastChangeDate", "0");
-                    dataObj.put("BetOpenRM", "0");
-                    dataObj.put("BetRejectedRM", "0");
-                    dataObj.put("BetCancelledRM", "0");
-                    dataObj.put("BetWonAmount", "0");
-                    dataObj.put("BetBonusOpenBM", "0");
-                    dataObj.put("BetBonusRejectedBM", "0");
-                    dataObj.put("BetBonusCancelledBM", "0");
-                    dataObj.put("BetBonusPossibleWinningBM", "0");
-                    dataObj.put("BetAmountBM", "0");
-                    dataObj.put("BetType", "0");
-                    dataObj.put("BetRMProcessed", "0");
-                    dataObj.put("BetBMProcessed", "0");
-                    dataObj.put("BetBonusAchieved", "0");
-
                     dataArray.put(dataObj);
                 }
                 

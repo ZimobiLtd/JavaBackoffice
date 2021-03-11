@@ -74,7 +74,7 @@ throws ServletException, IOException {
         String fromdate=respo[0];
         String todate=respo[1];
         System.out.println(fromdate+"==intidates=="+todate);
-        responseobj=getEvents("2017-09-30" ,"2020-10-31");
+        responseobj=getEvents(fromdate ,todate);
     }
                    
                    
@@ -179,7 +179,7 @@ public JSONArray getEvents(String fromDate,String toDate)
                 + "and Odd_Mark_Desc='yes' and Odd_Market_ID=29 limit 1) as 'gg', "
                 + "(select Odd_Mark_Odd from the_odds where Odd_Mark_Match_ID = Torna_Match_ID  "
                 + "and Odd_Mark_Desc='no' and Odd_Market_ID=29 limit 1) as 'ng' from tournament "
-                + "where Torna_Match_Event_Time between '" + fromDate + "' and '" + toDate + "' and Torna_Match_Status = 0 and "
+                + "where date(Torna_Match_Event_Time) between '" + fromDate + "' and '" + toDate + "' and Torna_Match_Status = 0 and "
                 + "(select count(Odd_Mark_Table_ID) from the_odds where Odd_Mark_Match_ID = Torna_Match_ID ) > 0 "
                 + "order by Torna_Match_Event_Time desc";
         

@@ -26,8 +26,8 @@ import org.json.JSONArray;
  *
  * @author jac
  */
-@WebServlet(urlPatterns = {"/Transactions"})
-public class Transactions extends HttpServlet {
+@WebServlet(urlPatterns = {"/TransactionsB2C"})
+public class TransactionsB2C extends HttpServlet {
 
     /**
      * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
@@ -61,108 +61,39 @@ public class Transactions extends HttpServlet {
                        jb.append(line);
                    }
                    
-                   System.out.println("Transactions===="+jb.toString());
+                   System.out.println("TransactionsB2C===="+jb.toString());
                    jsonobj = new JSONObject(jb.toString());
                    function=jsonobj.getString("function");
                    maindata=jsonobj.getString("data");
                    
                    
-                   if(function.equals("getTransactions"))
+                   if(function.equals("getTransactionsB2C"))
                    {
                         String []respo=initDates();
                         String fromdate=respo[0];
                         String todate=respo[1];
-                        responseobj=getTransactions(fromdate ,todate);
+                        responseobj=getTransactionsB2C(fromdate ,todate);
                    }
                    
                    
-                   if(function.equals("filterTransactions"))
+                   if(function.equals("filterTransactionsB2C"))
                    {
-                       String[]data=maindata.split("#");
-                       String from=data[0];
-                       String to=data[1];
-                       String transtype=data[2];
-                       String transstatus=data[3];  
+                        String[]data=maindata.split("#");
+                        String from=data[0];
+                        String to=data[1];
+                        String mobile=data[2];
                        
-                       String trans_type="",trans_status="";
-                       //Acc_Trans_Type =1 then 'Deposit' when Acc_Trans_Type=2 then 'User Withdrawal'  when Acc_Trans_Type=8 then 'Withdrawal Charge' 
-                        //when Acc_Trans_Type=3 then 'GoldenRace Bet Withdrawal' when Acc_Trans_Type=4 then 'Bet Withdrawal'  end) as 'Trans_Type'
-                        if(transtype.equals("Deposit"))
+                        if(mobile.startsWith("07") || mobile.startsWith("01"))
                         {
-                            trans_type="1";
+                           mobile="254"+mobile.substring(1);
                         }
-                        else if(transtype.equals("User Withdrawal"))
-                        {
-                            trans_type="2";
-                        }
-                        else if(transtype.equals("Withdrawal Charge"))
-                        {
-                            trans_type="8";
-                        }
-                        else if(transtype.equals("GoldenRace Bet Withdrawal"))
-                        {
-                            trans_type="3";
-                        }
-                        else if(transtype.equals("Bet Withdrawal"))
-                        {
-                            trans_type="4";
-                        }
-                        else
-                        {
-                           trans_type="All"; 
-                        }
-                       
-                       
-                       if(transstatus.equalsIgnoreCase("Processed"))
-                       {
-                           trans_status="0";
-                       }
-                       else if(transstatus.equalsIgnoreCase("Pending"))
-                       {
-                           trans_status="1";
-                       }
-                       else if(transstatus.equalsIgnoreCase("Failed"))
-                       {
-                           trans_status="2";
-                       }
-                       else
-                       {
-                          trans_status="All"; 
-                       }
-                       
-                       
-                       
-                       
-                       if(trans_type.equals("All") && trans_status.equals("All"))
-                       {
-                           responseobj=getTransactions(from,to);
-                       }
-                       else if(!trans_type.equals("All") && trans_status.equals("All"))
-                       {
-                           trans_type="Acc_Trans_Type="+trans_type;
-                           trans_status="Acc_Status in (0,1,2,3,4,8)";
-                           responseobj=filterTransactions(from,to,trans_type,trans_status);
-                       }
-                       else if(trans_type.equals("All") && !trans_status.equals("All"))
-                       {
-                           trans_type="Acc_Trans_Type in(0,1,2,3,4,8)";
-                           trans_status="Acc_Status ="+trans_status;
-                           responseobj=filterTransactions(from,to,trans_type,trans_status);
-                       }
-                       else
-                       {
-                           trans_type="Acc_Trans_Type ="+trans_type;
-                           trans_status="Acc_Status ="+trans_status;
-                           responseobj=filterTransactions(from,to,trans_type,trans_status);
-                       }
-                       
+                       responseobj=filterTransactionsB2C(from,to,mobile);
                    }
-                   
                    
              }catch (Exception ex) { ex.getMessage();}
             
              PrintWriter out = resp.getWriter(); 
-            out.print(responseobj);
+             out.print(responseobj);
         }
     
     
@@ -170,14 +101,12 @@ public class Transactions extends HttpServlet {
         
       
       
-        public JSONArray getTransactions(String from,String to)
+        public JSONArray getTransactionsB2C(String from,String to)
         {
                   
             String res="";
-            String dataQuery = "select Acc_Id, Acc_Date, Acc_Mobile, Acc_Amount, Acc_Mpesa_Trans_No, ifnull(Acc_Comment,'Success'),if(Acc_Status =0,'Processed','Pending'),"
-                             + "(CASE when Acc_Trans_Type =1 then 'Deposit' when Acc_Trans_Type=2 then 'User Withdrawal'  when Acc_Trans_Type=8 then 'Withdrawal Charge' when Acc_Trans_Type=3 then 'GoldenRace Bet Withdrawal' when Acc_Trans_Type=4 then 'Bet Withdrawal'  end) as 'Trans_Type'"
-                             + ",ifnull(Acc_Gateway,'Mpesa') from user_accounts where date(Acc_Date) between '"+from+"' and '"+to+"' order by Acc_Date desc ";
-            System.out.println("getTransactions==="+dataQuery);
+            String dataQuery = "select Trans_Id, Trans_Timestamp, Trans_Mobile, Trans_Amount, Trans_Mpesa_No,Trans_Disburse_Ref_No,if(Trans_Disburse_Status=1,'Successful','Failed') from mpesa_out where date(Trans_Timestamp) between '"+from+"' and '"+to+"' order by Trans_Timestamp desc ";
+            System.out.println("getTransactionsB2C==="+dataQuery);
             
             JSONObject dataObj  = null;
             JSONArray dataArray = new JSONArray();
@@ -187,18 +116,15 @@ public class Transactions extends HttpServlet {
             {
 
                 ResultSet rs = stmt.executeQuery(dataQuery);
-
                 while (rs.next())
                 {
                     String trans_id = rs.getString(1);
                     String trans_date = sdf.format(rs.getTimestamp(2));
-                    String trans_mobile = rs.getString(3);
+                    String trans_mobile ="0"+rs.getString(3).substring(3);
                     String trans_amnt = rs.getString(4);
                     String mpesa_code = rs.getString(5);
-                    String trans_comment = rs.getString(6);
+                    String trans_disburse_no = rs.getString(6);
                     String trans_status = rs.getString(7);
-                    String transtype = rs.getString(8);
-                    String transgateway = rs.getString(9);
 
                     dataObj  = new JSONObject();
                     dataObj.put("Trans_ID", trans_id);
@@ -206,13 +132,10 @@ public class Transactions extends HttpServlet {
                     dataObj.put("Trans_Mobile", trans_mobile);
                     dataObj.put("Trans_Amount", trans_amnt);
                     dataObj.put("Trans_MpesaCode", mpesa_code);
-                    dataObj.put("Trans_Comment", trans_comment);
+                    dataObj.put("Trans_Disburse_Number", trans_disburse_no);
                     dataObj.put("Trans_Status", trans_status);
-                    dataObj.put("Trans_Type", transtype);
-                    dataObj.put("Trans_Gateway", transgateway);
                     dataArray.put(dataObj);
                 }
-                
                 if(dataArray.length()==0)
                 {
                     dataObj  = new JSONObject();
@@ -221,10 +144,8 @@ public class Transactions extends HttpServlet {
                     dataObj.put("Trans_Mobile", "0");
                     dataObj.put("Trans_Amount", "0");
                     dataObj.put("Trans_MpesaCode", "0");
-                    dataObj.put("Trans_Comment", "0");
+                    dataObj.put("Trans_Disburse_Number", "0");
                     dataObj.put("Trans_Status", "0");
-                    dataObj.put("Trans_Type", "0");
-                    dataObj.put("Trans_Gateway", "0");
                     dataArray.put(dataObj);
                 }
                    
@@ -246,15 +167,14 @@ public class Transactions extends HttpServlet {
         
         
         
-        public JSONArray filterTransactions(String from,String to,String transtype,String transstatus)
+        public JSONArray filterTransactionsB2C(String from,String to,String mobile)
         {
                   
             String res="";
-            String dataQuery = "select Acc_Id, Acc_Date, Acc_Mobile, Acc_Amount, Acc_Mpesa_Trans_No, ifnull(Acc_Comment,'Success'),if(Acc_Status =0,'Processed','Pending'),"
-                             + "(CASE when Acc_Trans_Type =1 then 'Deposit' when Acc_Trans_Type=2 then 'User Withdrawal'  when Acc_Trans_Type=8 then 'Withdrawal Charge' when Acc_Trans_Type=3 then 'GoldenRace Bet Withdrawal' when Acc_Trans_Type=4 then 'Bet Withdrawal'   end) as 'Trans_Type',ifnull(Acc_Gateway,'Mpesa') "
-                             + "from user_accounts where date(Acc_Date) between '"+from+"' and '"+to+"' and "+transtype+" and "+transstatus+" order by Acc_Date desc ";
+            String dataQuery = "select Trans_Id, Trans_Timestamp, Trans_Mobile, Trans_Amount, Trans_Mpesa_No,Trans_Disburse_Ref_No,if(Trans_Disburse_Status=1,'Successful','Failed') from mpesa_out "
+                    + "where date(Trans_Timestamp) between '"+from+"' and '"+to+"' and Trans_Mobile='"+mobile+"' order by Trans_Timestamp desc ";
             
-            System.out.println("filterTransactions==="+dataQuery);
+            System.out.println("filterTransactionsB2C==="+dataQuery);
             
             JSONObject dataObj  = null;
             JSONArray dataArray = new JSONArray();
@@ -268,13 +188,11 @@ public class Transactions extends HttpServlet {
                     {
                         String trans_id = rs.getString(1);
                         String trans_date = sdf.format(rs.getTimestamp(2));
-                        String trans_mobile = rs.getString(3);
+                        String trans_mobile = "0"+rs.getString(3).substring(3);
                         String trans_amnt = rs.getString(4);
                         String mpesa_code = rs.getString(5);
-                        String trans_comment = rs.getString(6);
+                        String trans_disburse_no = rs.getString(6);
                         String trans_status = rs.getString(7);
-                        String trans_type = rs.getString(8);
-                        String trans_gateway = rs.getString(9);
 
                         dataObj  = new JSONObject();
                         dataObj.put("Trans_ID", trans_id);
@@ -282,10 +200,8 @@ public class Transactions extends HttpServlet {
                         dataObj.put("Trans_Mobile", trans_mobile);
                         dataObj.put("Trans_Amount", trans_amnt);
                         dataObj.put("Trans_MpesaCode", mpesa_code);
-                        dataObj.put("Trans_Comment", trans_comment);
+                        dataObj.put("Trans_Disburse_Number", trans_disburse_no);
                         dataObj.put("Trans_Status", trans_status);
-                        dataObj.put("Trans_Type", trans_type);
-                        dataObj.put("Trans_Gateway", trans_gateway);
                         dataArray.put(dataObj);
                     }
                     if(dataArray.length()==0)
@@ -296,10 +212,8 @@ public class Transactions extends HttpServlet {
                         dataObj.put("Trans_Mobile", "0");
                         dataObj.put("Trans_Amount", "0");
                         dataObj.put("Trans_MpesaCode", "0");
-                        dataObj.put("Trans_Comment", "0");
+                        dataObj.put("Trans_Disburse_Number", "0");
                         dataObj.put("Trans_Status", "0");
-                        dataObj.put("Trans_Type", "0");
-                        dataObj.put("Trans_Gateway", "0");
                         dataArray.put(dataObj);
                     }
 
@@ -326,7 +240,7 @@ public class Transactions extends HttpServlet {
 
                 String todate=LocalDate.now().toString();
                 
-                String fromdate=LocalDate.now().plusDays(-10).toString();
+                String fromdate=LocalDate.now().plusDays(-1).toString();
 
                 data=new String[]{fromdate,todate};//fromdate+"#"+todate ;
 

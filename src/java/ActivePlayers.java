@@ -41,7 +41,7 @@ public class ActivePlayers extends HttpServlet {
         Connection conn;
         String response,username ,password,function,maindata;
         String type="betting";JSONObject jsonobj=null;JSONArray responseobj  = null;
-        public static SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm");
+        public static SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
         protected void processRequest(HttpServletRequest req, HttpServletResponse resp)
         throws ServletException, IOException {
             resp.setContentType("text/json;charset=UTF-8");
@@ -73,7 +73,7 @@ public class ActivePlayers extends HttpServlet {
                         String []respo=initDates();
                         String fromdate=respo[0];
                         String todate=respo[1];
-                        responseobj=getActivePlayer("2017-05-23" ,"2020-01-30",filters);
+                        responseobj=getActivePlayer(fromdate ,todate,filters);
                    }
                    
                    
@@ -124,7 +124,7 @@ public class ActivePlayers extends HttpServlet {
                 + "(select ifnull(((SELECT sum(Play_Bet_Stake) FROM player_bets WHERE Play_Bet_Mobile=msisdn and Play_Bet_Status  in(201,202,203)) - "
                 + "(SELECT sum(Play_Bet_Possible_Winning) FROM player_bets WHERE Play_Bet_Mobile=msisdn and Play_Bet_Status =202) ),0) )as net "
                 + "FROM player WHERE msisdn IN (SELECT Play_Bet_Mobile FROM player_bets "
-                + "where Play_Bet_Timestamp BETWEEN '" + from + "' and '" + to + "'  " + filters + ")ORDER BY  Bet_Counts desc";
+                + "where date(Play_Bet_Timestamp) BETWEEN '" + from + "' and '" + to + "'  " + filters + ")ORDER BY  Bet_Counts desc";
                     
                     System.out.println("getActivePlayer==="+dataQuery);
             

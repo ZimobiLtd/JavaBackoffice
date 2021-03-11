@@ -73,8 +73,8 @@ throws ServletException, IOException {
         String []respo=initDates();
         String fromdate=respo[0];
         String todate=respo[1];
-        System.out.println(fromdate+"==intidates=="+todate);
-        responseobj=getTopLosers("2017-09-30" ,"2020-10-31");
+        //System.out.println(fromdate+"==intidates=="+todate);
+        responseobj=getTopLosers(fromdate ,todate);
     }
                    
                    
@@ -83,7 +83,6 @@ throws ServletException, IOException {
         String[]data=maindata.split("#");
         String from=data[0];
         String to=data[1];  
-
         responseobj=getTopLosers(from ,to);
     }
                    
@@ -114,7 +113,7 @@ public JSONArray getTopLosers(String fromDate,String toDate)
         ResultSet rs=null;
 
         dataQuery = "select Play_Bet_Mobile, Play_Bet_Stake as 'Turnover', 0 as 'Payout',Play_Bet_Stake as 'Net' " +
-                    "from player_bets where Play_Bet_Status = 203  and DATE(Play_Bet_Timestamp) BETWEEN '"+fromDate+"' and  '"+toDate+"' " +
+                    "from player_bets where Play_Bet_Status = 203  and date(Play_Bet_Timestamp) BETWEEN '"+fromDate+"' and  '"+toDate+"' " +
                     "GROUP BY Play_Bet_Mobile  order by Play_Bet_Stake desc ";
 
         rs = stmt.executeQuery(dataQuery);

@@ -75,7 +75,7 @@ public class PlayerLiability extends HttpServlet {
                        String fromdate=respo[0];
                        String todate=respo[1];
                        System.out.println(fromdate+"==intidates=="+todate);
-                       responseobj=getPlayerLiability("2020-08-28" ,todate);
+                       responseobj=getPlayerLiability(fromdate ,todate);
                    }
                    
                    
@@ -121,7 +121,7 @@ public class PlayerLiability extends HttpServlet {
                 "(select ifnull(sum(Acc_Amount),0) from user_accounts where Acc_Mobile = msisdn and Acc_Trans_Type = '2'), "+
                 "(select ifnull(sum(Acc_Amount),0) from user_accounts where Acc_Mobile = msisdn and Acc_Trans_Type = '7'), "+
                 "(select ifnull(sum(Acc_Amount),0) from user_accounts where Acc_Mobile = msisdn and Acc_Trans_Type = '100') "+
-                "FROM player WHERE registration_date BETWEEN  '" + fromDate + "' and '" + toDate + "' order by registration_date desc ";
+                "FROM player WHERE date(registration_date) BETWEEN  '" + fromDate + "' and '" + toDate + "' order by registration_date desc ";
 
                 rs = stmt.executeQuery(dataQuery);
 

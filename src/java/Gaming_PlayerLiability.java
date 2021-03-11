@@ -74,7 +74,7 @@ throws ServletException, IOException {
         String fromdate=respo[0];
         String todate=respo[1];
         System.out.println(fromdate+"==intidates=="+todate);
-        responseobj=getPlayerLiability("2017-09-30" ,"2020-10-31");
+        responseobj=getPlayerLiability(fromdate,todate);
     }
                    
                    
@@ -116,7 +116,7 @@ public JSONArray getPlayerLiability(String fromDate,String toDate)
         dataQuery = "select B.Mul_Match_ID,B.Mul_EventTime, B.Mul_Sportname, B.Mul_Tournament, B.Mul_Event, " +
                     "(select Mar_Name from Active_markets where Mar_ID = B.Mul_Market_ID),B.Mul_Prediction, " +
                     "count(Mul_ID),sum(Mul_Bet_Odd * -Play_Bet_Stake) from player_bets A inner join multibets B on A.Play_Bet_Group_ID = B.Mul_Group_ID " +
-                    "and A.Play_Bet_Status = 201  where B.Mul_Market_ID <> 0 and B.Mul_Match_ID <> 0 and A.Play_Bet_Timestamp " +
+                    "and A.Play_Bet_Status = 201  where B.Mul_Market_ID <> 0 and B.Mul_Match_ID <> 0 and date(A.Play_Bet_Timestamp) " +
                     "between '"+fromDate+"' and '"+toDate+"' and Mul_EventTime is not null group by B.Mul_Prediction, B.Mul_Match_ID " +
                     "order by Mul_EventTime   desc ";
         System.out.println("getGamingPlayerLiability==="+dataQuery);

@@ -74,7 +74,7 @@ throws ServletException, IOException {
         String fromdate=respo[0];
         String todate=respo[1];
         System.out.println(fromdate+"==intidates=="+todate);
-        responseobj=getMostPlayed("2017-09-30" ,"2020-10-31");
+        responseobj=getMostPlayed(fromdate ,todate);
     }
                    
                    
