@@ -195,7 +195,7 @@ public class DashBoard_Summary extends HttpServlet {
 
         dataQueryWithdrawals = "SELECT  count(Acc_ID),ifnull(sum(Acc_Amount),0) as 'user b2c withdrawal', "
                              + "(select ifnull(sum(Acc_Amount),0) from user_accounts where Acc_Trans_Type = 4 and  date(Acc_Date) between '" + fromDate + "' and '" + toDate + "' ) as 'bet withdrawal' , "
-                             + "(select sum(Play_Bet_Possible_Winning) from player_bets where date(Play_Bet_Timestamp) between '" + fromDate + "' and '" + toDate + "' and Play_Bet_Status=202) as 'bets won' "
+                             + "(select ifnull(sum(Play_Bet_Possible_Winning),0) from player_bets where date(Play_Bet_Timestamp) between '" + fromDate + "' and '" + toDate + "' and Play_Bet_Status=202) as 'bets won' "
                              + "FROM user_accounts where Acc_Trans_Type = 2 and  date(Acc_Date) between '" + fromDate + "' and '" + toDate + "'";
 
         dataQueryBalance = "select count(id),ifnull(sum(Player_Balance),0) from player where Player_Balance > 0 and date(registration_date) between '" + fromDate + "' and '" + toDate + "' ";

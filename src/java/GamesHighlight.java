@@ -86,6 +86,7 @@ public class GamesHighlight extends HttpServlet {
                         String from=data[0];
                         String to=data[1];  
                         String teamname=data[2].trim();
+                        String sport=data[3].trim();
                         String gameid=data[3].trim();
                         
                         if (teamname.equalsIgnoreCase("any")&& gameid.equalsIgnoreCase("any"))
@@ -164,10 +165,11 @@ public class GamesHighlight extends HttpServlet {
                 ResultSet rs=null;
                     
                 dataQuery = "select  Torna_Sport_Name, Torna_Cat_Name, Torna_Name, Torna_Match_Event, Torna_Match_Event_Time, "
-                            + "Torna_Match_ID, Torna_Sys_Game_ID, (case when Torna_Match_Status=0 then 'Active' when Torna_Match_Status=1 then 'Inactive' end), "
-                        + "(case when Torna_Cat_Game_Mode=1 then 'Todays Games' when Torna_Cat_Game_Mode=3 then 'Jackpot Games' when Torna_Cat_Game_Mode=2 then 'Todays Highlights' end),Torna_Cat_Game_Mode "
-                            + "from tournament where date(Torna_Match_Event_Time) between '" + fromDate + "' and '" + toDate + "' and "
-                            + "Torna_Match_Status = '0' and Torna_Match_Status='0' and Torna_Match_Stage !='Suspended' and Torna_Match_Stage !='Ended' and Torna_Match_Stage !='Deactivated' and date(Torna_Match_Event_Time)>=curdate() order by Torna_Cat_Game_Mode desc ";
+                         + "Torna_Match_ID, Torna_Sys_Game_ID, (case when Torna_Match_Status=0 then 'Active' when Torna_Match_Status=1 then 'Inactive' end), "
+                         + "(case when Torna_Cat_Game_Mode=1 then 'Todays Games' when Torna_Cat_Game_Mode=3 then 'Jackpot Games' when Torna_Cat_Game_Mode=2 then 'Todays Highlights' end),"
+                         + "Torna_Cat_Game_Mode from tournament where date(Torna_Match_Event_Time) between '" + fromDate + "' and '" + fromDate + "' and "
+                         + "Torna_Match_Status = '0' and Torna_Match_Status='0' and Torna_Match_Stage !='Suspended' and Torna_Match_Stage !='Ended' "
+                         + "and Torna_Match_Stage !='Deactivated' and date(Torna_Match_Event_Time)>=curdate() order by Torna_Cat_Game_Mode desc";//Torna_Cat_Game_Mode desc
                 
                 System.out.println("getgamesHighlits==="+dataQuery);
 
@@ -240,7 +242,7 @@ public class GamesHighlight extends HttpServlet {
                             + "Torna_Match_ID, Torna_Sys_Game_ID, (case when Torna_Match_Status=0 then 'Active' when Torna_Match_Status=1 then 'Inactive' end), "
                         + "(case when Torna_Cat_Game_Mode=1 then 'Todays Games' when Torna_Cat_Game_Mode=3 then 'Jackpot Games' when Torna_Cat_Game_Mode=3 then 'Todays Highlights' end),Torna_Cat_Game_Mode "
                             + "from tournament where Torna_Match_Event_Time between '" + fromDate + "' and '" + toDate + "' and "
-                            + "Torna_Match_Status = '0'  "+filters+" and Torna_Match_Stage !='Suspended' and Torna_Match_Stage !='Ended' and Torna_Match_Stage !='Deactivated' and date(Torna_Match_Event_Time)>=curdate() order by Torna_Cat_Game_Mode desc ";
+                            + "Torna_Match_Status = '0'  "+filters+" and Torna_Match_Stage !='Suspended' and Torna_Match_Stage !='Ended' and Torna_Match_Stage !='Deactivated' and date(Torna_Match_Event_Time)>=curdate() order by Torna_Cat_Game_Mode desc ";//,Torna_Match_Event_Time 
 
                 System.out.println("filtersgamesHighlits==="+dataQuery);
                 rs = stmt.executeQuery(dataQuery);
@@ -302,15 +304,11 @@ public class GamesHighlight extends HttpServlet {
             try( Connection conn = new DBManager(type).getDBConnection();
             Statement stmt = conn.createStatement();)
             {
-                
-                /*Query= " update tournament set Torna_Cat_Game_Mode = '1' where Torna_Cat_Game_Mode = '3' ";
-                stmt.executeUpdate(dataQuery);*/
-                
-                dataQuery1 = " update tournament set Torna_Cat_Game_Mode = '2' where Torna_Match_ID like '" + matchId + "%'  ";//and Torna_Match_Status = '0'
-                dataQuery = " update All_Games set Game_Mode = 1 where Game_Betradar_ID like '" + matchId + "%'  ";//and Torna_Match_Status = '0'
-                System.out.println("setHighlights==="+dataQuery);
+                dataQuery1 = " update tournament set Torna_Cat_Game_Mode ='2' where Torna_Match_ID like '" + matchId + "%'  ";//and Torna_Match_Status = '0'
+                //dataQuery = " update All_Games set Game_Mode = 2 where Game_Betradar_ID like '" + matchId + "%'  ";//and Torna_Match_Status = '0'
+                //System.out.println("setHighlights==="+dataQuery);
                 stmt.executeUpdate(dataQuery1);
-                stmt.executeUpdate(dataQuery);
+                //stmt.executeUpdate(dataQuery);
                 
                 
                 dataObj.put("message", "highlight successful");
@@ -340,16 +338,12 @@ public class GamesHighlight extends HttpServlet {
             Statement stmt = conn.createStatement();)
             {
                 
-                /*Query= " update tournament set Torna_Cat_Game_Mode = '1' where Torna_Cat_Game_Mode = '3' ";
-                stmt.executeUpdate(dataQuery);*/
-                
-                
-                dataQuery = " update tournament set Torna_Cat_Game_Mode = '1' where Torna_Match_ID  like '" + matchId + "%'  ";
+                dataQuery = " update tournament set Torna_Cat_Game_Mode ='1' where Torna_Match_ID  like '" + matchId + "%'  ";
                 //System.out.println("setHighlights==="+dataQuery);
-                dataQuery1 = " update All_Games set Game_Mode = 0 where Game_Betradar_ID like '" + matchId + "%'  ";
+                //dataQuery1 = " update All_Games set Game_Mode = 0 where Game_Betradar_ID like '" + matchId + "%'  ";
                 //System.out.println("setHighlights==="+dataQuery);
                 stmt.executeUpdate(dataQuery);
-                stmt.executeUpdate(dataQuery1);
+                //stmt.executeUpdate(dataQuery1);
                 
                 dataObj.put("message", "unhighlight successful");
                 dataArray.put(dataObj);
@@ -404,7 +398,7 @@ public class GamesHighlight extends HttpServlet {
             try 
             {
 
-                String todate=LocalDate.now().plusDays(+14).toString();
+                String todate=LocalDate.now().plusDays(+1).toString();
 
                 String fromdate=LocalDate.now().toString();
 

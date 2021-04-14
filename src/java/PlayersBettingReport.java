@@ -293,7 +293,7 @@ public class PlayersBettingReport extends HttpServlet {
                         openbet_rm = "0.00"; // open rm
                         settled_rm = String.valueOf(betstake); // settled rm
                         
-                        double win_tax=( Integer.valueOf(betpossiblewinning) - Integer.valueOf(betstake) )  *0.2;
+                        double win_tax=( Double.valueOf(betpossiblewinning) - Double.valueOf(betstake) )  *0.2;
                         double taxedamount_won=Double.valueOf(betpossiblewinning) -win_tax;
                         
                         taxedwinamount_rm=String.format("%.2f", taxedamount_won);
@@ -391,7 +391,26 @@ public class PlayersBettingReport extends HttpServlet {
                 if(dataArray.length()==0)
                 {
                     dataObj  = new JSONObject();
-                    //dataObj.put("error", "Player not found");
+                    dataObj.put("BetDate", "0");
+                    dataObj.put("BetSlipID", "0");
+                    dataObj.put("BetStatus", "0");
+                    dataObj.put("BetChannel", "0");
+                    dataObj.put("BetMobile", "0");
+                    dataObj.put("RMOpen", "0");
+                    dataObj.put("RMSettled", "0");
+                    dataObj.put("RMWinAmountTax", "0");
+                    dataObj.put("RMWinAmount", "0");
+                    dataObj.put("RMTaxedWinAmount", "0");
+                    dataObj.put("GGRRM", "0");
+                    dataObj.put("NGRRM", "0");
+                    dataObj.put("NGRRMTax", "0");
+                    dataObj.put("TaxedNGRRM", "0");
+                    dataObj.put("RefundRM", "0");
+                    dataObj.put("BMOpen", "0");
+                    dataObj.put("BMSettled", "0");
+                    dataObj.put("BMWinAmount", "0");
+                    dataObj.put("GGRBM", "0");
+                    dataObj.put("RefundBM", "0");
                     dataArray.put(dataObj);
                 }
                    
@@ -588,6 +607,26 @@ public class PlayersBettingReport extends HttpServlet {
                 if(dataArray.length()==0)
                 {
                     dataObj  = new JSONObject();
+                    dataObj.put("BetDate", "0");
+                    dataObj.put("BetSlipID", "0");
+                    dataObj.put("BetStatus", "0");
+                    dataObj.put("BetChannel", "0");
+                    dataObj.put("BetMobile", "0");
+                    dataObj.put("RMOpen", "0");
+                    dataObj.put("RMSettled", "0");
+                    dataObj.put("RMWinAmountTax", "0");
+                    dataObj.put("RMWinAmount", "0");
+                    dataObj.put("RMTaxedWinAmount", "0");
+                    dataObj.put("GGRRM", "0");
+                    dataObj.put("NGRRM", "0");
+                    dataObj.put("NGRRMTax", "0");
+                    dataObj.put("TaxedNGRRM", "0");
+                    dataObj.put("RefundRM", "0");
+                    dataObj.put("BMOpen", "0");
+                    dataObj.put("BMSettled", "0");
+                    dataObj.put("BMWinAmount", "0");
+                    dataObj.put("GGRBM", "0");
+                    dataObj.put("RefundBM", "0");
                     dataArray.put(dataObj);
                 }
                 
@@ -595,7 +634,7 @@ public class PlayersBettingReport extends HttpServlet {
                 JSONObject dataObj1  = new JSONObject();
                 JSONArray dataArray1 = new JSONArray();
                 String query1=" select ifnull(sum(Acc_Amount),0) ,date(registration_date) ,(select ifnull(sum(Acc_Amount),0) from user_accounts where Acc_Trans_Type=4  and Acc_Mobile='"+mobile+"' ) as 'total betstake' ," +
-                              "(select ifnull(sum(Acc_Amount),0) from user_accounts where Acc_Mpesa_Trans_No like 'BET%'  and Acc_Mobile='"+mobile+"' ) as 'total win' from user_accounts,player where Acc_Mobile='"+mobile+"' and msisdn='"+mobile+"'  group by Acc_Mobile";
+                              "(select ifnull(sum(Acc_Amount),0) from user_accounts where Acc_Mpesa_Trans_No like 'BET_WIN%' and Acc_Trans_Type=1 and Acc_Mobile='"+mobile+"' ) as 'total win' from user_accounts,player where Acc_Mobile='"+mobile+"' and msisdn='"+mobile+"' ";// group by Acc_Mobile
                 System.out.println("getPlayerAcc==="+query1);
                 rs = stmt.executeQuery(query1);
                 while (rs.next())
@@ -686,13 +725,6 @@ public class PlayersBettingReport extends HttpServlet {
                     dataObj.put("Trans_Gateway", "0");
                     dataArray.put(dataObj);
                 }
-                
-                if(dataArray.length()==0)
-                {
-                    dataObj  = new JSONObject();
-                    //dataObj.put("error", "Player not found");
-                    dataArray.put(dataObj);
-                }
                    
 
             rs.close();
@@ -767,12 +799,6 @@ public class PlayersBettingReport extends HttpServlet {
                         dataArray.put(dataObj);
                     }
                     
-                    if(dataArray.length()==0)
-                    {
-                        dataObj  = new JSONObject();
-                        //dataObj.put("error", "Player not found");
-                        dataArray.put(dataObj);
-                    }
 
             rs.close();
             stmt.close();
@@ -827,7 +853,7 @@ public class PlayersBettingReport extends HttpServlet {
 
                 String todate=LocalDate.now().toString();
 
-                String fromdate=LocalDate.now().plusDays(-30).toString();
+                String fromdate=LocalDate.now().plusDays(-1).toString();
 
                 data=new String[]{fromdate,todate};//fromdate+"#"+todate ;
 

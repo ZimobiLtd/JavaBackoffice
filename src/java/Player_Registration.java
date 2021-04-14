@@ -76,12 +76,12 @@ public class Player_Registration extends HttpServlet {
                    }
                    
                    
-                   if(function.equals("filterPlayerRegistrations"))
+                   if(function.equals("filterPlayerRegistrationsByMobile"))
                    {
                        String mobile=maindata;
                        String mobile_no="";
                        
-                       if(mobile.startsWith("07"))
+                       if(mobile.startsWith("07") || mobile.startsWith("01"))
                        {
                            mobile_no="254"+mobile.substring(1);
                        }
@@ -90,8 +90,15 @@ public class Player_Registration extends HttpServlet {
                            mobile_no=mobile;
                        }
                        
-                       responseobj=filterPlayerRegistrations(mobile_no);
-                       
+                       responseobj=filterPlayerRegistrationsByMobile(mobile_no);
+                   }
+                   
+                   if(function.equals("filterPlayerRegistrationsByDate"))
+                   {
+                       String []data=maindata.split("#");
+                       String fromdate=data[0];
+                       String todate=data[1];
+                       responseobj=filterPlayerRegistrationsByDate(fromdate,todate);
                    }
                    
                    if(function.equals("deactivatePlayer"))
@@ -99,7 +106,7 @@ public class Player_Registration extends HttpServlet {
                        String mobile=maindata;
                        String mobile_no="";
                        
-                       if(mobile.startsWith("07"))
+                       if(mobile.startsWith("07") || mobile.startsWith("01"))
                        {
                            mobile_no="254"+mobile.substring(1);
                        }
@@ -112,12 +119,13 @@ public class Player_Registration extends HttpServlet {
                        
                    }
                    
+                   
                    if(function.equals("activatePlayer"))
                    {
                        String mobile=maindata;
                        String mobile_no="";
                        
-                       if(mobile.startsWith("07"))
+                       if(mobile.startsWith("07") || mobile.startsWith("01"))
                        {
                            mobile_no="254"+mobile.substring(1);
                        }
@@ -129,7 +137,6 @@ public class Player_Registration extends HttpServlet {
                        responseobj=setActivatePlayer(mobile_no);
                        
                    }
-                   
                    
              }catch (Exception ex) { ex.getMessage();}
             
@@ -143,7 +150,7 @@ public class Player_Registration extends HttpServlet {
                   
             String res="";
             String dataQuery = "select id, msisdn, ifnull(`name`,'no name'), ifnull(email,'no email'), registration_date, (select ifnull(sum(Acc_Amount),0) from user_accounts where Acc_Mobile = msisdn ), Bonus_Balance,"
-                    + "(case when User_Channel=1 then'USSD' when User_Channel=2 then 'SMS' when User_Channel=3 then 'Web' end), "
+                    + "(case when User_Channel=1 then'USSD' when User_Channel=2 then 'SMS' when User_Channel=3 then 'Computer Web' when User_Channel=4 then 'Mobile Web' end), "
                     + "(case when `status`=1 then 'Inactive' when `status`=0 then 'Active' end), " +
                     " (select ifnull(max(Acc_Date),'0') from user_accounts where Acc_Mobile = msisdn) as 'Last Deposit', " +
                     " (select count(Play_Bet_ID) from player_bets where Play_Bet_Mobile = msisdn and Play_Bet_Status <> 206) as 'Bets Count' " +
@@ -210,27 +217,27 @@ public class Player_Registration extends HttpServlet {
         
         
         
-        public JSONArray filterPlayerRegistrations(String mobile_no)
+        public JSONArray filterPlayerRegistrationsByDate(String from,String to)
         {
-                  
+
             String res="";
             String dataQuery = "select id, msisdn, ifnull(`name`,'no name'), ifnull(email,'no email'), registration_date, (select ifnull(sum(Acc_Amount),0) from user_accounts where Acc_Mobile = msisdn ), Bonus_Balance,"
-                    + "(case when User_Channel=1 then'USSD' when User_Channel=2 then 'SMS' when User_Channel=3 then 'Web' end), "
+                    + "(case when User_Channel=1 then'USSD' when User_Channel=2 then 'SMS' when User_Channel=3 then 'Computer Web' when User_Channel=4 then 'Mobile Web' end), "
                     + "(case when `status`=1 then 'Inactive' when `status`=0 then 'Active' end), " +
                     " (select ifnull(max(Acc_Date),'0') from user_accounts where Acc_Mobile = msisdn) as 'Last Deposit', " +
                     " (select count(Play_Bet_ID) from player_bets where Play_Bet_Mobile = msisdn and Play_Bet_Status <> 206) as 'Bets Count' " +
-                    " from player where msisdn='"+mobile_no+"' order by registration_date desc ";
+                    " from player where date(registration_date) between '"+from+"' and '"+to+"' order by registration_date desc ";
             System.out.println("getPlayerRegistrations==="+dataQuery);
-            
+
             JSONObject dataObj  = null;
             JSONArray dataArray = new JSONArray();
-            
+
             try( Connection conn = new DBManager(type).getDBConnection();
             Statement stmt = conn.createStatement();)
             {
 
                    ResultSet rs = stmt.executeQuery(dataQuery);
-                  
+
                         while (rs.next())
                         {
                              String id = rs.getString(1);
@@ -259,14 +266,14 @@ public class Player_Registration extends HttpServlet {
                              dataObj.put("Status", status);
                              dataArray.put(dataObj);
                         }
-                        
+
                         if(dataArray.length()==0)
                         {
                             dataObj  = new JSONObject();
                             //dataObj.put("error", "Player not found");
                             dataArray.put(dataObj);
                         }
-                   
+
 
             rs.close();
             stmt.close();
@@ -276,7 +283,79 @@ public class Player_Registration extends HttpServlet {
             {
 
             }
-                    
+
+        return dataArray;
+        }
+        
+        
+        
+        public JSONArray filterPlayerRegistrationsByMobile(String mobile_no)
+        {
+
+            String res="";
+            String dataQuery = "select id, msisdn, ifnull(`name`,'no name'), ifnull(email,'no email'), registration_date, (select ifnull(sum(Acc_Amount),0) from user_accounts where Acc_Mobile = msisdn ), Bonus_Balance,"
+                    + "(case when User_Channel=1 then'USSD' when User_Channel=2 then 'SMS' when User_Channel=3 then 'Computer Web' when User_Channel=4 then 'Mobile Web' end), "
+                    + "(case when `status`=1 then 'Inactive' when `status`=0 then 'Active' end), " +
+                    " (select ifnull(max(Acc_Date),'0') from user_accounts where Acc_Mobile = msisdn) as 'Last Deposit', " +
+                    " (select count(Play_Bet_ID) from player_bets where Play_Bet_Mobile = msisdn and Play_Bet_Status <> 206) as 'Bets Count' " +
+                    " from player where msisdn='"+mobile_no+"' order by registration_date desc ";
+            System.out.println("getPlayerRegistrations==="+dataQuery);
+
+            JSONObject dataObj  = null;
+            JSONArray dataArray = new JSONArray();
+
+            try( Connection conn = new DBManager(type).getDBConnection();
+            Statement stmt = conn.createStatement();)
+            {
+
+                   ResultSet rs = stmt.executeQuery(dataQuery);
+
+                        while (rs.next())
+                        {
+                             String id = rs.getString(1);
+                             String mobile = "0"+rs.getString(2).substring(3);
+                             String name = rs.getString(3);
+                             String email = rs.getString(4);
+                             String regdate = sdf.format(rs.getTimestamp(5));
+                             String balanceRM = rs.getString(6);
+                             String balanceBM = rs.getString(7);
+                             String channel = rs.getString(8);
+                             String status = rs.getString(9);
+                             String lastdepositdate = rs.getString(10);
+                             String betscount = rs.getString(11);
+
+                             dataObj  = new JSONObject();
+                             dataObj.put("ID", id);
+                             dataObj.put("Mobile", mobile);
+                             dataObj.put("Name", name);
+                             dataObj.put("Email", email);
+                             dataObj.put("Registration_Date", regdate);
+                             dataObj.put("BalanceRM", balanceRM);
+                             dataObj.put("BalanceBM", balanceBM);
+                             dataObj.put("Registration_Channel", channel);
+                             dataObj.put("LastDeposit_Date", lastdepositdate);
+                             dataObj.put("BetsCount", betscount);
+                             dataObj.put("Status", status);
+                             dataArray.put(dataObj);
+                        }
+
+                        if(dataArray.length()==0)
+                        {
+                            dataObj  = new JSONObject();
+                            //dataObj.put("error", "Player not found");
+                            dataArray.put(dataObj);
+                        }
+
+
+            rs.close();
+            stmt.close();
+            conn.close();
+            }
+            catch(Exception e)
+            {
+
+            }
+
         return dataArray;
         }
         

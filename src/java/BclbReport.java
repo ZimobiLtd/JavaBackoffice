@@ -131,20 +131,21 @@ public class BclbReport extends HttpServlet {
                         
                         
                         String wins = String .valueOf(Integer.valueOf(totalsales)-Integer.valueOf(payouts));
-                        double excise_tax=0.15*Double.valueOf(Integer.valueOf(totalsales)-Integer.valueOf(payouts));
-                        String exciseduty = String.format("%.2f", excise_tax);
+                        double betting_tax=0.15*Double.valueOf(Integer.valueOf(totalsales)-Integer.valueOf(payouts));
+                        String bettingTax = String.format("%.2f", betting_tax);
                         
                         dataObj.put("Report_Date", rptdate);
                         dataObj.put("Tickets", tickets);
                         dataObj.put("TotalSales", totalsales);
                         dataObj.put("NetSales", totalsales);
                         dataObj.put("Win_Loss", wins);
-                        dataObj.put("ExciseDuty", exciseduty);
-                        dataObj.put("BettingTax", "0");
+                        dataObj.put("BettingTax", bettingTax);
                         //dataObj.put("WitholdingTax", "0.00");
                     }
                     double []taxData=getTaxData(conn,stmt,date);
-                    String withholdingtax = String.format("%.2f", taxData[0]);
+                     String totalPayout = String.format("%.2f", taxData[0]);
+                    String withholdingtax = String.format("%.2f", taxData[1]);
+                    dataObj.put("Payout", totalPayout);
                     dataObj.put("WitholdingTax", withholdingtax);
                     
                     dataArray.put(dataObj);
@@ -191,7 +192,8 @@ public class BclbReport extends HttpServlet {
                         taxedpossibleWinning += Double.valueOf( rs.getString(3));
                         withholdingTax += Double.valueOf( rs.getString(4));
                     }
-                    respo=new double[] {withholdingTax};
+                    double finPossibleWinning=possibleWinning-withholdingTax;
+                    respo=new double[] {finPossibleWinning,withholdingTax};
                     
             rs.close();
             }
@@ -204,86 +206,6 @@ public class BclbReport extends HttpServlet {
         }
         
         
-        
-        
-        
-        
-        public JSONArray filterDailyReport(String datefrom,String dateto)
-        {
-                  
-            String res="";
-            String dataQuery = "";
-            JSONObject dataObj  = null;
-            JSONArray dataArray = new JSONArray();
-            
-            try( Connection conn = new DBManager(type).getDBConnection();
-            Statement stmt = conn.createStatement();)
-            {
-
-                ResultSet rs=null;
-                for (String date : loopdate(datefrom ,dateto)) 
-                {
-                    dataObj  = new JSONObject();
-                    
-                    dataQuery = "select ifnull(sum(Acc_Amount),0) as 'deposits', " +
-                    "(select ifnull(sum(Acc_Amount),0) FROM user_accounts WHERE Acc_Trans_Type =2 and DATE(Acc_Date) = '"+date+"') as'withdrawals' ," +
-                    "(select  ifnull(sum(Play_Bet_Stake),0) as 'betstakes' from player_bets where DATE(Play_Bet_Timestamp)= '"+date+"' and Play_Bet_Status in (201,202,203)) as 'bet stake'," +
-                    "(select  '0' from player_bets where DATE(Play_Bet_Timestamp)= '"+date+"' and Play_Bet_Status in (201,202,203)) as 'bet bonus stake'," +
-                    "(select ifnull(sum(Acc_Bonus_Amount),0) from user_accounts where Acc_Trans_Type=7 and DATE(Acc_Date) ='"+date+"' )as 'acc bonus amount'," +
-                    "(select count(Play_Bet_ID) from player_bets where DATE(Play_Bet_Timestamp)= '"+date+"' and Play_Bet_Status  in (201,202,203)) as 'player bets'," +
-                    "(select ifnull(SUM(total),0) from (select sum(Play_Bet_Stake) as 'total' from player_bets where Play_Bet_Status  in (202, 203) and DATE(Play_Bet_Timestamp) = '"+date+"' " +
-                    "union ALL select -(ifnull(sum(Play_Bet_Possible_Winning),0)-(ifnull(sum(Play_Bet_Possible_Winning),0)*0.2)) as 'total' from player_bets where Play_Bet_Status = '202' and DATE(Play_Bet_Timestamp) = '"+date+"') as mytable)as 'GGR', " +
-                    "(select count(id)  from player where DATE(registration_date) =  '"+date+"' ) as 'registered players'," +
-                    "(select count(distinct(Acc_Mobile)) from user_accounts where DATE(Acc_Date) =  '"+date+"' and Acc_Trans_Type = 1 ) as 'first deposit players'," +
-                    "(select ifnull(sum(Acc_Amount),0) from user_accounts where DATE(Acc_Date) =  '"+date+"' and Acc_Trans_Type = 1 )as 'first deposit amount'" +
-                    "FROM user_accounts WHERE Acc_Trans_Type =1 and DATE(Acc_Date) = '"+date+"' ";
-                    rs = stmt.executeQuery(dataQuery);
-                    
-                    
-                    while (rs.next())
-                    {
-                       String rptdate = date;
-                        String deposits = rs.getString(1);
-                        String withdrawals = rs.getString(2);
-                        String betstake = rs.getString(3);
-                        String betsbonusstake = rs.getString(4);
-                        String accbonusamnt = rs.getString(5);
-                        String playerbets = rs.getString(6);
-                        String ggr = rs.getString(7);
-                        String registeredplayers = rs.getString(8);
-                        String firstdepositplayers = rs.getString(9);
-                        String firstdepositplayersamnt = rs.getString(10);
-                        
-                        dataObj.put("Report_Date", rptdate);
-                        dataObj.put("Deposits", deposits);
-                        dataObj.put("Withdrawals", withdrawals);
-                        dataObj.put("BetStake", betstake);
-                        dataObj.put("BetsBonusStake", betsbonusstake);
-                        dataObj.put("AccBonusAmount", accbonusamnt);
-                        dataObj.put("PlayerBets", playerbets);
-                        dataObj.put("GGR", String.format("%.2f", Double.parseDouble(ggr)));
-                        dataObj.put("RegisteredPlayers", registeredplayers);
-                        dataObj.put("FirstDepositPlayers", firstdepositplayers);
-                        dataObj.put("FirstDepositAmount", firstdepositplayersamnt);
-                    }
-                    
-                    dataArray.put(dataObj);
-                }
-                
-                   
-
-            rs.close();
-            stmt.close();
-            conn.close();
-            }
-            catch(Exception e)
-            {
-
-            }
-                    
-        return dataArray;
-        }
-      
       
         
         

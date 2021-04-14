@@ -171,7 +171,7 @@ public class LogTrails extends HttpServlet {
                   
             String res="";
             String dataQuery = "select id, msisdn, ifnull(`name`,'no name'), ifnull(email,'no email'), registration_date, Player_Balance, Bonus_Balance,"
-                    + "(case when User_Channel=1 then'SMS' when User_Channel=2 then 'USSD' when User_Channel=3 then 'Web' end), "
+                    + "(case when User_Channel=1 then'SMS' when User_Channel=2 then 'USSD' when User_Channel=3 then 'Computer Web' when User_Channel=4 then 'Mobile Web' end), "
                     + "(case when `status`=1 then 'Active' when `status`=0 then 'Inactive' end), " +
                     " (select ifnull(max(Acc_Date),'0') from user_accounts where Acc_Mobile = msisdn) as 'Last Deposit', " +
                     " (select count(Play_Bet_ID) from player_bets where Play_Bet_Mobile = msisdn and Play_Bet_Status <> 206) as 'Bets Count' " +
