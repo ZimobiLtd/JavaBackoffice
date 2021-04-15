@@ -1,3 +1,5 @@
+package Betting;
+
 /*
  * To change this license header, choose License Headers in Project Properties.
  * To change this template file, choose Tools | Templates
@@ -10,9 +12,9 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.sql.Connection;
 import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.sql.Statement;
 import java.text.SimpleDateFormat;
-import java.time.ZonedDateTime;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
@@ -27,8 +29,8 @@ import org.json.JSONArray;
  *
  * @author jac
  */
-@WebServlet(urlPatterns = {"/SendSMS"})
-public class SMSSender extends HttpServlet {
+@WebServlet(urlPatterns = {"/BetDetails"})
+public class BetDetails extends HttpServlet {
 
     /**
      * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
@@ -62,27 +64,16 @@ public class SMSSender extends HttpServlet {
                        jb.append(line);
                    }
                    
-                   System.out.println("ActivePlayer===="+jb.toString());
+                   System.out.println("BetDetails===="+jb.toString());
                    jsonobj = new JSONObject(jb.toString());
                    function=jsonobj.getString("function");
                    maindata=jsonobj.getString("data");
                    
                    
-                   if(function.equals("sendSMS"))
+                   if(function.equals("getBetDetails"))
                    {
-                        JSONObject dataObj  = new JSONObject();
-                        JSONArray dataArray = new JSONArray();
-                        
-                        String []data=maindata.split("#");
-                        String type=data[0];
-                        String msg=data[1];
-
-
-                        dataObj  = new JSONObject();
-                        dataObj.put("message", "sms sent"); 
-                        dataArray.put(dataObj);
-                        resp.setStatus(200);
-                        responseobj=dataArray;                        
+                        String betslipID=getBetGroupID(maindata);
+                        responseobj=getAllMultibets( betslipID);
                    }
                    
                    
@@ -95,19 +86,18 @@ public class SMSSender extends HttpServlet {
         }
     
     
-        public JSONArray getActivePlayer(String from,String to,String filters)
+        
+        
+        public JSONArray getAllMultibets(String betslipID)
         {
                   
-            String res=""; 
-            String dataQuery = "SELECT DISTINCT msisdn,Name,email,registration_date,(SELECT count(Play_Bet_ID) FROM player_bets WHERE Play_Bet_Mobile= msisdn " + filters + ")AS Bet_Counts , "
-                + "(SELECT sum(Play_Bet_Stake) FROM player_bets WHERE Play_Bet_Mobile=msisdn and Play_Bet_Status not in(200,204,205,206)) as stake, "
-                + "(SELECT  ifnull(sum(Play_Bet_Possible_Winning),0) FROM player_bets WHERE Play_Bet_Mobile=msisdn and Play_Bet_Status =202) as payout, "
-                + "(select ifnull(((SELECT sum(Play_Bet_Stake) FROM player_bets WHERE Play_Bet_Mobile=msisdn and Play_Bet_Status  in(201,202,203)) - "
-                + "(SELECT sum(Play_Bet_Possible_Winning) FROM player_bets WHERE Play_Bet_Mobile=msisdn and Play_Bet_Status =202) ),0) )as net "
-                + "FROM player WHERE msisdn IN (SELECT Play_Bet_Mobile FROM player_bets "
-                + "where Play_Bet_Timestamp BETWEEN '" + from + "' and '" + to + "'  " + filters + ")ORDER BY  Bet_Counts desc";
-                    
-                    System.out.println("getActivePlayer==="+dataQuery);
+            String res="";
+            String dataQuery = "select A.Mul_ID, ifnull(C.Match_Type_Desc,'no match type'), ifnull(Torna_Match_Event_Time,'no event'), "
+                    + "ifnull(concat(Torna_Sport_Name,'->',Torna_Cat_Name,'->',Torna_Name,'->',Torna_Match_Event),'no event'), A.Mul_Game_ID, A.Mul_Match_Name,"
+                    + " A.Mul_Prediction, B.Bet_Status_Name, A.Mul_Bet_Odd, A.Mul_Bet_Winning_Pred  from multibets A ,tournament, bet_status B ,match_type C  "
+                    + "where A.Mul_Group_ID = "+betslipID+"  and Torna_Match_ID=A.Mul_Match_ID and A.Mul_Bet_Status = B.Bet_Status_Code and C.Match_Type_Status_ID =1 ";
+            
+            System.out.println("getAllMultibets==="+dataQuery);
             
             JSONObject dataObj  = null;
             JSONArray dataArray = new JSONArray();
@@ -115,49 +105,55 @@ public class SMSSender extends HttpServlet {
             try( Connection conn = new DBManager(type).getDBConnection();
             Statement stmt = conn.createStatement();)
             {
-
+                
                 ResultSet rs = stmt.executeQuery(dataQuery);
+                
+                    while (rs.next())
+                    {
+                        
+                        dataObj  = new JSONObject();
+                        String bet_id = rs.getString(1);
+                        String match_type = rs.getString(2);
+                        String event_date = sdf.format(rs.getTimestamp(3));
+                        String event = rs.getString(4);
+                        String bet_game_id = rs.getString(5);
+                        String bet_market_id = rs.getString(6);
+                        String prediction = rs.getString(7);
+                        String bet_status = rs.getString(8);
+                        String odds = rs.getString(9);
+                        String outcome = rs.getString(10);
 
-                while (rs.next())
-                {
-                     String mobile =rs.getString(1);
-                     String name = rs.getString(2);
-                     String email = rs.getString(3);
-                     String regdate = rs.getString(4);
-                     String betscount = rs.getString(5);
-                     String totalstake = rs.getString(6);
-                     String payout= rs.getString(7);
-                     String net= rs.getString(8);
-                  
-                     dataObj  = new JSONObject();
-                     dataObj.put("Mobile", "0"+mobile.substring(3));
-                     dataObj.put("Name", name);
-                     dataObj.put("Email", email);
-                     dataObj.put("Registration_Date", regdate);
-                     dataObj.put("BetsCount", betscount);
-                     dataObj.put("TotalStake", totalstake);
-                     dataObj.put("Payout", payout);
-                     dataObj.put("Net", net);
-                     dataArray.put(dataObj);
-                }
 
-                if(dataArray.length()==0)
-                {
-                    dataObj  = new JSONObject();
-                     dataObj.put("ID", "0");
-                     dataObj.put("Mobile", "0");
-                     dataObj.put("Name", "0");
-                     dataObj.put("Email", "0");
-                     dataObj.put("Registration_Date", "0");
-                     dataObj.put("BetsCount", "0");
-                     dataObj.put("TotalStake", "0");
-                     dataObj.put("Payout", "0");
-                     dataObj.put("Net", "0");
-                     dataArray.put(dataObj);
-                }
-                   
-
-            rs.close();
+                        dataObj.put("Bet_ID", bet_id);
+                        dataObj.put("Match_Type", match_type);
+                        dataObj.put("Event_Date", event_date);
+                        dataObj.put("Event", event);
+                        dataObj.put("Bet_Game_ID", bet_game_id);
+                        dataObj.put("Bet_Market_ID", bet_market_id);
+                        dataObj.put("Bet_Prediction", prediction);
+                        dataObj.put("Bet_Status", bet_status);
+                        dataObj.put("Odds", odds);
+                        dataObj.put("Outcome", outcome);
+                        dataArray.put(dataObj);
+                    }
+                    
+                    if(dataArray.length()==0)
+                    {
+                        dataObj  = new JSONObject();
+                        dataObj.put("Bet_ID", "0");
+                        dataObj.put("Match_Type", "0");
+                        dataObj.put("Event_Date", "0");
+                        dataObj.put("Event", "0");
+                        dataObj.put("Bet_Game_ID", "0");
+                        dataObj.put("Bet_Market_ID", "0");
+                        dataObj.put("Bet_Prediction", "0");
+                        dataObj.put("Bet_Status", "0");
+                        dataObj.put("Odds", "0");
+                        dataObj.put("Outcome", "0");
+                        dataArray.put(dataObj);
+                    }
+                
+            
             stmt.close();
             conn.close();
             }
@@ -171,29 +167,35 @@ public class SMSSender extends HttpServlet {
         
         
         
-        // return record count in a result set
-        public String execute( Connection conn,Statement stmt, String query) 
+        public String getBetGroupID(String betslipid)
         {
+
             String data="";
-            System.out.println("getActivePlayer execute===="+query);
-            try {
+            String query="select Play_Bet_Group_ID from player_bets where Play_Bet_Slip_ID = '" + betslipid + "'";
 
-                ResultSet rst = (ResultSet) stmt.executeQuery(query);
+            try( Connection conn = new DBManager(type).getDBConnection();
+            Statement stmt = conn.createStatement();)
+            {
 
-                while (rst.next()) 
-                {
-                    data = rst.getString(1);
-                }
-            //rst.close();
-            } catch (Exception ex) {
-                System.err.println("execute error .... " + ex.getMessage());
+            ResultSet rs = stmt.executeQuery(query);
+            while (rs.next()) {
+
+            data = rs.getString(1);
+
+
             }
-           
-            return data;
+
+             rs.close();
+             conn.close();
+            } catch (SQLException ex) {
+
+             System.out.println(ex.getMessage());
+            }
+
+        return data;
         }
       
-        
-        
+      
         
         public String[] initDates() 
         {

@@ -1,3 +1,5 @@
+package Players;
+
 /*
  * To change this license header, choose License Headers in Project Properties.
  * To change this template file, choose Tools | Templates
@@ -27,8 +29,8 @@ import org.json.JSONArray;
  *
  * @author jac
  */
-@WebServlet(urlPatterns = {"/SendSMS"})
-public class SMSSender extends HttpServlet {
+@WebServlet(urlPatterns = {"/DormantPlayers"})
+public class DormantPlayers extends HttpServlet {
 
     /**
      * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
@@ -62,29 +64,28 @@ public class SMSSender extends HttpServlet {
                        jb.append(line);
                    }
                    
-                   System.out.println("ActivePlayer===="+jb.toString());
+                   System.out.println("DormantPlayer===="+jb.toString());
                    jsonobj = new JSONObject(jb.toString());
                    function=jsonobj.getString("function");
                    maindata=jsonobj.getString("data");
                    
                    
-                   if(function.equals("sendSMS"))
+                   if(function.equals("getDormantPlayers"))
                    {
-                        JSONObject dataObj  = new JSONObject();
-                        JSONArray dataArray = new JSONArray();
-                        
-                        String []data=maindata.split("#");
-                        String type=data[0];
-                        String msg=data[1];
-
-
-                        dataObj  = new JSONObject();
-                        dataObj.put("message", "sms sent"); 
-                        dataArray.put(dataObj);
-                        resp.setStatus(200);
-                        responseobj=dataArray;                        
+                        String []respo=initDates();
+                        String fromdate=respo[0];
+                        String todate=respo[1];
+                        responseobj=getDormantPlayer(fromdate ,todate);
                    }
                    
+                   
+                   if(function.equals("filterDormantPlayers"))
+                   {
+                        String [] data=maindata.split("#");
+                        String from=data[0];
+                        String to=data[1];
+                        responseobj=getDormantPlayer(from ,to);                       
+                   }
                    
                    
                    
@@ -95,19 +96,15 @@ public class SMSSender extends HttpServlet {
         }
     
     
-        public JSONArray getActivePlayer(String from,String to,String filters)
+        public JSONArray getDormantPlayer(String from,String to)
         {
                   
-            String res=""; 
-            String dataQuery = "SELECT DISTINCT msisdn,Name,email,registration_date,(SELECT count(Play_Bet_ID) FROM player_bets WHERE Play_Bet_Mobile= msisdn " + filters + ")AS Bet_Counts , "
-                + "(SELECT sum(Play_Bet_Stake) FROM player_bets WHERE Play_Bet_Mobile=msisdn and Play_Bet_Status not in(200,204,205,206)) as stake, "
-                + "(SELECT  ifnull(sum(Play_Bet_Possible_Winning),0) FROM player_bets WHERE Play_Bet_Mobile=msisdn and Play_Bet_Status =202) as payout, "
-                + "(select ifnull(((SELECT sum(Play_Bet_Stake) FROM player_bets WHERE Play_Bet_Mobile=msisdn and Play_Bet_Status  in(201,202,203)) - "
-                + "(SELECT sum(Play_Bet_Possible_Winning) FROM player_bets WHERE Play_Bet_Mobile=msisdn and Play_Bet_Status =202) ),0) )as net "
-                + "FROM player WHERE msisdn IN (SELECT Play_Bet_Mobile FROM player_bets "
-                + "where Play_Bet_Timestamp BETWEEN '" + from + "' and '" + to + "'  " + filters + ")ORDER BY  Bet_Counts desc";
-                    
-                    System.out.println("getActivePlayer==="+dataQuery);
+            String res="";
+            String dataQuery = "SELECT msisdn,NAME,email,registration_date,Player_Balance,Bonus_Balance, "
+                    + "(SELECT ifnull(max(Play_Bet_Timestamp),'0') FROM player_bets WHERE Play_Bet_Mobile=msisdn and date(Play_Bet_Timestamp) not between '" + from + "' and '" + to + "' GROUP BY  Play_Bet_Mobile)"
+                    + "FROM player "
+                             + "WHERE msisdn NOT  IN ( SELECT Play_Bet_Mobile FROM player_bets  where date(Play_Bet_Timestamp) between '" + from + "' and '" + to + "' ) and NAME is not null GROUP BY msisdn  limit 100  ";
+            System.out.println("getDormantPlayer==="+dataQuery);
             
             JSONObject dataObj  = null;
             JSONArray dataArray = new JSONArray();
@@ -123,21 +120,19 @@ public class SMSSender extends HttpServlet {
                      String mobile =rs.getString(1);
                      String name = rs.getString(2);
                      String email = rs.getString(3);
-                     String regdate = rs.getString(4);
-                     String betscount = rs.getString(5);
-                     String totalstake = rs.getString(6);
-                     String payout= rs.getString(7);
-                     String net= rs.getString(8);
-                  
+                     String regdate =sdf.format(rs.getTimestamp(4));
+                     String balanceRM = rs.getString(5);
+                     String balanceBM = rs.getString(6);
+                     String lastactivedate= rs.getString(7);
+                     
                      dataObj  = new JSONObject();
                      dataObj.put("Mobile", "0"+mobile.substring(3));
                      dataObj.put("Name", name);
                      dataObj.put("Email", email);
                      dataObj.put("Registration_Date", regdate);
-                     dataObj.put("BetsCount", betscount);
-                     dataObj.put("TotalStake", totalstake);
-                     dataObj.put("Payout", payout);
-                     dataObj.put("Net", net);
+                     dataObj.put("BalanceRM", balanceRM);
+                     dataObj.put("BalanceBM", balanceBM);
+                     dataObj.put("LastActiveDate", lastactivedate);
                      dataArray.put(dataObj);
                 }
 
@@ -149,10 +144,9 @@ public class SMSSender extends HttpServlet {
                      dataObj.put("Name", "0");
                      dataObj.put("Email", "0");
                      dataObj.put("Registration_Date", "0");
-                     dataObj.put("BetsCount", "0");
-                     dataObj.put("TotalStake", "0");
-                     dataObj.put("Payout", "0");
-                     dataObj.put("Net", "0");
+                     dataObj.put("BalanceRM", "0");
+                     dataObj.put("BalanceBM", "0");
+                     dataObj.put("LastActiveDate", "0");
                      dataArray.put(dataObj);
                 }
                    
@@ -175,16 +169,16 @@ public class SMSSender extends HttpServlet {
         public String execute( Connection conn,Statement stmt, String query) 
         {
             String data="";
-            System.out.println("getActivePlayer execute===="+query);
+            System.out.println("getDormantPlayer execute===="+query);
             try {
 
-                ResultSet rst = (ResultSet) stmt.executeQuery(query);
+                ResultSet rs = (ResultSet) stmt.executeQuery(query);
 
-                while (rst.next()) 
+                while (rs.next()) 
                 {
-                    data = rst.getString(1);
+                    data = rs.getString(1);
                 }
-            //rst.close();
+             rs.close();    
             } catch (Exception ex) {
                 System.err.println("execute error .... " + ex.getMessage());
             }

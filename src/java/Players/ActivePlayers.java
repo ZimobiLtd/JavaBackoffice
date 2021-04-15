@@ -1,3 +1,5 @@
+package Players;
+
 /*
  * To change this license header, choose License Headers in Project Properties.
  * To change this template file, choose Tools | Templates
@@ -27,8 +29,8 @@ import org.json.JSONArray;
  *
  * @author jac
  */
-@WebServlet(urlPatterns = {"/SendSMS"})
-public class SMSSender extends HttpServlet {
+@WebServlet(urlPatterns = {"/ActivePlayers"})
+public class ActivePlayers extends HttpServlet {
 
     /**
      * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
@@ -68,23 +70,43 @@ public class SMSSender extends HttpServlet {
                    maindata=jsonobj.getString("data");
                    
                    
-                   if(function.equals("sendSMS"))
+                   if(function.equals("getActivePlayers"))
                    {
-                        JSONObject dataObj  = new JSONObject();
-                        JSONArray dataArray = new JSONArray();
-                        
-                        String []data=maindata.split("#");
-                        String type=data[0];
-                        String msg=data[1];
-
-
-                        dataObj  = new JSONObject();
-                        dataObj.put("message", "sms sent"); 
-                        dataArray.put(dataObj);
-                        resp.setStatus(200);
-                        responseobj=dataArray;                        
+                        String filters=" and Play_Bet_Type in(1,2,3)";
+                        String []respo=initDates();
+                        String fromdate=respo[0];
+                        String todate=respo[1];
+                        responseobj=getActivePlayer(fromdate ,todate,filters);
                    }
                    
+                   
+                   if(function.equals("filterActivePlayers"))
+                   {
+                       String filters="";
+                        String [] data=maindata.split("#");
+                        String from=data[0];
+                        String to=data[1];
+                        String type=data[2];
+                        
+                        if(type.equals("Single Bet"))
+                        {
+                            filters="and Play_Bet_Type=1";
+                        }
+                        else if(type.equals("Multi Bet"))
+                        {
+                            filters="and Play_Bet_Type=3";
+                        }
+                        else if(type.equals("Jackpot"))
+                        {
+                            filters="and Play_Bet_Type=1";
+                        }
+                        else if(type.equals("All"))
+                        {
+                            filters="and Play_Bet_Type in(1,2,3)";
+                        }
+                        
+                        responseobj=getActivePlayer(from ,to,filters);                       
+                   }
                    
                    
                    
@@ -105,7 +127,7 @@ public class SMSSender extends HttpServlet {
                 + "(select ifnull(((SELECT sum(Play_Bet_Stake) FROM player_bets WHERE Play_Bet_Mobile=msisdn and Play_Bet_Status  in(201,202,203)) - "
                 + "(SELECT sum(Play_Bet_Possible_Winning) FROM player_bets WHERE Play_Bet_Mobile=msisdn and Play_Bet_Status =202) ),0) )as net "
                 + "FROM player WHERE msisdn IN (SELECT Play_Bet_Mobile FROM player_bets "
-                + "where Play_Bet_Timestamp BETWEEN '" + from + "' and '" + to + "'  " + filters + ")ORDER BY  Bet_Counts desc";
+                + "where date(Play_Bet_Timestamp) BETWEEN '" + from + "' and '" + to + "'  " + filters + ")ORDER BY  Bet_Counts desc";
                     
                     System.out.println("getActivePlayer==="+dataQuery);
             
@@ -123,7 +145,7 @@ public class SMSSender extends HttpServlet {
                      String mobile =rs.getString(1);
                      String name = rs.getString(2);
                      String email = rs.getString(3);
-                     String regdate = rs.getString(4);
+                     String regdate = sdf.format(rs.getTimestamp(4));
                      String betscount = rs.getString(5);
                      String totalstake = rs.getString(6);
                      String payout= rs.getString(7);
