@@ -44,7 +44,7 @@ public class BetDetails extends HttpServlet {
         Connection conn;
         String response,username ,password,function,maindata;
         String type="betting";JSONObject jsonobj=null;JSONArray responseobj  = null;
-        public static SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+        public static SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm");
         protected void processRequest(HttpServletRequest req, HttpServletResponse resp)
         throws ServletException, IOException {
             resp.setContentType("text/json;charset=UTF-8");
@@ -58,27 +58,24 @@ public class BetDetails extends HttpServlet {
             try 
             {
 
-                   BufferedReader reader = req.getReader();
-                   while ((line = reader.readLine()) != null)
-                   {
-                       jb.append(line);
-                   }
-                   
-                   System.out.println("BetDetails===="+jb.toString());
-                   jsonobj = new JSONObject(jb.toString());
-                   function=jsonobj.getString("function");
-                   maindata=jsonobj.getString("data");
-                   
-                   
-                   if(function.equals("getBetDetails"))
-                   {
-                        String betslipID=getBetGroupID(maindata);
-                        responseobj=getAllMultibets( betslipID);
-                   }
-                   
-                   
-                   
-                   
+                BufferedReader reader = req.getReader();
+                while ((line = reader.readLine()) != null)
+                {
+                    jb.append(line);
+                }
+
+                System.out.println("BetDetails===="+jb.toString());
+                jsonobj = new JSONObject(jb.toString());
+                function=jsonobj.getString("function");
+                maindata=jsonobj.getString("data");
+
+
+                if(function.equals("getBetDetails"))
+                {
+                     String betslipID=getBetGroupID(maindata);
+                     responseobj=getAllMultibets( betslipID);
+                }
+                     
              }catch (Exception ex) { ex.getMessage();}
             
              PrintWriter out = resp.getWriter(); 

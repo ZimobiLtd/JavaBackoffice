@@ -329,7 +329,7 @@ public class Transactions extends HttpServlet {
 
                 String todate=LocalDate.now().toString();
                 
-                String fromdate=LocalDate.now().plusDays(-10).toString();
+                String fromdate=LocalDate.now().plusDays(-2).toString();
 
                 data=new String[]{fromdate,todate};//fromdate+"#"+todate ;
 

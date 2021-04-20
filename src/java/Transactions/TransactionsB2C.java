@@ -243,7 +243,7 @@ public class TransactionsB2C extends HttpServlet {
 
                 String todate=LocalDate.now().toString();
                 
-                String fromdate=LocalDate.now().plusDays(-1).toString();
+                String fromdate=LocalDate.now().plusDays(-2).toString();
 
                 data=new String[]{fromdate,todate};//fromdate+"#"+todate ;
 

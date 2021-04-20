@@ -103,7 +103,7 @@ public class DormantPlayers extends HttpServlet {
             String dataQuery = "SELECT msisdn,NAME,email,registration_date,Player_Balance,Bonus_Balance, "
                     + "(SELECT ifnull(max(Play_Bet_Timestamp),'0') FROM player_bets WHERE Play_Bet_Mobile=msisdn and date(Play_Bet_Timestamp) not between '" + from + "' and '" + to + "' GROUP BY  Play_Bet_Mobile)"
                     + "FROM player "
-                             + "WHERE msisdn NOT  IN ( SELECT Play_Bet_Mobile FROM player_bets  where date(Play_Bet_Timestamp) between '" + from + "' and '" + to + "' ) and NAME is not null GROUP BY msisdn  limit 100  ";
+                             + "WHERE msisdn NOT  IN ( SELECT Play_Bet_Mobile FROM player_bets  where date(Play_Bet_Timestamp) between '" + from + "' and '" + to + "' ) and NAME is not null GROUP BY msisdn ";
             System.out.println("getDormantPlayer==="+dataQuery);
             
             JSONObject dataObj  = null;

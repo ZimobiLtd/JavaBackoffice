@@ -461,7 +461,7 @@ public class MainDashBoard extends HttpServlet {
 
             String todate=LocalDate.now().toString();
 
-            String fromdate=LocalDate.now().plusDays(-30).toString();
+            String fromdate=LocalDate.now().plusDays(-0).toString();
 
             data=new String[]{fromdate,todate};//fromdate+"#"+todate ;
 

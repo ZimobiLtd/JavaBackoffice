@@ -47,7 +47,7 @@ public class PlayersBettingReport extends HttpServlet {
         Connection conn;
         String response,username ,password,function,maindata;
         String type="betting";JSONObject jsonobj=null;JSONArray responseobj  = null;
-        public static SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+        public static SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm");
         protected void processRequest(HttpServletRequest req, HttpServletResponse resp)
         throws ServletException, IOException {
             resp.setContentType("text/json;charset=UTF-8");
@@ -258,7 +258,7 @@ public class PlayersBettingReport extends HttpServlet {
                 dataQuery = "select Play_Bet_Timestamp, Play_Bet_Slip_ID, (case when Play_Bet_Status=200 then 'Pending'  when Play_Bet_Status=201 then 'Placed' when Play_Bet_Status=202 then 'Win' when Play_Bet_Status=203 then 'Loss' when Play_Bet_Status=204 then 'Rejected' when Play_Bet_Status=205 then 'Cancelled' end)as 'bet_status', "+
                             " Chan_Mode_Name , Play_Bet_Mobile, Play_Bet_Stake, Play_Bet_Bonus_Stake , Play_Bet_Possible_Winning, " +
                             "Play_Bet_Group_ID, Play_Bet_Possible_BonusWinning  from player_bets ,channels_used where  Chan_Table_ID = play_bet_Channel and  date(Play_Bet_Timestamp) between   '"+fromDate+"' and '"+toDate+"'  " +
-                            "and play_Bet_Type in (0,1,2,3)  and Play_Bet_Status in (201, 202, 203) order by Play_Bet_Timestamp desc ";
+                            "and play_Bet_Type in (0,1,2,3)  and Play_Bet_Status in (200,201, 202, 203) order by Play_Bet_Timestamp desc ";
                 
                 System.out.println("getBettingReport==="+dataQuery);
                 
@@ -459,14 +459,14 @@ public class PlayersBettingReport extends HttpServlet {
                     dataQuery = "select Play_Bet_Timestamp, Play_Bet_Slip_ID, (case when Play_Bet_Status=200 then 'Pending'  when Play_Bet_Status=201 then 'Placed' when Play_Bet_Status=202 then 'Win' when Play_Bet_Status=203 then 'Loss' when Play_Bet_Status=204 then 'Rejected' when Play_Bet_Status=205 then 'Cancelled' end)as 'bet_status', "+
                             " Chan_Mode_Name , Play_Bet_Mobile, Play_Bet_Stake, Play_Bet_Bonus_Stake , Play_Bet_Possible_Winning, " +
                             "Play_Bet_Group_ID, Play_Bet_Possible_BonusWinning  from player_bets ,channels_used where  Chan_Table_ID = play_bet_Channel  " +
-                            "and play_Bet_Type in (0,1,2,3)  and Play_Bet_Status in (201, 202, 203) and  player_bets.Play_Bet_Mobile='"+mobile+"' order by Play_Bet_Timestamp desc ";        
+                            "and play_Bet_Type in (0,1,2,3)  and Play_Bet_Status in (200,201, 202, 203) and  player_bets.Play_Bet_Mobile='"+mobile+"' order by Play_Bet_Timestamp desc ";        
                 }
                 else
                 {
                     dataQuery = "select Play_Bet_Timestamp, Play_Bet_Slip_ID, (case when Play_Bet_Status=200 then 'Pending'  when Play_Bet_Status=201 then 'Placed' when Play_Bet_Status=202 then 'Win' when Play_Bet_Status=203 then 'Loss' when Play_Bet_Status=204 then 'Rejected' when Play_Bet_Status=205 then 'Cancelled' end)as 'bet_status', "+
                             " Chan_Mode_Name , Play_Bet_Mobile, Play_Bet_Stake, Play_Bet_Bonus_Stake , Play_Bet_Possible_Winning, " +
                             "Play_Bet_Group_ID, Play_Bet_Possible_BonusWinning  from player_bets ,channels_used where  Chan_Table_ID = play_bet_Channel and  date(Play_Bet_Timestamp) between   '"+fromDate+"' and '"+toDate+"'  " +
-                            "and play_Bet_Type in (0,1,2,3)  and Play_Bet_Status in (201, 202, 203) and  player_bets.Play_Bet_Mobile='"+mobile+"' order by Play_Bet_Timestamp desc ";                
+                            "and play_Bet_Type in (0,1,2,3)  and Play_Bet_Status in (200,201, 202, 203) and  player_bets.Play_Bet_Mobile='"+mobile+"' order by Play_Bet_Timestamp desc ";                
                 }
                 
                
@@ -497,7 +497,7 @@ public class PlayersBettingReport extends HttpServlet {
                     {
                         openbet_rm = String.valueOf(betstake); // open rm
                         settled_rm = "0.00"; // settled rm
-                        winamount_rm = "0.00"; // win rm
+                        winamount_rm =betpossiblewinning;// "0.00"; // win rm
                         ggr_rm = "0.00"; // ggr rm
                         openbet_bm = String.valueOf(betbonusstake); // open bm
                         settled_bm = "0.00"; // settled bm
@@ -858,7 +858,7 @@ public class PlayersBettingReport extends HttpServlet {
 
                 String todate=LocalDate.now().toString();
 
-                String fromdate=LocalDate.now().plusDays(-1).toString();
+                String fromdate=LocalDate.now().plusDays(-30).toString();
 
                 data=new String[]{fromdate,todate};//fromdate+"#"+todate ;
 

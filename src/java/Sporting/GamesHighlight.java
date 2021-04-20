@@ -84,43 +84,8 @@ public class GamesHighlight extends HttpServlet {
                    if(function.equals("filterGamesHighlight"))
                    {
                         String filters="";
-                        String[]data=maindata.split("#");
-                        String from=data[0];
-                        String to=data[1];  
-                        String teamname=data[2].trim();
-                        String sport=data[3].trim();
-                        String gameid=data[3].trim();
-                        
-                        if (teamname.equalsIgnoreCase("any")&& gameid.equalsIgnoreCase("any"))
-                        {
-                          responseobj=getgamesHighlits(from ,to);  
-                        }
-                        else if (teamname.equalsIgnoreCase("any")&& !gameid.equalsIgnoreCase("any"))
-                        {
-                            filters = "and Torna_Sys_Game_ID like '" + gameid + "%' ";
-                            responseobj=filtergamesHighlits(from ,to,filters);
-                        }
-                        else if (!teamname.equalsIgnoreCase("any")&& gameid.equalsIgnoreCase("any"))
-                        {
-                            filters = " and Torna_Match_Event like '%" + teamname + "%' ";
-                            responseobj=filtergamesHighlits(from ,to,filters);
-                        }
-                        else
-                        {
-                            if (!teamname.equals("null") && !gameid.equals("null")) 
-                            {
-                                filters = " and Torna_Match_Event like '%" + teamname + "%'  and Torna_Sys_Game_ID like '" + gameid + "%' ";
-                            }
-                            else if (!teamname.equals("null")&& gameid.equals("null") ) 
-                            {
-                                filters = " and Torna_Match_Event like '%" + teamname + "%' ";
-                            }
-                            else if (teamname.equals("null")&& !gameid.equals("null") ) 
-                            {
-                                filters = "and Torna_Sys_Game_ID like '" + gameid + "%' ";
-                            }
-                            responseobj=filtergamesHighlits(from ,to,filters);
-                        }
+                        String date=maindata;
+                        responseobj=filtergamesHighlits(date);
                         
                    }
                    
@@ -185,7 +150,7 @@ public class GamesHighlight extends HttpServlet {
                     String countryname = rs.getString(2);
                     String torna_name = rs.getString(3);
                     String event = rs.getString(4);
-                    String eventtime =sdf.format(rs.getTimestamp(5));
+                    String eventtime =rs.getString(5).replace(".0", "");//sdf.format(rs.getTimestamp(5));
                     String torna_match_id = rs.getString(6);
                     String torna_sys_game_id = rs.getString(7);
                     String matchstatus = rs.getString(8);
@@ -226,7 +191,7 @@ public class GamesHighlight extends HttpServlet {
         
         
         
-        public JSONArray filtergamesHighlits(String fromDate,String toDate ,String filters)
+        public JSONArray filtergamesHighlits(String date)
         {
                   
             String res="";
@@ -241,11 +206,11 @@ public class GamesHighlight extends HttpServlet {
                 ResultSet rs=null;
                     
                 dataQuery = "select  Torna_Sport_Name, Torna_Cat_Name, Torna_Name, Torna_Match_Event, Torna_Match_Event_Time, "
-                            + "Torna_Match_ID, Torna_Sys_Game_ID, (case when Torna_Match_Status=0 then 'Active' when Torna_Match_Status=1 then 'Inactive' end), "
-                        + "(case when Torna_Cat_Game_Mode=1 then 'Todays Games' when Torna_Cat_Game_Mode=3 then 'Jackpot Games' when Torna_Cat_Game_Mode=3 then 'Todays Highlights' end),Torna_Cat_Game_Mode "
-                            + "from tournament where Torna_Match_Event_Time between '" + fromDate + "' and '" + toDate + "' and "
-                            + "Torna_Match_Status = '0'  "+filters+" and Torna_Match_Stage !='Suspended' and Torna_Match_Stage !='Ended' and Torna_Match_Stage !='Deactivated' and date(Torna_Match_Event_Time)>=curdate() order by Torna_Cat_Game_Mode desc ";//,Torna_Match_Event_Time 
-
+                         + "Torna_Match_ID, Torna_Sys_Game_ID, (case when Torna_Match_Status=0 then 'Active' when Torna_Match_Status=1 then 'Inactive' end), "
+                         + "(case when Torna_Cat_Game_Mode=1 then 'Todays Games' when Torna_Cat_Game_Mode=3 then 'Jackpot Games' when Torna_Cat_Game_Mode=2 then 'Todays Highlights' end),"
+                         + "Torna_Cat_Game_Mode from tournament where date(Torna_Match_Event_Time)='" + date + "' and "
+                         + "Torna_Match_Status = '0' and Torna_Match_Status='0' and Torna_Match_Stage !='Suspended' and Torna_Match_Stage !='Ended' "
+                         + "and Torna_Match_Stage !='Deactivated' and date(Torna_Match_Event_Time)>=curdate() order by Torna_Cat_Game_Mode desc";
                 System.out.println("filtersgamesHighlits==="+dataQuery);
                 rs = stmt.executeQuery(dataQuery);
 
@@ -258,7 +223,7 @@ public class GamesHighlight extends HttpServlet {
                     String countryname = rs.getString(2);
                     String torna_name = rs.getString(3);
                     String event = rs.getString(4);
-                    String eventtime = sdf.format(rs.getTimestamp(5));
+                    String eventtime =rs.getString(5).replace(".0", "");//sdf.format(rs.getTimestamp(5));
                     String torna_match_id = rs.getString(6);
                     String torna_sys_game_id = rs.getString(7);
                     String matchstatus = rs.getString(8);
@@ -277,6 +242,22 @@ public class GamesHighlight extends HttpServlet {
                     dataObj.put("MatchModeStatus", matchmodestatus);
 
                     dataArray.put(dataObj);
+                }
+                
+                if(dataArray.length()==0)
+                {
+                    dataObj  = new JSONObject();
+                    dataObj.put("TornamentMatchID", "0");
+                    dataObj.put("GameID", "0");
+                    dataObj.put("Country", "0");
+                    dataObj.put("Sport", "0");
+                    dataObj.put("Tornament", "0");
+                    dataObj.put("Event", "0");
+                    dataObj.put("EventTime", "0");
+                    dataObj.put("MatchStatus", "0");
+                    dataObj.put("MatchMode", "0");
+                    dataObj.put("MatchModeStatus", "0");
+                     dataArray.put(dataObj);
                 }
                    
                    
