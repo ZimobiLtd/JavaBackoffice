@@ -165,7 +165,7 @@ public class MainDashBoard extends HttpServlet {
         double GGR=0;
         double NGR=0;
         double Profit=0;
-        double Loss=0;
+        double Lost=0;
         
         JSONObject dataObj  = null;
         JSONArray dataArray = new JSONArray();
@@ -312,12 +312,12 @@ public class MainDashBoard extends HttpServlet {
                 double ngr_val =GGR - (Double.valueOf(totalOpenBetsRMTurnOver) + taxedamount_won);
                 NGR=ngr_val-(ngr_val*0.15);
                 Profit=Double.valueOf(settledBetsTurnoverRM)-(Double.valueOf(wonBetsTurnoverRM)-Double.valueOf(wonBetsTurnoverRM)*0.15);
-                Loss=taxedamount_won;
+                Lost=taxedamount_won;
                 
                 dataObj.put("GGR", String.valueOf(GGR));
                 dataObj.put("NGR", String.valueOf(NGR));
                 dataObj.put("Profit",String.valueOf(Profit));
-                dataObj.put("Loss", String.valueOf(Loss));
+                dataObj.put("Lost", String.valueOf(Lost));
                 
                 main.put("Profit_Summary", dataObj);
                 
@@ -501,7 +501,7 @@ public class MainDashBoard extends HttpServlet {
 "            \"GGR\": \"0\",\n" +
 "            \"TotalWinnings\": \"0\",\n" +
 "            \"TurnoverRM\": \"0\",\n" +
-"            \"Loss\": \"0\",\n" +
+"            \"Lost\": \"0\",\n" +
 "            \"NGR\": \"0\",\n" +
 "            \"Profit\": \"0\"\n" +
 "        },\n" +

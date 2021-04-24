@@ -141,7 +141,7 @@ public class BclbReport extends HttpServlet {
                         dataObj.put("Tickets", tickets);
                         dataObj.put("TotalSales", totalsales);
                         dataObj.put("NetSales", totalsales);
-                        dataObj.put("Win_Loss", wins);
+                        dataObj.put("Win_Lost", wins);
                         dataObj.put("BettingTax", bettingTax);
                         //dataObj.put("WitholdingTax", "0.00");
                     }

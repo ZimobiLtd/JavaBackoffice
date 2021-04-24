@@ -439,7 +439,7 @@ public class Player_Registration extends HttpServlet {
 
                 Date startDate = new Date();//sdf.parse(fromDate);
                 long curTime = startDate.getTime();
-                long interval = (24 * 1000 * 60 * 60)*10;
+                long interval = (24 * 1000 * 60 * 60)*0;
                 curTime -= interval;
                 String fromdate=sdf.format(new Date(curTime));
                 String todate=sdf.format(startDate);

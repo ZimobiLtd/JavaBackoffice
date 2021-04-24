@@ -166,7 +166,7 @@ public class FinanceDashBoard extends HttpServlet {
         double GGR=0;
         double NGR=0;
         double Profit=0;
-        double Loss=0;
+        double Lost=0;
         
         JSONObject dataObj  = null;
         JSONArray dataArray = new JSONArray();
@@ -315,7 +315,7 @@ public class FinanceDashBoard extends HttpServlet {
                 dataObj.put("GGR", String.valueOf(GGR));
                 dataObj.put("NGR", String.valueOf(NGR));
                 dataObj.put("Profit",String.valueOf(Profit));
-                dataObj.put("Loss", totalWinnings);
+                dataObj.put("Lost", totalWinnings);
                 
                 main.put("Profit_Summary", dataObj);
                 

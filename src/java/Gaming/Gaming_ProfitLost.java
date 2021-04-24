@@ -33,8 +33,8 @@ import org.json.JSONArray;
  *
  * @author jac
  */
-@WebServlet(urlPatterns = {"/GamingProfitLoss"})
-public class Gaming_ProfitLoss extends HttpServlet {
+@WebServlet(urlPatterns = {"/GamingProfitLost"})
+public class Gaming_ProfitLost extends HttpServlet {
 
     /**
      * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
@@ -68,23 +68,23 @@ throws ServletException, IOException {
         jb.append(line);
     }
 
-        System.out.println("GamingProfitLoss===="+jb.toString());
+        System.out.println("GamingProfitLost===="+jb.toString());
         jsonobj = new JSONObject(jb.toString());
         function=jsonobj.getString("function");
         maindata=jsonobj.getString("data");
 
 
-    if(function.equals("getProfitLoss"))
+    if(function.equals("getProfitLost"))
     {
-        responseobj=getProfitLoss("2017-12-30");
+        responseobj=getProfitLost("2017-12-30");
     }
    
    
-    if(function.equals("filterProfitLoss"))
+    if(function.equals("filterProfitLost"))
     {
         String date=maindata;
 
-        responseobj=getProfitLoss(date);
+        responseobj=getProfitLost(date);
     }
    
    
@@ -99,7 +99,7 @@ throws ServletException, IOException {
         
       
       
-public JSONArray getProfitLoss(String toDate)
+public JSONArray getProfitLost(String toDate)
 {
 
     String[] months = new String[] { "January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December" };
