@@ -142,9 +142,9 @@ public class MainDashBoard extends HttpServlet {
         String totalWinnings="0";
         
         String USSD_Reg="0";
-        String Web_Reg="0";
+        String computer_Web_Reg="0";
         String SMS_Reg="0";
-        String App_Reg="0";
+        String mobile_Web_Reg="0";
         
         String placedBets="0";
         String wonBets="0";
@@ -327,16 +327,16 @@ public class MainDashBoard extends HttpServlet {
                 rs = stmt.executeQuery(registrations); 
                 while (rs.next()) 
                 {
-                    SMS_Reg=rs.getString(1);
-                    USSD_Reg=rs.getString(2);
-                    Web_Reg=rs.getString(3);
-                    App_Reg=rs.getString(4);
+                    USSD_Reg=rs.getString(1);
+                    SMS_Reg=rs.getString(2);
+                    computer_Web_Reg=rs.getString(3);
+                    mobile_Web_Reg=rs.getString(4);
                 }
                 dataObj  = new JSONObject();
                 dataObj.put("SMS_Reg", SMS_Reg);
                 dataObj.put("USSD_Reg", USSD_Reg);
-                dataObj.put("Web_Reg", Web_Reg);
-                dataObj.put("App_Reg", App_Reg);
+                dataObj.put("Computer_Web", computer_Web_Reg);
+                dataObj.put("Mobile_Web", mobile_Web_Reg);
                 
                 main.put("Registration_Summary", dataObj);
                 
@@ -387,18 +387,18 @@ public class MainDashBoard extends HttpServlet {
                 
                 System.out.println("dataQueryBetsByChannel==="+dataQueryBetsByChannel);
                 rs = stmt.executeQuery(dataQueryBetsByChannel); 
-                while (rs.next()) 
+                 while (rs.next()) 
                 {
-                    SMS_Bets=rs.getString(1);
-                    USSD_Bets=rs.getString(2);
-                    Web_Bets=rs.getString(3);
-                    App_Bets=rs.getString(4);
+                    USSD_Reg=rs.getString(1);
+                    SMS_Reg=rs.getString(2);
+                    computer_Web_Reg=rs.getString(3);
+                    mobile_Web_Reg=rs.getString(4);
                 }
                 dataObj  = new JSONObject();
-                dataObj.put("SMS_Bets", SMS_Bets);
-                dataObj.put("USSD_Bets", USSD_Bets);
-                dataObj.put("Web_Bets", Web_Bets);
-                dataObj.put("App_Bets", App_Bets);
+                dataObj.put("SMS_Reg", SMS_Reg);
+                dataObj.put("USSD_Reg", USSD_Reg);
+                dataObj.put("Computer_Web", computer_Web_Reg);
+                dataObj.put("Mobile_Web", mobile_Web_Reg);
                 
                 main.put("BetsByChannel_Summary", dataObj);
                 
