@@ -155,9 +155,9 @@ public class FinanceDashBoard extends HttpServlet {
         String settledBets="0";
         
         String USSD_Bets="0";
-        String Web_Bets="0";
+        String Computer_Web_Bets="0";
         String SMS_Bets="0";
-        String App_Bets="0";
+        String Mobile_Web_Bets="0";
         
         String Single_Bets="0";
         String Multi_Bets="0";
@@ -388,16 +388,17 @@ public class FinanceDashBoard extends HttpServlet {
                 rs = stmt.executeQuery(dataQueryBetsByChannel); 
                 while (rs.next()) 
                 {
-                    SMS_Bets=rs.getString(1);
-                    USSD_Bets=rs.getString(2);
-                    Web_Bets=rs.getString(3);
-                    App_Bets=rs.getString(4);
+                    
+                    USSD_Bets=rs.getString(1);
+                    SMS_Bets=rs.getString(2);
+                    Computer_Web_Bets=rs.getString(3);
+                    Mobile_Web_Bets=rs.getString(4);
                 }
                 dataObj  = new JSONObject();
                 dataObj.put("SMS_Bets", SMS_Bets);
                 dataObj.put("USSD_Bets", USSD_Bets);
-                dataObj.put("Web_Bets", Web_Bets);
-                dataObj.put("App_Bets", App_Bets);
+                dataObj.put("Computer_Web_Bets", Computer_Web_Bets);
+                dataObj.put("Mobile_Web_Bets", Mobile_Web_Bets);
                 
                 main.put("BetsByChannel_Summary", dataObj);
                 

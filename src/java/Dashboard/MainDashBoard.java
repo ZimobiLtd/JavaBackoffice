@@ -154,9 +154,9 @@ public class MainDashBoard extends HttpServlet {
         String settledBets="0";
         
         String USSD_Bets="0";
-        String Web_Bets="0";
+        String computer_Web_Bets="0";
+        String mobile_Web_Bets="0";
         String SMS_Bets="0";
-        String App_Bets="0";
         
         String Single_Bets="0";
         String Multi_Bets="0";
@@ -347,25 +347,24 @@ public class MainDashBoard extends HttpServlet {
                 rs = stmt.executeQuery(dataQueryBetsByStatus); 
                 while (rs.next()) 
                 {
-                    if (rs.getInt(1) == 201) 
-                    {
-                        placedBets = rs.getString(2);
-                    }
-                    else if(rs.getInt(1) == 202) 
-                    {
-                        wonBets = rs.getString(2);
-                    }
-                    else if (rs.getInt(1) == 203) 
-                    {
-                        lostBets = rs.getString(2);
-                    }
-                    else if (rs.getInt(1) == 204) 
-                    {
-                        rejectedBets = rs.getString(2);
-                    }
-                    else if (rs.getInt(1) == 205) 
-                    {
-                        cancelledBets = rs.getString(2);
+                    switch (rs.getInt(1)) {
+                        case 201:
+                            placedBets = rs.getString(2);
+                            break;
+                        case 202:
+                            wonBets = rs.getString(2);
+                            break;
+                        case 203:
+                            lostBets = rs.getString(2);
+                            break;
+                        case 204:
+                            rejectedBets = rs.getString(2);
+                            break;
+                        case 205:
+                            cancelledBets = rs.getString(2);
+                            break;
+                        default:
+                            break;
                     }
                     
                     settledBets = String.valueOf(Integer.valueOf(lostBets) + Integer.valueOf(wonBets));
@@ -389,16 +388,16 @@ public class MainDashBoard extends HttpServlet {
                 rs = stmt.executeQuery(dataQueryBetsByChannel); 
                  while (rs.next()) 
                 {
-                    USSD_Reg=rs.getString(1);
-                    SMS_Reg=rs.getString(2);
-                    computer_Web_Reg=rs.getString(3);
-                    mobile_Web_Reg=rs.getString(4);
+                    USSD_Bets=rs.getString(1);
+                    SMS_Bets=rs.getString(2);
+                    computer_Web_Bets=rs.getString(3);
+                    mobile_Web_Bets=rs.getString(4);
                 }
                 dataObj  = new JSONObject();
-                dataObj.put("SMS_Reg", SMS_Reg);
-                dataObj.put("USSD_Reg", USSD_Reg);
-                dataObj.put("Computer_Web", computer_Web_Reg);
-                dataObj.put("Mobile_Web", mobile_Web_Reg);
+                dataObj.put("SMS_Bets", SMS_Bets);
+                dataObj.put("USSD_Bets", USSD_Bets);
+                dataObj.put("Computer_Web_Bets", computer_Web_Bets);
+                dataObj.put("Mobile_Web_Bets", mobile_Web_Bets);
                 
                 main.put("BetsByChannel_Summary", dataObj);
                 
