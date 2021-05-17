@@ -45,7 +45,7 @@ public class Betting_TurnOver extends HttpServlet {
      */
         Connection conn;
         String response,username ,password,function,maindata;
-        String type="betting";JSONObject jsonobj=null;JSONArray responseobj  = null;
+        JSONObject jsonobj=null;JSONArray responseobj  = null;
         public static SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
         public static SimpleDateFormat sdf1 = new SimpleDateFormat("yyyy-MM-dd");
         protected void processRequest(HttpServletRequest req, HttpServletResponse resp)
@@ -214,7 +214,7 @@ public class Betting_TurnOver extends HttpServlet {
             openbetbonus_bm="0.00",betbonusrejected="0.00",betbonuscancelled="0.00",betbonuswinningamount="0.00",betbonusamount="0.00",betwonamount_rm_tax="0.00",bettype="0.00",betrealmoneyprocessed="0.00",bonusachieved="0.00";
              
             
-            try( Connection conn = new DBManager(type).getDBConnection();
+            try( Connection conn = new DBManager().getDBConnection();
             Statement stmt = conn.createStatement();)
             {
 
@@ -446,7 +446,7 @@ public class Betting_TurnOver extends HttpServlet {
             openbetbonus_bm="0.00",betbonusrejected="0.00",betbonuscancelled="0.00",betbonuswinningamount="0.00",betbonusamount="0.00",betwonamount_rm_tax="0.00",bettype="0.00",betrealmoneyprocessed="0.00",bonusachieved="0.00";
                       
             
-            try( Connection conn = new DBManager(type).getDBConnection();
+            try( Connection conn = new DBManager().getDBConnection();
             Statement stmt = conn.createStatement();)
             {
 
@@ -688,7 +688,7 @@ public class Betting_TurnOver extends HttpServlet {
             openbetbonus_bm="0.00",betbonusrejected="0.00",betbonuscancelled="0.00",betbonuswinningamount="0.00",betbonusamount="0.00",betwonamount_rm_tax="0.00",bettype="0.00",betrealmoneyprocessed="0.00",bonusachieved="0.00";
              
             
-            try( Connection conn = new DBManager(type).getDBConnection();
+            try( Connection conn = new DBManager().getDBConnection();
             Statement stmt = conn.createStatement();)
             {
 

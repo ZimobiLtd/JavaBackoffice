@@ -43,7 +43,7 @@ public class Bonus extends HttpServlet {
      */
         Connection conn;
         String response,username ,password,function,maindata;
-        String type="betting";JSONObject jsonobj=null;JSONArray responseobj  = null;
+        JSONObject jsonobj=null;JSONArray responseobj  = null;
         public static SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
         protected void processRequest(HttpServletRequest req, HttpServletResponse resp)
         throws ServletException, IOException {
@@ -151,7 +151,7 @@ public class Bonus extends HttpServlet {
             JSONObject dataObj  = null;
             JSONArray dataArray = new JSONArray();
             
-            try( Connection conn = new DBManager(type).getDBConnection();
+            try( Connection conn = new DBManager().getDBConnection();
             Statement stmt = conn.createStatement();)
             {
 
@@ -240,7 +240,7 @@ public class Bonus extends HttpServlet {
                     + "values (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)";
 
              PreparedStatement ps=null;
-            try(Connection conn = new DBManager(type).getDBConnection();
+            try(Connection conn = new DBManager().getDBConnection();
                 Statement stmt=  conn.createStatement();)
 
             {

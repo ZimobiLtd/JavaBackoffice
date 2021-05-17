@@ -20,9 +20,9 @@ import javax.sql.DataSource;
 public class DBManager {
 
     
-      public DBManager(String type) {
+      public DBManager() {
 
-               this.type=type; 
+               this.type="betting"; 
       }
           
         String type,data_source;

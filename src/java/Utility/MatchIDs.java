@@ -6,7 +6,6 @@ package Utility;
  * and open the template in the editor.
  */
 
-import Players.*;
 import Database.DBManager;
 import Utility.Utility;
 import java.io.BufferedReader;
@@ -47,7 +46,7 @@ public class MatchIDs extends HttpServlet {
      */
     Connection conn;
     String response,username ,password,function,maindata;
-    String type="betting";JSONObject jsonobj=null;JSONArray responseobj  = null;
+    JSONObject jsonobj=null;JSONArray responseobj  = null;
     public static SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
     protected void processRequest(HttpServletRequest req, HttpServletResponse resp)
     throws ServletException, IOException {
@@ -69,9 +68,9 @@ public class MatchIDs extends HttpServlet {
     {
 
         String data="";
-        String query="select  group_concat(Mul_Match_ID separator '#') from multibets where  Mul_Group_ID=(Select  Play_Bet_Group_ID  from player_bets where Play_Bet_Slip_ID='"+betSlipID+"')";
+        String query="select  ifnull(group_concat(Mul_Match_ID separator '#'),'No match id was found') from multibets where  Mul_Group_ID=(Select  Play_Bet_Group_ID  from player_bets where Play_Bet_Slip_ID='"+betSlipID+"')";
 
-        try( Connection conn = new DBManager(type).getDBConnection();
+        try( Connection conn = new DBManager().getDBConnection();
         Statement stmt = conn.createStatement();)
         {
 
