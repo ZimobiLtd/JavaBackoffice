@@ -67,7 +67,7 @@ public class PlayerLiabilityAPI extends HttpServlet {
 
             if(function.equals("getPlayerLiability"))
             {
-                String []respo=new Utility().getDatesRange(7);
+                String []respo=new Utility().getDatesRange(-7);
                 String fromdate=respo[0];
                 String todate=respo[1];
                 responseobj=new PlayersLiabilityProcessor().getPlayerLiability(fromdate ,todate);

@@ -55,6 +55,7 @@ public class MainDashBoardSummaryProcessor {
         String depositPlayers="0";
         String b2cwithdrawAccBal="0";
         String wallet2BetwithdrawAccBal="0";
+        String wallet2GoldenraceBetwithdrawAccBal="0";
         String betsWonAccBal="0";
         String withdrawPlayers="0";
         String playersRMBalance="0";
@@ -80,6 +81,7 @@ public class MainDashBoardSummaryProcessor {
         String rejectedBets="0";
         String cancelledBets="0";
         String settledBets="0";
+        String totalBets="0";
         
         String USSD_Bets="0";
         String Computer_Web_Bets="0";
@@ -119,14 +121,14 @@ public class MainDashBoardSummaryProcessor {
                     + "(select count(id) from player where date(registration_date) between  '" + fromDate + "' and '" + toDate + "' and user_channel=4) "
                     + "from player where date(registration_date) between  '" + fromDate + "' and '" + toDate + "' and user_channel=1 ";
 
-        dataQueryDeposit = "SELECT count(Acc_ID),ifnull(sum(Acc_Amount),0) as 'mpesa deposits',"
-                + "(select ifnull(sum(Acc_Amount),0) from user_accounts where Acc_Trans_Type = 1 and  date(Acc_Date) between '" + fromDate + "' and '" + toDate + "' and Acc_Mpesa_Trans_No like 'BET%') as 'bet win deposit' "
+        dataQueryDeposit = "SELECT count(Acc_ID),ifnull(sum(Acc_Amount),0) as 'mpesa deposits' "
                 + "FROM user_accounts where Acc_Trans_Type = 1 and  date(Acc_Date) between '" + fromDate + "' and '" + toDate + "' and Acc_Mpesa_Trans_No not like 'BET%' ";
 
         dataQueryWithdrawals = "SELECT  count(Acc_ID),ifnull(sum(Acc_Amount),0) as 'user b2c withdrawal', "
-                             + "(select ifnull(sum(Acc_Amount),0) from user_accounts where Acc_Trans_Type = 4 and  date(Acc_Date) between '" + fromDate + "' and '" + toDate + "' ) as 'bet withdrawal' , "
-                             + "(select ifnull(sum(Play_Bet_Possible_Winning),0) from player_bets where date(Play_Bet_Timestamp) between '" + fromDate + "' and '" + toDate + "' and Play_Bet_Status=202) as 'bets won' "
-                             + "FROM user_accounts where Acc_Trans_Type = 2 and  date(Acc_Date) between '" + fromDate + "' and '" + toDate + "'";
+                            + "(select  ifnull(sum(Play_Bet_Stake),0) as 'betstakes' from player_bets where DATE(Play_Bet_Timestamp) between '" + fromDate + "' and '" + toDate + "' and Play_Bet_Status in (201,202,203)) as 'normal bet withdrawal' , "
+                            + "(select ifnull(sum(Acc_Amount),0) from user_accounts where Acc_Trans_Type = 4 and Acc_Gateway='GOLDENRACE_BET' and date(Acc_Date) between '" + fromDate + "' and '" + toDate + "' ) as 'goldenrace bet withdrawal' , "
+                            + "(select ifnull(sum(Play_Bet_Possible_Winning),0) from player_bets where date(Play_Bet_Timestamp) between '" + fromDate + "' and '" + toDate + "' and Play_Bet_Status=202) as 'bets won' "
+                            + "FROM user_accounts where Acc_Trans_Type = 2 and  date(Acc_Date) between '" + fromDate + "' and '" + toDate + "'";
 
         dataQueryBalance = "select ifnull(sum(Acc_Amount),0) from user_accounts where date(Acc_Date) between '" + fromDate + "' and '" + toDate + "' ";
 
@@ -135,10 +137,10 @@ public class MainDashBoardSummaryProcessor {
         dataQueryBetsByStatus = "select Play_Bet_Status,count(Play_Bet_ID) from player_bets where date(Play_Bet_Timestamp) between '" + fromDate + "' and '" + toDate + "' GROUP BY Play_Bet_Status";
         
         //sms,ussd,web,bet
-        dataQueryBetsByChannel="select count(Play_Bet_Slip_ID),(select count(Play_Bet_Slip_ID) from player_bets where date(Play_Bet_Timestamp) between '" + fromDate + "' and '" + toDate + "' and Play_Bet_Channel = 1), "
+        dataQueryBetsByChannel="select count(Play_Bet_Slip_ID),(select count(Play_Bet_Slip_ID) from player_bets where date(Play_Bet_Timestamp) between '" + fromDate + "' and '" + toDate + "' and Play_Bet_Channel = 2), "
                 + "(select count(Play_Bet_Slip_ID) from player_bets where date(Play_Bet_Timestamp) between '" + fromDate + "' and '" + toDate + "' and Play_Bet_Channel = 3), "
                 + "(select count(Play_Bet_Slip_ID) from player_bets where date(Play_Bet_Timestamp) between '" + fromDate + "' and '" + toDate + "' and Play_Bet_Channel = 4) "
-                + "from player_bets where date(Play_Bet_Timestamp) between '" + fromDate + "' and '" + toDate + "' and Play_Bet_Channel = 2 " ;
+                + "from player_bets where date(Play_Bet_Timestamp) between '" + fromDate + "' and '" + toDate + "' and Play_Bet_Channel = 1 " ;
 
         dataQueryBetsByBetType="select Play_Bet_Type, count(Play_Bet_Type) from player_bets  where date(Play_Bet_Timestamp) between '" + fromDate + "' and '" + toDate + "' GROUP BY Play_Bet_Type";
         
@@ -163,13 +165,13 @@ public class MainDashBoardSummaryProcessor {
                             case 0:
                                depositPlayers=rs.getString(1);
                                c2bDepositAccBal=String.valueOf((Math.round(Double.valueOf(rs.getString(2)).intValue())));
-                               betWinDepositAccBal=String.valueOf((Math.round(Double.valueOf(rs.getString(3)).intValue())));
                             break;
                             case 1:
                                withdrawPlayers=rs.getString(1);
                                b2cwithdrawAccBal=String.valueOf((Math.round(Double.valueOf(rs.getString(2)).intValue())));
                                wallet2BetwithdrawAccBal=String.valueOf((Math.round(Double.valueOf(rs.getString(3)).intValue())));
-                               betsWonAccBal=String.valueOf((Math.round(Double.valueOf(rs.getString(4)).intValue())));
+                               wallet2GoldenraceBetwithdrawAccBal=String.valueOf((Math.round(Double.valueOf(rs.getString(4)).intValue())));
+                               betsWonAccBal=String.valueOf((Math.round(Double.valueOf(rs.getString(5)).intValue())));
                             break;
                             case 2:
                                 playersRMBalance=String.valueOf((Math.round(Double.valueOf(rs.getString(1)).intValue())));
@@ -184,9 +186,9 @@ public class MainDashBoardSummaryProcessor {
                 
                 dataObj  = new JSONObject();
                 dataObj.put("C2BDepositsValue", c2bDepositAccBal);
-                dataObj.put("BetWinDepositsValue", betWinDepositAccBal);
                 dataObj.put("B2CWithdrawalValue", b2cwithdrawAccBal.replace("-", ""));
                 dataObj.put("TotalBetStake", wallet2BetwithdrawAccBal.replace("-", ""));
+                dataObj.put("TotalGoldenRaceBetStake", wallet2GoldenraceBetwithdrawAccBal.replace("-", ""));
                 dataObj.put("TotalBetsWonAmount", betsWonAccBal);
                 
                 main.put("Finance_Summary", dataObj);
@@ -234,13 +236,23 @@ public class MainDashBoardSummaryProcessor {
                 GGR = Double.valueOf(totalTurnoverRM) ;
                 double ngr_val =GGR - Double.valueOf(totalWinnings);
                 NGR=ngr_val-(ngr_val*0.15);
-                Profit=Double.valueOf(settledBetsTurnoverRM)-(Double.valueOf(wonBetsTurnoverRM)-Double.valueOf(wonBetsTurnoverRM)*0.15);
+                Profit=Double.valueOf(settledBetsTurnoverRM)-(Double.valueOf(totalWinnings));//-Double.valueOf(wonBetsTurnoverRM)*0.15
                 
                 
                 dataObj.put("GGR", String.valueOf(GGR));
                 dataObj.put("NGR", String.valueOf(NGR));
-                dataObj.put("Profit",String.valueOf(Profit));
-                dataObj.put("Lost", totalWinnings);
+                
+                if((int) Profit < 0)
+                {
+                    dataObj.put("Profit","0");
+                    dataObj.put("Loss", String.valueOf(Profit*-1));
+                }
+                else
+                {
+                    dataObj.put("Profit",String.valueOf(Profit));
+                    dataObj.put("Loss", "0");
+                }
+                
                 
                 main.put("Profit_Summary", dataObj);
                 
@@ -291,7 +303,7 @@ public class MainDashBoardSummaryProcessor {
                         default:
                             break;
                     }
-                    System.out.println("placedBets>>>"+placedBets+">>>"+wonBets+"<<<lostBets>>>"+lostBets+"<<<rejectedBets>>>"+rejectedBets+"<<<cancelledBets>>>"+cancelledBets);
+                    //System.out.println("placedBets>>>"+placedBets+">>>"+wonBets+"<<<lostBets>>>"+lostBets+"<<<rejectedBets>>>"+rejectedBets+"<<<cancelledBets>>>"+cancelledBets);
                     settledBets = String.valueOf(Integer.valueOf(lostBets) + Integer.valueOf(wonBets));
                 }
                 rs.close();

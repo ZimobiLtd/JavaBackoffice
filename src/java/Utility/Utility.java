@@ -168,19 +168,25 @@ public class Utility {
             if(conn !=null)
             {
                 conn.close();
+                System.out.println("<<<DB connection closed>>>");
             }
             if(rs !=null)
             {
                 rs.close();
+                System.out.println("<<<ResultSet closed>>>");
             }
             if(ps !=null)
             {
                 ps.close();
+                System.out.println("<<<PreparedStatement closed>>>");
             }
             if(stmt !=null)
             {
                 stmt.close();
+                System.out.println("<<<Statement closed>>>");
             }
+            
+            
         } catch (SQLException ex) {
             System.out.println("Error doFinally=== "+ex.getMessage());
         } 

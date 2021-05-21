@@ -31,12 +31,23 @@ public class GoldenRaceTransactionsProcessor {
     
     
     
-    public JSONArray getGoldenRaceTransactions(String from,String to)
+    public JSONArray getGoldenRaceTransactions(String from,String to,String mobile)
     {
         ResultSet rs=null;Connection conn=null;Statement stmt=null;PreparedStatement ps=null;
-        String query = "select Acc_Id, Acc_Date, Acc_Mobile, Acc_Amount, Acc_Mpesa_Trans_No, ifnull(Acc_Comment,'Success'),if(Acc_Status =0,'Processed','Pending'),"
+        String query ="";
+        if(mobile.equals("0"))
+        {
+            query = "select Acc_Id, Acc_Date, Acc_Mobile, Acc_Amount, Acc_Mpesa_Trans_No, ifnull(Acc_Comment,'Success'),if(Acc_Status =0,'Processed','Pending'),"
                          + "(CASE when Golden_Race_Trans_Type ='bet' then 'Bet' when Golden_Race_Trans_Type='win' then 'Bet Win'  when Golden_Race_Trans_Type='cancelbet' then 'Cancel Bet'  end) as 'Trans_Type'"
                          + ",ifnull(Acc_Gateway,'Mpesa') from user_accounts where date(Acc_Date) between '"+from+"' and '"+to+"' and Golden_Race_Trans_Type in('bet','win','cancelbet') order by Acc_Date desc ";
+         
+        }
+        else
+        {
+            query = "select Acc_Id, Acc_Date, Acc_Mobile, Acc_Amount, Acc_Mpesa_Trans_No, ifnull(Acc_Comment,'Success'),if(Acc_Status =0,'Processed','Pending'),"
+                         + "(CASE when Golden_Race_Trans_Type ='bet' then 'Bet' when Golden_Race_Trans_Type='win' then 'Bet Win'  when Golden_Race_Trans_Type='cancelbet' then 'Cancel Bet'  end) as 'Trans_Type'"
+                         + ",ifnull(Acc_Gateway,'Mpesa') from user_accounts where date(Acc_Date) between '"+from+"' and '"+to+"' and Acc_Mobile='"+mobile+"' and Golden_Race_Trans_Type in('bet','win','cancelbet') order by Acc_Date desc ";         
+        }
         System.out.println("getGoldenRaceTransactions==="+query);
 
         JSONObject dataObj  = null;
@@ -97,12 +108,24 @@ public class GoldenRaceTransactionsProcessor {
 
 
 
-    public JSONArray filterGoldenRaceTransactions(String from,String to,String transtype,String transstatus)
+    public JSONArray filterGoldenRaceTransactions(String from,String to,String transtype,String transstatus,String mobile)
     {
         ResultSet rs=null;Connection conn=null;Statement stmt=null;PreparedStatement ps=null;
-        String query = "select Acc_Id, Acc_Date, Acc_Mobile, Acc_Amount, Acc_Mpesa_Trans_No, ifnull(Acc_Comment,'Success'),if(Acc_Status =0,'Processed','Pending'),"
+        String query ="";
+        System.out.println("mobile==="+mobile);
+        if(mobile.equals("0"))
+        {
+            query = "select Acc_Id, Acc_Date, Acc_Mobile, Acc_Amount, Acc_Mpesa_Trans_No, ifnull(Acc_Comment,'Success'),if(Acc_Status =0,'Processed','Pending'),"
                          + "(CASE when Golden_Race_Trans_Type ='bet' then 'Bet' when Golden_Race_Trans_Type='win' then 'Bet Win'  when Golden_Race_Trans_Type='cancelbet' then 'Cancel Bet'  end) as 'Trans_Type',ifnull(Acc_Gateway,'Mpesa') "
-                         + "from user_accounts where date(Acc_Date) between '"+from+"' and '"+to+"' and "+transtype+" and "+transstatus+" order by Acc_Date desc ";
+                         + "from user_accounts where date(Acc_Date) between '"+from+"' and '"+to+"' and "+transtype+" and "+transstatus+"  order by Acc_Date desc ";
+        }
+        else
+        {
+            query = "select Acc_Id, Acc_Date, Acc_Mobile, Acc_Amount, Acc_Mpesa_Trans_No, ifnull(Acc_Comment,'Success'),if(Acc_Status =0,'Processed','Pending'),"
+                         + "(CASE when Golden_Race_Trans_Type ='bet' then 'Bet' when Golden_Race_Trans_Type='win' then 'Bet Win'  when Golden_Race_Trans_Type='cancelbet' then 'Cancel Bet'  end) as 'Trans_Type',ifnull(Acc_Gateway,'Mpesa') "
+                         + "from user_accounts where date(Acc_Date) between '"+from+"' and '"+to+"' and "+transtype+" and "+transstatus+" and Acc_Mobile='"+mobile+"' order by Acc_Date desc ";
+        }
+        
         System.out.println("filterGoldenRaceTransactions==="+query);
 
         JSONObject dataObj  = null;

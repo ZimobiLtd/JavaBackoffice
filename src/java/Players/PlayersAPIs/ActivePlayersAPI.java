@@ -68,7 +68,7 @@ public class ActivePlayersAPI extends HttpServlet {
             if(function.equals("getActivePlayers"))
             {
                 String filters=" and Play_Bet_Type in(1,2,3)";
-                String []respo=new Utility().getDatesRange(7);
+                String []respo=new Utility().getDatesRange(-7);
                 String fromdate=respo[0];
                 String todate=respo[1];
                 responseobj=new ActivePlayersProcessor().getActivePlayer(fromdate ,todate,filters);

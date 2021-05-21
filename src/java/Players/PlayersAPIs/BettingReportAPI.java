@@ -89,7 +89,7 @@ public class BettingReportAPI extends HttpServlet {
             {
                 String[]data=maindata.split("#");
                 String player_mobile=data[0];
-                String []respo=new Utility().getDatesRange(0);
+                String []respo=new Utility().getDatesRange(-30);
                 String fromdate=respo[0];
                 String todate=respo[1]; 
 
@@ -107,7 +107,7 @@ public class BettingReportAPI extends HttpServlet {
                 String mobile=maindata;
                 if(mobile.startsWith("07") || mobile.startsWith("01"))
                 {
-                   mobile="254"+mobile.substring(1);
+                   mobile="254"+mobile.substring(3);
                 }
                 responseobj=new BettingReportProcessor().getPlayerBettingReportByMobile(mobile);
             }
@@ -141,7 +141,7 @@ public class BettingReportAPI extends HttpServlet {
                 String[]data=maindata.split("#");
                 String player_mobile=data[0];
 
-                String []respo=new Utility().getDatesRange(0);
+                String []respo=new Utility().getDatesRange(-30);
                 String fromdate=respo[0];
                 String todate=respo[1];
 

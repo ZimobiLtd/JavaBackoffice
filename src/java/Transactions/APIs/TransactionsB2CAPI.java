@@ -87,21 +87,14 @@ public class TransactionsB2CAPI extends HttpServlet {
                 String from=data[0];
                 String to=data[1];
                 String mobile=data[2];
+                String mpesaCode=data[3].trim().toUpperCase();
 
-                if(mobile.equals("0"))
+                if(mobile.startsWith("07") || mobile.startsWith("01"))
                 {
-
-                    responseobj=new TransactionsB2CProcessor().getTransactionsB2C(from,to);
+                   mobile="254"+mobile.substring(1);
                 }
-                else
-                {
-                    if(mobile.startsWith("07") || mobile.startsWith("01"))
-                    {
-                       mobile="254"+mobile.substring(1);
-                    }
-                    responseobj=new TransactionsB2CProcessor().filterTransactionsB2C(from,to,mobile);
-                }
-
+                
+                responseobj=new TransactionsB2CProcessor().filterTransactionsB2C(from,to,mobile,mpesaCode);
             }
 
         }catch (IOException | JSONException ex) { ex.getMessage();}

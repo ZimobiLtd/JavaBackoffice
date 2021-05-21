@@ -6,25 +6,19 @@ package Transactions.APIs;
  * and open the template in the editor.
  */
 
-import Database.DBManager;
 import Transactions.TransactionsProcessor.TransactionsC2BProcessor;
 import Utility.Utility;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.sql.Connection;
-import java.sql.ResultSet;
-import java.sql.Statement;
 import java.text.SimpleDateFormat;
-import java.time.LocalDate;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import org.json.JSONObject;
-import java.util.Base64; 
-import java.util.Date;
 import org.json.JSONArray;
 import org.json.JSONException;
 
@@ -86,19 +80,14 @@ public class TransactionsC2BAPI extends HttpServlet {
                 String from=data[0];
                 String to=data[1];
                 String mobile=data[2];
+                String mpesaCode=data[3].trim().toUpperCase();
 
-                if(mobile.equals("0"))
+                if(mobile.startsWith("07") || mobile.startsWith("01"))
                 {
-                    responseobj=new TransactionsC2BProcessor().getTransactionsC2B(from,to);
+                   mobile="254"+mobile.substring(1);
                 }
-                else
-                {
-                    if(mobile.startsWith("07") || mobile.startsWith("01"))
-                    {
-                       mobile="254"+mobile.substring(1);
-                    }
-                    responseobj=new TransactionsC2BProcessor().filterTransactionsC2B(from,to,mobile);
-                }
+                responseobj=new TransactionsC2BProcessor().filterTransactionsC2B(from,to,mobile,mpesaCode);
+                
             }
 
         }catch (IOException | JSONException ex) { ex.getMessage();}

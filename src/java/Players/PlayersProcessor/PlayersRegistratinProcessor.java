@@ -254,7 +254,7 @@ public class PlayersRegistratinProcessor {
             dataQuery= " update player set `status` =1 where msisdn = '"+mobile+"' ";
             conn = new DBManager().getDBConnection();
             stmt = conn.createStatement();
-            rs = stmt.executeQuery(dataQuery);
+            stmt.executeUpdate(dataQuery);
 
             dataObj  = new JSONObject();
             dataObj.put("message", "Player deactivated");
@@ -281,13 +281,12 @@ public class PlayersRegistratinProcessor {
         String dataQuery = "";String Query="";
         JSONObject dataObj  = new JSONObject();
         JSONArray dataArray = new JSONArray();
+        dataQuery= " update player set  `status` =0 where msisdn = '"+mobile+"' ";
 
         try
         {
             conn = new DBManager().getDBConnection();
             stmt = conn.createStatement();
-
-            dataQuery= " update player set  `status` =0 where msisdn = '"+mobile+"' ";
             stmt.executeUpdate(dataQuery);
 
 

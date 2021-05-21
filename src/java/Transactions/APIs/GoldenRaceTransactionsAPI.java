@@ -77,7 +77,7 @@ public class GoldenRaceTransactionsAPI extends HttpServlet {
                  String []respo=new Utility().getDatesRange(-2);
                  String fromdate=respo[0];
                  String todate=respo[1];
-                 responseobj=new GoldenRaceTransactionsProcessor().getGoldenRaceTransactions(fromdate,todate);
+                 responseobj=new GoldenRaceTransactionsProcessor().getGoldenRaceTransactions(fromdate,todate,"0");
             }
 
 
@@ -87,7 +87,13 @@ public class GoldenRaceTransactionsAPI extends HttpServlet {
                 String from=data[0];
                 String to=data[1];
                 String transtype=data[2];
-                String transstatus=data[3];  
+                String transstatus=data[3];
+                String player_mobile=data[4]; 
+                
+                if(player_mobile.startsWith("07") || player_mobile.startsWith("01"))
+                {
+                   player_mobile="254"+player_mobile.substring(1);
+                }
 
                 String trans_type="",trans_status="";
                 //Acc_Trans_Type =1 then 'Deposit' when Acc_Trans_Type=2 then 'User Withdrawal'  when Acc_Trans_Type=8 then 'Withdrawal Charge' 
@@ -132,25 +138,25 @@ public class GoldenRaceTransactionsAPI extends HttpServlet {
 
                 if(trans_type.equals("All") && trans_status.equals("All"))
                 {
-                    responseobj=new GoldenRaceTransactionsProcessor().getGoldenRaceTransactions(from,to);
+                    responseobj=new GoldenRaceTransactionsProcessor().getGoldenRaceTransactions(from,to,player_mobile);
                 }
                 else if(!trans_type.equals("All") && trans_status.equals("All"))
                 {
                     trans_type="Golden_Race_Trans_Type="+trans_type;
                     trans_status="Acc_Status in (0,1,2)";
-                    responseobj=new GoldenRaceTransactionsProcessor().filterGoldenRaceTransactions(from,to,trans_type,trans_status);
+                    responseobj=new GoldenRaceTransactionsProcessor().filterGoldenRaceTransactions(from,to,trans_type,trans_status,player_mobile);
                 }
                 else if(trans_type.equals("All") && !trans_status.equals("All"))
                 {
                     trans_type="Golden_Race_Trans_Type in('bet','win','cancelbet')";
                     trans_status="Acc_Status ="+trans_status;
-                    responseobj=new GoldenRaceTransactionsProcessor().filterGoldenRaceTransactions(from,to,trans_type,trans_status);
+                    responseobj=new GoldenRaceTransactionsProcessor().filterGoldenRaceTransactions(from,to,trans_type,trans_status,player_mobile);
                 }
                 else
                 {
                     trans_type="Golden_Race_Trans_Type ="+trans_type;
                     trans_status="Acc_Status ="+trans_status;
-                    responseobj=new GoldenRaceTransactionsProcessor().filterGoldenRaceTransactions(from,to,trans_type,trans_status);
+                    responseobj=new GoldenRaceTransactionsProcessor().filterGoldenRaceTransactions(from,to,trans_type,trans_status,player_mobile);
                 }
 
             }

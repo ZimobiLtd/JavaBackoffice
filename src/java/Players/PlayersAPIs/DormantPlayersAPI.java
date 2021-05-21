@@ -59,7 +59,7 @@ public class DormantPlayersAPI extends HttpServlet {
                 jb.append(line);
             }
 
-            System.out.println("DormantPlayer==="+jb.toString());
+            System.out.println("getDormantPlayersData==="+jb.toString());
             jsonobj = new JSONObject(jb.toString());
             function=jsonobj.getString("function");
             maindata=jsonobj.getString("data");

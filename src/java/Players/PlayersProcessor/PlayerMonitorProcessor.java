@@ -49,8 +49,12 @@ public class PlayerMonitorProcessor {
 
             while (rs.next())
             {
-                String AccBalance = rs.getString(1);
+                String AccBalance = rs.getString(1).replace("-", "");
                 String mobile = "0"+rs.getString(2).substring(3);
+                /*if(mobile.equals("0112836056"))
+                {
+                   AccBalance=String.valueOf( Integer.valueOf(rs.getString(1).replace("-", ""))+5);
+                }*/
                 String regdate = sdf.format(rs.getTimestamp(3));
                 String regChannel = rs.getString(4);
                 String AccStatus = rs.getString(5);

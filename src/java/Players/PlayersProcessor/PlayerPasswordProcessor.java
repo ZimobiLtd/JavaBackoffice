@@ -36,8 +36,7 @@ public class PlayerPasswordProcessor {
         {
             conn = new DBManager().getDBConnection();
             stmt = conn.createStatement();
-            rs = stmt.executeQuery(dataQuery);
-
+            
             int i = stmt.executeUpdate(dataQuery);
             if(i>0)
             {
@@ -47,7 +46,7 @@ public class PlayerPasswordProcessor {
         }
         catch (SQLException ex) 
         {
-            System.out.println("Error monitorAccounts=== "+ex.getMessage());
+            System.out.println("Error updatePlayerPassword=== "+ex.getMessage());
         }
         finally
         {

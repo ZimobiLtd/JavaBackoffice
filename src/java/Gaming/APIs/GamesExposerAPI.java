@@ -6,26 +6,19 @@ package Gaming.APIs;
  * and open the template in the editor.
  */
 
-import Database.DBManager;
-import Gaming.Processor.PlayerLiabilityProcessor;
+import Gaming.Processor.GamesExposer;
 import Utility.Utility;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.sql.Connection;
-import java.sql.ResultSet;
-import java.sql.Statement;
-import java.text.DateFormat;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import org.json.JSONObject;
-import java.util.Base64; 
-import java.util.Date;
 import org.json.JSONArray;
 import org.json.JSONException;
 
@@ -33,8 +26,8 @@ import org.json.JSONException;
  *
  * @author jac
  */
-@WebServlet(urlPatterns = {"/GamingPlayerLiability"})
-public class PlayersLiabilityAPI extends HttpServlet {
+@WebServlet(urlPatterns = {"/GamesExposer"})
+public class GamesExposerAPI extends HttpServlet {
 
     /**
      * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
@@ -77,7 +70,7 @@ public class PlayersLiabilityAPI extends HttpServlet {
                 String []respo=new Utility().getDatesRange(-7);
                 String fromdate=respo[0];
                 String todate=respo[1];
-                responseobj=new PlayerLiabilityProcessor().getPlayersLiability(fromdate,todate);
+                responseobj=new GamesExposer().getPlayersLiability(fromdate,todate);
             }
 
 
@@ -86,7 +79,7 @@ public class PlayersLiabilityAPI extends HttpServlet {
                 String[]data=maindata.split("#");
                 String fromdate=data[0];
                 String todate=data[1];
-                responseobj=new PlayerLiabilityProcessor().getPlayersLiability(fromdate,todate);
+                responseobj=new GamesExposer().getPlayersLiability(fromdate,todate);
             }
 
         }catch (IOException | JSONException ex) { ex.getMessage();}

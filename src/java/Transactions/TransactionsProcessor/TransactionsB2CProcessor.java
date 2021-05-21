@@ -99,12 +99,27 @@ public class TransactionsB2CProcessor {
 
 
 
-    public JSONArray filterTransactionsB2C(String from,String to,String mobile)
+    public JSONArray filterTransactionsB2C(String from,String to,String mobile,String mpesaCode)
     {
         ResultSet rs=null;Connection conn=null;Statement stmt=null;PreparedStatement ps=null;
-        String query = "select Trans_Id, Trans_Timestamp, Trans_Mobile, Trans_Amount, Trans_Mpesa_No,Trans_Disburse_Ref_No,if(Trans_Disburse_Status=1,'Successful','Failed') from mpesa_out "
-                + "where date(Trans_Timestamp) between '"+from+"' and '"+to+"' and Trans_Mobile='"+mobile+"' order by Trans_Timestamp desc ";
-
+        String query = "";
+        if(!mobile.equals("0") && mpesaCode.equals("0"))
+        {
+           query = "select Trans_Id, Trans_Timestamp, Trans_Mobile, Trans_Amount, Trans_Mpesa_No,Trans_Disburse_Ref_No,if(Trans_Disburse_Status=1,'Successful','Failed') from mpesa_out where date(Trans_Timestamp) between '"+from+"' and '"+to+"' and Trans_Mobile='"+mobile+"' order by Trans_Timestamp desc ";
+        }
+        else if(mobile.equals("0") && !mpesaCode.equals("0"))
+        {
+           query = "select Trans_Id, Trans_Timestamp, Trans_Mobile, Trans_Amount, Trans_Mpesa_No,Trans_Disburse_Ref_No,if(Trans_Disburse_Status=1,'Successful','Failed') from mpesa_out where date(Trans_Timestamp) between '"+from+"' and '"+to+"' and Trans_Mpesa_No='"+mpesaCode+"' order by Trans_Timestamp desc ";
+        }
+        else if(!mobile.equals("0") && !mpesaCode.equals("0"))
+        {
+           query = "select Trans_Id, Trans_Timestamp, Trans_Mobile, Trans_Amount, Trans_Mpesa_No,Trans_Disburse_Ref_No,if(Trans_Disburse_Status=1,'Successful','Failed') from mpesa_out where date(Trans_Timestamp) between '"+from+"' and '"+to+"' and Trans_Mobile='"+mobile+"' and Trans_Mpesa_No='"+mpesaCode+"' order by Trans_Timestamp desc ";
+        }
+        else if(mobile.equals("0") && mpesaCode.equals("0"))
+        {
+           query = "select Trans_Id, Trans_Timestamp, Trans_Mobile, Trans_Amount, Trans_Mpesa_No,Trans_Disburse_Ref_No,if(Trans_Disburse_Status=1,'Successful','Failed') from mpesa_out where date(Trans_Timestamp) between '"+from+"' and '"+to+"' order by Trans_Timestamp desc ";
+        }
+        
         System.out.println("filterTransactionsB2C==="+query);
 
         JSONObject dataObj  = null;

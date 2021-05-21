@@ -92,10 +92,26 @@ public class TransactionsC2BProcessor {
 
 
 
-    public JSONArray filterTransactionsC2B(String from,String to,String mobile)
+    public JSONArray filterTransactionsC2B(String from,String to,String mobile,String mpesaCode)
     {
         ResultSet rs=null;Connection conn=null;Statement stmt=null;PreparedStatement ps=null;
-        String query = "select Trans_Id, Trans_Timestamp, Trans_Mobile, Trans_Amount, Trans_Mpesa_No,Trans_Acc_No from transactions_c2b where date(Trans_Timestamp) between '"+from+"' and '"+to+"' and Trans_Mobile='"+mobile+"' order by Trans_Timestamp desc ";
+        String query ="";
+        if(!mobile.equals("0") && mpesaCode.equals("0"))
+        {
+           query = "select Trans_Id, Trans_Timestamp, Trans_Mobile, Trans_Amount, Trans_Mpesa_No,Trans_Acc_No from transactions_c2b where date(Trans_Timestamp) between '"+from+"' and '"+to+"' and Trans_Mobile='"+mobile+"' order by Trans_Timestamp desc ";
+        }
+        else if(mobile.equals("0") && !mpesaCode.equals("0"))
+        {
+           query = "select Trans_Id, Trans_Timestamp, Trans_Mobile, Trans_Amount, Trans_Mpesa_No,Trans_Acc_No from transactions_c2b where date(Trans_Timestamp) between '"+from+"' and '"+to+"' and Trans_Mpesa_No='"+mpesaCode+"' order by Trans_Timestamp desc ";
+        }
+        else if(!mobile.equals("0") && !mpesaCode.equals("0"))
+        {
+           query = "select Trans_Id, Trans_Timestamp, Trans_Mobile, Trans_Amount, Trans_Mpesa_No,Trans_Acc_No from transactions_c2b where date(Trans_Timestamp) between '"+from+"' and '"+to+"' and Trans_Mobile='"+mobile+"' and Trans_Mpesa_No='"+mpesaCode+"' order by Trans_Timestamp desc ";
+        }
+        else if(mobile.equals("0") && mpesaCode.equals("0"))
+        {
+           query = "select Trans_Id, Trans_Timestamp, Trans_Mobile, Trans_Amount, Trans_Mpesa_No,Trans_Acc_No from transactions_c2b where date(Trans_Timestamp) between '"+from+"' and '"+to+"' order by Trans_Timestamp desc ";
+        }
         System.out.println("filterTransactionsC2B==="+query);
 
         JSONObject dataObj  = null;

@@ -69,8 +69,8 @@ public class GamesHighlightAPI extends HttpServlet {
                    if(function.equals("getGamesHighlight"))
                    {
                        String []respo=new Utility().getDatesRange(+2);
-                       String fromdate=respo[0];
-                       String todate=respo[1];
+                       String todate=respo[0];
+                       String fromdate=respo[1];
                        responseobj=new GamesHighlightsProcessor().getgamesHighlits(fromdate,todate);
                    }
                    

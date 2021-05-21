@@ -123,7 +123,9 @@ public class FinanceDashboardSummaryProcessor {
         dataQueryWithdrawals = "SELECT  count(Acc_ID),ifnull(sum(Acc_Amount),0) FROM user_accounts "
                + "WHERE Acc_Trans_Type = 2 and  date(Acc_Date) between '" + fromDate + "' and '" + toDate + "'";
 
-        dataQueryBalance = "select ifnull(sum(Acc_Amount),0) from user_accounts where date(Acc_Date) between '" + fromDate + "' and '" + toDate + "' ";
+        dataQueryBalance = "select  sum(Acc_Amount),(select sum(Acc_Amount) from user_accounts where  Acc_Trans_Type in (1,3,9)   and date(Acc_Date)  between '" + fromDate + "' and '" + toDate + "' ) as 'Deposits' ,"
+                + "( select sum(Acc_Amount) from user_accounts where  Acc_Trans_Type in (4,2,8)   and date(Acc_Date)  between '" + fromDate + "' and '" + toDate + "' )as 'Withdrawals' "
+                + "from user_accounts  where  date(Acc_Date) between '" + fromDate + "' and '" + toDate + "' ";
 
         //bonusbalancesum = "select count(id),ifnull(sum(Bonus_Balance),0) from player where Bonus_Balance > 0 and date(registration_date) between '" + fromDate + "' and '" + toDate + "' ";
 

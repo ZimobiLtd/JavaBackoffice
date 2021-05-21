@@ -75,7 +75,7 @@ public class PlayersRegistrationAPI extends HttpServlet {
 
             if(function.equals("getPlayerRegistrations"))
             {
-                 String []respo=new Utility().getDatesRange(7);
+                 String []respo=new Utility().getDatesRange(-7);
                  String fromdate=respo[0];
                  String todate=respo[1];
                  responseobj=new PlayersRegistratinProcessor().getPlayerRegistrations(fromdate,todate);

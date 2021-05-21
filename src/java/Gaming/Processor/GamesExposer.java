@@ -6,7 +6,7 @@
 package Gaming.Processor;
 
 import Database.DBManager;
-import static Gaming.APIs.PlayersLiabilityAPI.sdf;
+import static Gaming.APIs.GamesExposerAPI.sdf;
 import Utility.Utility;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -21,10 +21,10 @@ import org.json.JSONObject;
  *
  * @author jac
  */
-public class PlayerLiabilityProcessor {
+public class GamesExposer {
     
     
-    public PlayerLiabilityProcessor()
+    public GamesExposer()
     {
         
     }
@@ -39,8 +39,8 @@ public class PlayerLiabilityProcessor {
         try
         {
             dataQuery = "select B.Mul_Match_ID,B.Mul_EventTime, B.Mul_Sportname, B.Mul_Tournament, B.Mul_Event, " +
-                        "(select Mar_Name from Active_markets where Mar_ID = B.Mul_Market_ID),B.Mul_Prediction, " +
-                        "count(Mul_ID),sum(Mul_Bet_Odd * -Play_Bet_Stake) from player_bets A inner join multibets B on A.Play_Bet_Group_ID = B.Mul_Group_ID " +
+                        "(select Mar_Name from Active_markets where Mar_ID = B.Mul_Market_ID group by Mar_ID),B.Mul_Prediction, " +
+                        "count(Mul_ID),sum(Play_Bet_Possible_Winning) from player_bets A inner join multibets B on A.Play_Bet_Group_ID = B.Mul_Group_ID " +
                         "and A.Play_Bet_Status = 201  where B.Mul_Market_ID <> 0 and B.Mul_Match_ID <> 0 and date(A.Play_Bet_Timestamp) " +
                         "between '"+fromDate+"' and '"+toDate+"' and Mul_EventTime is not null group by B.Mul_Prediction, B.Mul_Match_ID order by Mul_EventTime   desc ";
             System.out.println("getGamingPlayerLiability==="+dataQuery);
@@ -71,7 +71,7 @@ public class PlayerLiabilityProcessor {
                 dataObj.put("Market", market);
                 dataObj.put("Outcome", outcome);
                 dataObj.put("Betscount", betscount);
-                dataObj.put("Exposure", exposure);
+                dataObj.put("Exposure", String.format("%.2f", Double.valueOf(exposure)));
 
                 dataArray.put(dataObj);
             }
