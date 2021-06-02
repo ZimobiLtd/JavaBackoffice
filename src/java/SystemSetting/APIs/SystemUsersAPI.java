@@ -112,10 +112,10 @@ public class SystemUsersAPI extends HttpServlet {
                         {
                             public void run()
                             {
-                                String txt="Welcome to Starbet Back Office: Username:"+username+" Password:"+password+"\n\n"+
-                                 "Regards,\n" +
+                                String text="Welcome to Starbet Back Office: Username:"+username+" Password:"+password+"<br><br>"+
+                                 "Regards,<br>" +
                                  "StartBet Team";
-                                new EmailSender().sendEmail(txt,emailaddress, "User Account");
+                                new EmailSender().postEmail(emailaddress,text);
                             }
                         };
                         new Thread(myrunnable).start();
@@ -236,9 +236,9 @@ public class SystemUsersAPI extends HttpServlet {
                 if(email_status==1)
                 {
                      String code=new Utility().generateCode(7);
-                     String link="We received a request to reset the password on your StarBet Back Office Account.\nKindly click on the link below.\n\n"
-                             + "http://167.86.68.102:7074/resetPass/"+code+"\n\n" +
-                              "Regards,\n" +
+                     String text="We received a request to reset the password on your StarBet Back Office Account.<br>Kindly click on the link below.<br><br>"
+                             + "http://167.86.68.102:7074/resetPass/"+code+"<br><br>" +
+                              "Regards,<br>" +
                               "StartBet Team";
                      int status=new SystemUsersProcessor().saveCode(email, code);
 
@@ -263,7 +263,7 @@ public class SystemUsersAPI extends HttpServlet {
                       {
                           public void run()
                           {
-                              new EmailSender().sendEmail(link,email, "Reset Password Link");
+                              new EmailSender().postEmail(email,text);
                           }
                       };
                       new Thread(myrunnable).start();
@@ -336,10 +336,8 @@ public class SystemUsersAPI extends HttpServlet {
                     {
                         public void run()
                         {
-                            String txt="Hi,\nYour starbet password was changed.New password is: "+new_pass+"\n\n"+
-                             "Regards,\n" +
-                             "StartBet Team";
-                            new EmailSender().sendEmail(txt,email, "Reset Password");
+                            String text="Hi,<br>Your starbet password was changed.New password is: "+new_pass+".Thanks,<br>StarBet Team.";
+                            new EmailSender().postEmail(email,text);
                         }
                     };
                     new Thread(myrunnable).start();
@@ -382,10 +380,8 @@ public class SystemUsersAPI extends HttpServlet {
                         {
                             public void run()
                             {
-                                String txt="Hi,\nYour starbet password was changed.New password is: "+new_pass+"\n\n"+
-                                 "Regards,\n" +
-                                 "StartBet Team";
-                                new EmailSender().sendEmail(txt,email, "Reset Password");
+                                String text="Hi,<br>Your starbet password was changed.New password is: "+new_pass+".<br><br>Thanks,<br>StarBet Team.";
+                                new EmailSender().postEmail(email,text);
                             }
                         };
                         new Thread(myrunnable).start();

@@ -211,4 +211,9 @@ public class Utility {
         }
     return builder.toString();
     }
+    
+    public static void main(String []args)
+    {
+        new Utility().sendSMS("254706006083","test");
+    }
 }

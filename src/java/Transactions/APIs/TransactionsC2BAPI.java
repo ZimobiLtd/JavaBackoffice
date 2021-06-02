@@ -67,7 +67,7 @@ public class TransactionsC2BAPI extends HttpServlet {
 
             if(function.equals("getTransactionsC2B"))
             {
-                String []respo=new Utility().getDatesRange(-2);
+                String []respo=new Utility().getDatesRange(-1);
                 String fromdate=respo[0];
                 String todate=respo[1];
                 responseobj=new TransactionsC2BProcessor().getTransactionsC2B(fromdate ,todate);

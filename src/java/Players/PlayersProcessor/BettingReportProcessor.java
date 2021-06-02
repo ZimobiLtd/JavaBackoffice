@@ -652,16 +652,17 @@ public class BettingReportProcessor {
 
             JSONObject dataObj1  = new JSONObject();
             JSONArray dataArray1 = new JSONArray();
-            String query1=" select ifnull(sum(Acc_Amount),0) ,date(registration_date) ,(select ifnull(sum(Acc_Amount),0) from user_accounts where Acc_Trans_Type=4  and Acc_Mobile='"+mobile+"' ) as 'total betstake' ," +
+            String query1=" select ifnull(sum(Acc_Amount),0),ifnull(sum(Acc_Bonus_Amount),0),date(registration_date) ,(select ifnull(sum(Acc_Amount),0) from user_accounts where Acc_Trans_Type=4  and Acc_Mobile='"+mobile+"' ) as 'total betstake' ," +
                           "(select ifnull(sum(Acc_Amount),0) from user_accounts where Acc_Mpesa_Trans_No like 'BET_WIN%' and Acc_Trans_Type=3 and Acc_Mobile='"+mobile+"' ) as 'total win' from user_accounts,player where Acc_Mobile='"+mobile+"' and msisdn='"+mobile+"' ";// group by Acc_Mobile
             System.out.println("getPlayerAcc==="+query1);
             rs = stmt.executeQuery(query1);
             while (rs.next())
             {
                 dataObj1.put("Balance", rs.getString(1));
-                dataObj1.put("RegistrationDate", rs.getString(2));
-                dataObj1.put("TotalBetStake", rs.getString(3).replace("-", "") );//String.format("%.2f", Double.valueOf(rs.getString(2)))
-                dataObj1.put("TotalWinnings", rs.getString(4) );//String.format("%.2f", Double.valueOf(rs.getString(3)))
+                dataObj1.put("BonusBalance", rs.getString(2));
+                dataObj1.put("RegistrationDate", rs.getString(3));
+                dataObj1.put("TotalBetStake", rs.getString(4).replace("-", "") );//String.format("%.2f", Double.valueOf(rs.getString(2)))
+                dataObj1.put("TotalWinnings", rs.getString(5));//String.format("%.2f", Double.valueOf(rs.getString(3)))
 
                 dataArray1.put(dataObj1);
 

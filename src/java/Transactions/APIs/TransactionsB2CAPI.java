@@ -74,7 +74,7 @@ public class TransactionsB2CAPI extends HttpServlet {
 
             if(function.equals("getTransactionsB2C"))
             {
-                String []respo=new Utility().getDatesRange(-2);
+                String []respo=new Utility().getDatesRange(-1);
                 String fromdate=respo[0];
                 String todate=respo[1];
                 responseobj=new TransactionsB2CProcessor().getTransactionsB2C(fromdate ,todate);

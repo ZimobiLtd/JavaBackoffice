@@ -73,7 +73,7 @@ public class TransactionsAPI extends HttpServlet {
 
             if(function.equals("getTransactions"))
             {
-                String []respo=new Utility().getDatesRange(-2);
+                String []respo=new Utility().getDatesRange(-1);
                 String fromdate=respo[0];
                 String todate=respo[1];
                 responseobj=new TransactionsProcessor().getTransactions(fromdate ,todate);

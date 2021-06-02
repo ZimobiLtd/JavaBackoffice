@@ -496,7 +496,6 @@ public class SystemUsersProcessor {
         {
             conn = new DBManager().getDBConnection();
             stmt = conn.createStatement();
-            rs = stmt.executeQuery(query);
             if(taskType ==0 )
             {
                 query = "UPDATE users set  password='"+newpass+"',userstatus=2 where emailaddress='"+email+"'  ";

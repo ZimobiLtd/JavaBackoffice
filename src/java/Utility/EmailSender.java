@@ -10,7 +10,13 @@ package Utility;
  *
  * @author jac
  */
-import java.util.Date;
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.OutputStream;
+import java.net.HttpURLConnection;
+import java.net.URL;
 import javax.mail.BodyPart;
 import javax.mail.Message;
 import javax.mail.MessagingException;
@@ -34,61 +40,21 @@ public class EmailSender {
     }
     
     
-    /*public void sendEmail(String text,String to, String subject) 
-    {
-        String mailSmtpHost ="smtp.zoho.com";
-        String userName="password@starbet.co.ke";
-        String password="St@rbet1234";
-        String mailFrom ="password@starbet.co.ke";
-        try {
-        Properties properties = new Properties();
-        properties.put("mail.smtp.host", mailSmtpHost);
-        properties.put("mail.smtp.auth", "true");
-        properties.put("mail.smtp.port", "587");
-        //properties.put("mail.smtp.ssl.enable", "true");
-        properties.put("mail.smtp.starttls.enable", "true");
-        Session emailSession = Session.getInstance(properties,
-        new javax.mail.Authenticator() {
-        protected PasswordAuthentication getPasswordAuthentication() 
-        {
-            return new PasswordAuthentication(userName, password);
-         }
-       });
-
-        Message emailMessage = new MimeMessage(emailSession);
-        emailMessage.addRecipient(Message.RecipientType.TO, new InternetAddress(to));
-        //emailMessage.addRecipient(Message.RecipientType.CC, new InternetAddress(cc));
-        emailMessage.setFrom(new InternetAddress(mailFrom));
-        emailMessage.setSubject(subject);
-        emailMessage.setText(text);
-
-        //emailSession.setDebug(true);
-
-        Transport.send(emailMessage);
-
-        System.out.println("==="+subject+" email sent===");
-
-        } catch (AddressException e) {
-                e.printStackTrace();
-        } catch (MessagingException e) {
-                e.printStackTrace();
-        }
-    }*/
-    
-    /*public void sendEmail(String text,String to, String subject) 
+    public void sendEmail(String text,String to, String subject) 
     {
         String mailSmtpHost = "smtp.zoho.com";
-        String userName="password@starbet.co.ke";
+        String userName="password@starbet.com";
         String password="St@rbet1234";
-        String mailFrom = "password@starbet.co.ke";
+        String mailFrom = "password@starbet.com";
         try {
         Properties properties = new Properties();
         properties.put("mail.smtp.host", mailSmtpHost);
         properties.put("mail.smtp.auth", "true");
-        properties.put("mail.smtp.port", "587");
-        properties.put("mail.smtp.starttls.enable", "true");
+        properties.put("mail.smtp.port", "465");
+        properties.put("mail.smtp.startssl.enable", "true");
         Session emailSession = Session.getInstance(properties,
         new javax.mail.Authenticator() {
+        @Override
         protected PasswordAuthentication getPasswordAuthentication() 
         {
             return new PasswordAuthentication(userName, password);
@@ -106,64 +72,11 @@ public class EmailSender {
 
         Transport.send(emailMessage);
 
-        System.out.println("==="+subject+" email sent===");
 
         } catch (AddressException e) {
                 e.printStackTrace();
         } catch (MessagingException e) {
                 e.printStackTrace();
-        }
-    }*/
-    
-    
-    
-     public void sendEmail(String text,String mailTo, String subject) 
-     {
-        final String GMAIL_HOST = "smtp.gmail.com";
-        final String ZOHO_HOST = "starbet.co.ke";
-        final String TLS_PORT = "587";
-
-        final String SENDER_EMAIL = "password@starbet.co.ke";
-        final String SENDER_USERNAME ="password@starbet.co.ke";
-        final String SENDER_PASSWORD = "St@rbet1234";
-
-        // protocol properties
-        Properties props = System.getProperties();
-        props.setProperty("mail.smtps.host", ZOHO_HOST); // change to GMAIL_HOST for gmail for gmail
-        props.setProperty("mail.smtp.port", TLS_PORT);
-        props.setProperty("mail.smtp.starttls.enable", "true");
-        /*props.setProperty("mail.smtp.socketFactory.class", "javax.net.ssl.SSLSocketFactory");
-        props.setProperty("mail.smtp.socketFactory.port", "25");*/
-        props.setProperty("mail.smtps.auth", "true");
-        // close connection upon quit being sent
-        props.put("mail.smtps.quitwait", "false");
-
-        Session session = Session.getInstance(props, null);
-
-        props.setProperty("mail.smtp.socketFactory.fallback", "false");
-        try {
-            // create the message
-            final MimeMessage msg = new MimeMessage(session);
-
-            // set recipients and content
-            msg.setFrom(new InternetAddress(SENDER_EMAIL));
-            msg.setRecipients(Message.RecipientType.TO, InternetAddress.parse(mailTo, false));
-            msg.setSubject(subject);
-            //msg.setText(text);
-            msg.setText("Message Sent via JavaMail", "utf-8", "html");
-            msg.setSentDate(new Date());
-
-            // this means you do not need socketFactory properties
-            Transport transport = session.getTransport("smtps");
-
-            // send the mail
-            transport.connect(ZOHO_HOST, SENDER_USERNAME, SENDER_PASSWORD);
-            transport.sendMessage(msg, msg.getAllRecipients());
-            transport.close();
-
-        } catch (MessagingException ex)
-        {
-            System.out.println("send mail==="+ex.getMessage());
         }
     }
     
@@ -226,12 +139,66 @@ public class EmailSender {
     } 
     
     
+    
+    public void postEmail(String receiverEmail, String text)
+    {
+        String respo="";
+        String url="http://62.171.191.3:7076/send-email";
+        String postParams = "{\"email\": \""+receiverEmail+"\", \"message\": \""+text+"\"}";
+        System.out.println(postParams);
+        StringBuffer response = null;
+
+        try
+        {
+            String charset = "UTF-8";
+            HttpURLConnection connection = (HttpURLConnection)new URL(url).openConnection();
+
+            connection.setDoOutput(true);
+            connection.setRequestProperty("cache-control", "no-cache");
+            connection.setRequestProperty("Accept-Charset", "UTF-8");
+            connection.setRequestProperty("Content-type", "application/json");
+            //connection.setRequestProperty("Authorization", "Bearer ukdpyoliwya4lfch");
+            //connection.setRequestProperty("Content-Length", "" + Integer.toString(data.getBytes().length));
+
+            OutputStream output = connection.getOutputStream();
+            output.write(postParams.getBytes("UTF-8"));
+            output.close();
+
+
+            int responseCode=connection.getResponseCode();
+            if(responseCode==200)
+            {
+                InputStream inputStream = connection.getInputStream();
+                BufferedReader responseReader = new BufferedReader(new InputStreamReader(inputStream, "UTF-8"));
+
+                response = new StringBuffer();
+                String inputLine;
+                while ((inputLine = responseReader.readLine()) != null)
+                {
+                  response.append(inputLine);
+                }
+                System.out.println("Email Sent>>>" + response.toString());
+                respo=response.toString();
+                responseReader.close();
+            }
+            else
+            {
+                respo="Email Failed>>>";
+            }
+        }
+        catch (IOException ex)
+        {
+            System.out.println("Error postEmail=== "+ex.getMessage());
+        }
+    }
+    
+    
 
  
   public static void main(String[] args) 
   {
       
-    new EmailSender().sendEmail("Hello coder","jacmgitau@gmail.com", "Test") ;
+       new EmailSender().sendEmail("Hello coder","jacmgitau@gmail.com", "Test") ;
       
   }
     

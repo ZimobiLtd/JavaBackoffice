@@ -6,25 +6,19 @@ package Players.PlayersAPIs;
  * and open the template in the editor.
  */
 
-import Database.DBManager;
 import Players.PlayersProcessor.PlayersRegistratinProcessor;
 import Utility.Utility;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.sql.Connection;
-import java.sql.ResultSet;
-import java.sql.Statement;
 import java.text.SimpleDateFormat;
-import java.time.ZonedDateTime;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import org.json.JSONObject;
-import java.util.Base64; 
-import java.util.Date;
 import org.json.JSONArray;
 import org.json.JSONException;
 
@@ -60,7 +54,6 @@ public class PlayersRegistrationAPI extends HttpServlet {
 
         try 
         {
-
             BufferedReader reader = req.getReader();
             while ((line = reader.readLine()) != null)
             {
@@ -75,10 +68,10 @@ public class PlayersRegistrationAPI extends HttpServlet {
 
             if(function.equals("getPlayerRegistrations"))
             {
-                 String []respo=new Utility().getDatesRange(-7);
-                 String fromdate=respo[0];
-                 String todate=respo[1];
-                 responseobj=new PlayersRegistratinProcessor().getPlayerRegistrations(fromdate,todate);
+                String []respo=new Utility().getDatesRange(-1);
+                String fromdate=respo[0];
+                String todate=respo[1];
+                responseobj=new PlayersRegistratinProcessor().getPlayerRegistrations(fromdate,todate);
             }
 
 
@@ -104,7 +97,7 @@ public class PlayersRegistrationAPI extends HttpServlet {
                 String []data=maindata.split("#");
                 String fromdate=data[0];
                 String todate=data[1];
-                responseobj=new PlayersRegistratinProcessor().filterPlayerRegistrationsByDate(fromdate,todate);
+                responseobj=new PlayersRegistratinProcessor().getPlayerRegistrations(fromdate,todate);
             }
 
             if(function.equals("deactivatePlayer"))

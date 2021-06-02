@@ -85,16 +85,17 @@ public class BetDetails extends HttpServlet {
     
         
         
-        public JSONArray getAllMultibets(String betslipID)
+        public JSONArray getAllMultibets(String mulGroupID)
         {
                   
             String res="";
-            String dataQuery = "select A.Mul_ID, ifnull(C.Match_Type_Desc,'no match type'), ifnull(Torna_Match_Event_Time,'no event'), "
+            /*String dataQuery = "select A.Mul_ID, ifnull(C.Match_Type_Desc,'no match type'), ifnull(Torna_Match_Event_Time,'no event'), "
                     + "ifnull(concat(Torna_Sport_Name,'->',Torna_Cat_Name,'->',Torna_Name,'->',Torna_Match_Event),'no event'), A.Mul_Game_ID, A.Mul_Match_Name,"
                     + " A.Mul_Prediction, B.Bet_Status_Name, A.Mul_Bet_Odd, A.Mul_Bet_Winning_Pred  from multibets A ,tournament, bet_status B ,match_type C  "
-                    + "where A.Mul_Group_ID = "+betslipID+"  and Torna_Match_ID=A.Mul_Match_ID and A.Mul_Bet_Status = B.Bet_Status_Code and C.Match_Type_Status_ID =1 ";
-            
-            System.out.println("getAllMultibets==="+dataQuery);
+                    + "where A.Mul_Group_ID = "+betslipID+"  and Torna_Match_ID=A.Mul_Match_ID and A.Mul_Bet_Status = B.Bet_Status_Code and C.Match_Type_Status_ID =1 ";*/
+            String query="select A.Mul_ID, ifnull( A.Mul_Sportname,'no sport'), ifnull( A.Mul_EventTime,'no event time'), ifnull(Mul_Event,'no event'), A.Mul_Game_ID, A.Mul_Match_Name,"
+                    + " A.Mul_Prediction, B.Bet_Status_Name, A.Mul_Bet_Odd, A.Mul_Bet_Winning_Pred  from multibets A , bet_status B  where A.Mul_Group_ID ="+mulGroupID+"  and A.Mul_Bet_Status = B.Bet_Status_Code ";
+            System.out.println("getAllMultibets==="+query);
             
             JSONObject dataObj  = null;
             JSONArray dataArray = new JSONArray();
@@ -103,7 +104,7 @@ public class BetDetails extends HttpServlet {
             Statement stmt = conn.createStatement();)
             {
                 
-                ResultSet rs = stmt.executeQuery(dataQuery);
+                ResultSet rs = stmt.executeQuery(query);
                 
                     while (rs.next())
                     {
@@ -111,7 +112,16 @@ public class BetDetails extends HttpServlet {
                         dataObj  = new JSONObject();
                         String bet_id = rs.getString(1);
                         String match_type = rs.getString(2);
-                        String event_date = sdf.format(rs.getTimestamp(3));
+                        String event_date="";
+                        String val = rs.getString(3);//rs.getTimestamp(3);
+                        if(val.equals("no event time"))
+                        {
+                            event_date="no event time";
+                        }
+                        else
+                        {
+                            event_date =val.substring(0,val.length() -3);
+                        }
                         String event = rs.getString(4);
                         String bet_game_id = rs.getString(5);
                         String bet_market_id = rs.getString(6);
