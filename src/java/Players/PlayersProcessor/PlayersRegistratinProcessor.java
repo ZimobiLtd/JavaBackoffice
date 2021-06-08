@@ -32,7 +32,7 @@ public class PlayersRegistratinProcessor {
     public JSONArray getPlayerRegistrations(String from,String to)
     {
         ResultSet rs=null;Connection conn=null;Statement stmt=null;PreparedStatement ps=null;
-        String dataQuery = "select id, msisdn, ifnull(`name`,'no name'), ifnull(email,'no email'), registration_date, (select ifnull(sum(Acc_Amount),0) from user_accounts where Acc_Mobile = msisdn ), (select ifnull(sum(Acc_Bonus_Amount),0) from user_accounts where Acc_Mobile = msisdn ),"
+        String dataQuery = "select id, msisdn, ifnull(`name`,'no name'), ifnull(email,'no email'), registration_date, (select ifnull(sum(Acc_Amount),0) from user_accounts where Acc_Mobile = msisdn ), (select ifnull(sum(Acc_Bonus_Amount),0) from user_accounts where Acc_Mobile=msisdn and Acc_Bonus_Status=1),"
                 + "(case when User_Channel=1 then'USSD' when User_Channel=2 then 'SMS' when User_Channel=3 then 'Computer Web' when User_Channel=4 then 'Mobile Web' when User_Channel=0 then 'No Channel'  end), "
                 + "(case when `status`=1 then 'Inactive' when `status`=0 then 'Active' end), " +
                 " (select ifnull(max(Acc_Date),'0') from user_accounts where Acc_Mobile = msisdn and Acc_Trans_Type=1) as 'Last Deposit', " +
@@ -74,8 +74,8 @@ public class PlayersRegistratinProcessor {
                 dataObj.put("Name", name);
                 dataObj.put("Email", email);
                 dataObj.put("Registration_Date", regdate);
-                dataObj.put("BalanceRM", balanceRM);
-                dataObj.put("BalanceBM", balanceBM);
+                dataObj.put("BalanceRM", String.format("%.2f", Double.valueOf(balanceRM)));
+                dataObj.put("BalanceBM", String.format("%.2f", Double.valueOf(balanceBM)));
                 dataObj.put("Registration_Channel", channel);
                 dataObj.put("LastDeposit_Date", lastdepositdate);
                 dataObj.put("BetsCount", betscount);
@@ -107,7 +107,7 @@ public class PlayersRegistratinProcessor {
     public JSONArray filterPlayerRegistrationsByMobile(String mobile_no)
     {
         ResultSet rs=null;Connection conn=null;Statement stmt=null;PreparedStatement ps=null;
-        String dataQuery = "select id, msisdn, ifnull(`name`,'no name'), ifnull(email,'no email'), registration_date, (select ifnull(sum(Acc_Amount),0) from user_accounts where Acc_Mobile = msisdn ), (select ifnull(sum(Acc_Amount),0) from user_accounts where Acc_Mobile = msisdn ),"
+        String dataQuery = "select id, msisdn, ifnull(`name`,'no name'), ifnull(email,'no email'), registration_date, (select ifnull(sum(Acc_Amount),0) from user_accounts where Acc_Mobile = msisdn ), (select ifnull(sum(Acc_Bonus_Amount),0) from user_accounts where Acc_Mobile=msisdn and Acc_Bonus_Status=1),"
                 + "(case when User_Channel=1 then'USSD' when User_Channel=2 then 'SMS' when User_Channel=3 then 'Computer Web' when User_Channel=4 then 'Mobile Web' end), "
                 + "(case when `status`=1 then 'Inactive' when `status`=0 then 'Active' end), " +
                 " (select ifnull(max(Acc_Date),'0') from user_accounts where Acc_Mobile = msisdn and Acc_Trans_Type=1) as 'Last Deposit', " +
@@ -149,8 +149,8 @@ public class PlayersRegistratinProcessor {
                 dataObj.put("Name", name);
                 dataObj.put("Email", email);
                 dataObj.put("Registration_Date", regdate);
-                dataObj.put("BalanceRM", balanceRM);
-                dataObj.put("BalanceBM", balanceBM);
+                dataObj.put("BalanceRM", String.format("%.2f", Double.valueOf(balanceRM)));
+                dataObj.put("BalanceBM", String.format("%.2f", Double.valueOf(balanceBM)));
                 dataObj.put("Registration_Channel", channel);
                 dataObj.put("LastDeposit_Date", lastdepositdate);
                 dataObj.put("BetsCount", betscount);
@@ -180,7 +180,7 @@ public class PlayersRegistratinProcessor {
 
 
 
-    public JSONArray setDeactivatePlayer(String mobile)
+    public JSONArray setDeactivatePlayer(String mobile,String narration,String deactivatedBy)
     {
         ResultSet rs=null;Connection conn=null;Statement stmt=null;PreparedStatement ps=null;
         String dataQuery = "";String Query="";
@@ -189,7 +189,7 @@ public class PlayersRegistratinProcessor {
 
         try
         {
-            dataQuery= " update player set `status` =1 where msisdn = '"+mobile+"' ";
+            dataQuery= " update player set `status` =1,narration='"+narration+"',action_by='"+deactivatedBy+"' where msisdn = '"+mobile+"' ";
             conn = new DBManager().getDBConnection();
             stmt = conn.createStatement();
             stmt.executeUpdate(dataQuery);
@@ -212,21 +212,66 @@ public class PlayersRegistratinProcessor {
     }
 
 
+    
+    public JSONArray getDeactivationNarration(String mobile)
+    {
+        ResultSet rs=null;Connection conn=null;Statement stmt=null;PreparedStatement ps=null;
+        String dataQuery = "select narration,action_by from player where msisdn='"+mobile+"'";
+        //System.out.println("getDeactivationNarration==="+dataQuery);
 
-    public JSONArray setActivatePlayer(String mobile)
+        JSONObject dataObj  = null;
+        JSONArray dataArray = new JSONArray();
+
+        try
+        {
+            conn = new DBManager().getDBConnection();
+            stmt = conn.createStatement();
+            rs = stmt.executeQuery(dataQuery);
+
+            while (rs.next())
+            {
+                String deactivationNarration = rs.getString(1);
+                String actionBy = rs.getString(2);
+
+                dataObj  = new JSONObject();
+                dataObj.put("Narration", deactivationNarration);
+                dataObj.put("ActionBy", actionBy);
+                dataArray.put(dataObj);
+            }
+
+            if(dataArray.length()==0)
+            {
+                dataObj  = new JSONObject();
+                dataArray.put(dataObj);
+            }
+        }
+        catch (SQLException | JSONException ex) 
+        {
+            System.out.println("Error getDeactivationNarration=== "+ex.getMessage());
+        }
+        finally
+        {
+            new Utility().doFinally(conn,stmt,rs,ps);
+        }
+
+    return dataArray;
+    }
+    
+    
+
+    public JSONArray setActivatePlayer(String mobile,String activatedBy)
     {
         ResultSet rs=null;Connection conn=null;Statement stmt=null;PreparedStatement ps=null;
         String dataQuery = "";String Query="";
         JSONObject dataObj  = new JSONObject();
         JSONArray dataArray = new JSONArray();
-        dataQuery= " update player set  `status` =0 where msisdn = '"+mobile+"' ";
+        dataQuery= " update player set  `status` =0,narration='0',action_by='"+activatedBy+"' where msisdn = '"+mobile+"' ";
 
         try
         {
             conn = new DBManager().getDBConnection();
             stmt = conn.createStatement();
             stmt.executeUpdate(dataQuery);
-
 
             dataObj  = new JSONObject();
             dataObj.put("message", "Player activated");

@@ -42,9 +42,9 @@ public class BCLBReportProcessor {
             for (String date : new Utility().getDatesList(datefrom ,dateto)) 
             {
                 dataObj  = new JSONObject();
-                dataQuery ="select ifnull(sum(Play_Bet_Stake),0) as 'betstakes' ,count(Play_Bet_ID) ,"
-                         + "(select ifnull(sum(Play_Bet_Possible_Winning),0) from player_bets where DATE(Play_Bet_Timestamp) ='"+date+"' and Play_Bet_Status  in (202)) as 'payouts' " 
-                         + "from player_bets where DATE(Play_Bet_Timestamp) =  '"+date+"'  and Play_Bet_Status in (202,203)  ";
+                dataQuery ="select ifnull(sum(Play_Bet_Cash_Stake),0) as 'betstakes' ,count(Play_Bet_ID) ,"
+                         + "(select ifnull(sum(Play_Bet_Possible_Winning),0) from player_bets where DATE(Play_Bet_Timestamp) ='"+date+"' and Play_Bet_Status  in (202) and  Play_Bet_Cash_Stake > 0) as 'payouts' " 
+                         + "from player_bets where DATE(Play_Bet_Timestamp) =  '"+date+"'  and Play_Bet_Status in (202,203) and  Play_Bet_Cash_Stake > 0 ";
                 System.out.println("getBCLBReport==="+dataQuery);
 
                 rs = stmt.executeQuery(dataQuery);
@@ -99,9 +99,9 @@ public class BCLBReportProcessor {
 
         try
         {
-            dataQuery = " select  Play_Bet_Stake,Play_Bet_Possible_Winning,Play_Bet_Possible_Winning, sum((Play_Bet_Gross_Possible_Winning - Play_Bet_Stake)*0.2) "
-                    + " from player_bets where DATE(Play_Bet_Timestamp)='"+date+"' and Play_Bet_Status in (202) group by Play_Bet_ID";
-            System.out.println("getBCLBReport==="+dataQuery);
+            dataQuery = " select  Play_Bet_Cash_Stake,Play_Bet_Possible_Winning,Play_Bet_Possible_Winning, sum((Play_Bet_Gross_Possible_Winning - Play_Bet_Cash_Stake)*0.2) "
+                    + " from player_bets where DATE(Play_Bet_Timestamp)='"+date+"' and Play_Bet_Status in (202) and  Play_Bet_Cash_Stake > 0 group by Play_Bet_ID";
+            System.out.println("getTaxData==="+dataQuery);
 
             rs = stmt.executeQuery(dataQuery);
             

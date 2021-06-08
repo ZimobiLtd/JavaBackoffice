@@ -22,13 +22,13 @@ public class DBManager {
     
       public DBManager() {
 
-               this.type="betting"; 
+               this.type="0"; 
       }
           
         String type,data_source;
-        String user ="zianahkev";
-        String url1 = "jdbc:mysql://5.189.139.236:3306/supabet_inhouse";//192.168.0.88
-        String user_password ="A6cMtfGAAKtmn5CW";
+        String user ="mysqld_user";
+        String url1 = "jdbc:mysql://62.171.191.3:3306/starbet";//192.168.0.88
+        String user_password ="+q4LY9.F:29:3b(q";
         String driver="com.mysql.jdbc.Driver";
     
       public Connection getDBConnection()
@@ -59,7 +59,7 @@ public class DBManager {
 
                     if (connection != null)
                     {		
-                       //System.out.println("===Connection OK==="+type);   
+                       System.out.println("===Connection OK==="+type);   
                     }
 
                     }

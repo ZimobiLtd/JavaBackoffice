@@ -102,7 +102,10 @@ public class PlayersRegistrationAPI extends HttpServlet {
 
             if(function.equals("deactivatePlayer"))
             {
-                String mobile=maindata;
+                String []data=maindata.split("#");
+                String mobile=data[0];
+                String narration=data[1];
+                String deactivatedBy=data[2];
                 String mobile_no="";
 
                 if(mobile.startsWith("07") || mobile.startsWith("01"))
@@ -114,14 +117,36 @@ public class PlayersRegistrationAPI extends HttpServlet {
                     mobile_no=mobile;
                 }
 
-                responseobj=new PlayersRegistratinProcessor().setDeactivatePlayer(mobile_no);
-
+                responseobj=new PlayersRegistratinProcessor().setDeactivatePlayer(mobile_no,narration,deactivatedBy);
+                System.out.println("responseobj=== "+responseobj);
             }
 
+            
+            if(function.equals("getNarration"))
+            {
+                String []data=maindata.split("#");
+                String mobile=data[0];
+                String mobile_no="";
+
+                if(mobile.startsWith("07") || mobile.startsWith("01"))
+                {
+                    mobile_no="254"+mobile.substring(1);
+                }
+                else
+                {
+                    mobile_no=mobile;
+                }
+
+                responseobj=new PlayersRegistratinProcessor().getDeactivationNarration(mobile_no);
+            }
+            
 
             if(function.equals("activatePlayer"))
             {
-                String mobile=maindata;
+                String []data=maindata.split("#");
+                String mobile=data[0];
+                String narration=data[1];
+                String activatedBy=data[2];
                 String mobile_no="";
 
                 if(mobile.startsWith("07") || mobile.startsWith("01"))
@@ -133,8 +158,7 @@ public class PlayersRegistrationAPI extends HttpServlet {
                     mobile_no=mobile;
                 }
 
-                responseobj=new PlayersRegistratinProcessor().setActivatePlayer(mobile_no);
-
+                responseobj=new PlayersRegistratinProcessor().setActivatePlayer(mobile_no,activatedBy);
             }
 
         }catch (IOException | JSONException ex) { ex.getMessage();}
