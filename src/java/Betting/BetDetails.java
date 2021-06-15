@@ -93,7 +93,7 @@ public class BetDetails extends HttpServlet {
                     + "ifnull(concat(Torna_Sport_Name,'->',Torna_Cat_Name,'->',Torna_Name,'->',Torna_Match_Event),'no event'), A.Mul_Game_ID, A.Mul_Match_Name,"
                     + " A.Mul_Prediction, B.Bet_Status_Name, A.Mul_Bet_Odd, A.Mul_Bet_Winning_Pred  from multibets A ,tournament, bet_status B ,match_type C  "
                     + "where A.Mul_Group_ID = "+betslipID+"  and Torna_Match_ID=A.Mul_Match_ID and A.Mul_Bet_Status = B.Bet_Status_Code and C.Match_Type_Status_ID =1 ";*/
-            String query="select A.Mul_ID, ifnull( A.Mul_Sportname,'no sport'), ifnull( A.Mul_EventTime,'no event time'), ifnull(Mul_Event,'no event'), A.Mul_Game_ID, A.Mul_Match_Name,"
+            String query="select A.Mul_Game_ID,A.Mul_Match_ID,ifnull( A.Mul_Sportname,'no sport'), ifnull( A.Mul_EventTime,'no event time'), ifnull(Mul_Event,'no event'), A.Mul_Game_ID, A.Mul_Match_Name,"
                     + " A.Mul_Prediction, B.Bet_Status_Name, A.Mul_Bet_Odd, A.Mul_Bet_Winning_Pred  from multibets A , bet_status B  where A.Mul_Group_ID ="+mulGroupID+"  and A.Mul_Bet_Status = B.Bet_Status_Code ";
             System.out.println("getAllMultibets==="+query);
             
@@ -110,10 +110,11 @@ public class BetDetails extends HttpServlet {
                     {
                         
                         dataObj  = new JSONObject();
-                        String bet_id = rs.getString(1);
-                        String match_type = rs.getString(2);
+                        String Mul_ID = rs.getString(1);
+                        String match_id = rs.getString(2);
+                        String match_type = rs.getString(3);
                         String event_date="";
-                        String val = rs.getString(3);//rs.getTimestamp(3);
+                        String val = rs.getString(4);
                         if(val.equals("no event time"))
                         {
                             event_date="no event time";
@@ -122,16 +123,17 @@ public class BetDetails extends HttpServlet {
                         {
                             event_date =val.substring(0,val.length() -3);
                         }
-                        String event = rs.getString(4);
-                        String bet_game_id = rs.getString(5);
-                        String bet_market_id = rs.getString(6);
-                        String prediction = rs.getString(7);
-                        String bet_status = rs.getString(8);
-                        String odds = rs.getString(9);
-                        String outcome = rs.getString(10);
+                        String event = rs.getString(5);
+                        String bet_game_id = rs.getString(6);
+                        String bet_market_id = rs.getString(7);
+                        String prediction = rs.getString(8);
+                        String bet_status = rs.getString(9);
+                        String odds = rs.getString(10);
+                        String outcome = rs.getString(11);
 
 
-                        dataObj.put("Bet_ID", bet_id);
+                        dataObj.put("ID", Mul_ID);
+                        dataObj.put("Match_ID", match_id);
                         dataObj.put("Match_Type", match_type);
                         dataObj.put("Event_Date", event_date);
                         dataObj.put("Event", event);

@@ -53,7 +53,7 @@ public class DairyReportProcessor {
                 "(select  ifnull(sum(Play_Bet_Bonus_Stake),0) from player_bets where DATE(Play_Bet_Timestamp)= '"+date+"' and Play_Bet_Status in (201,202,203)) as 'bet bonus stake'," +
                 "(select ifnull(sum(Acc_Bonus_Amount),0) from user_accounts where Acc_Trans_Type=7 and DATE(Acc_Date) ='"+date+"' )as 'acc bonus amount'," +
                 "(select count(Play_Bet_ID) from player_bets where DATE(Play_Bet_Timestamp)= '"+date+"' and Play_Bet_Status  in (201,202,203)) as 'player bets'," +
-                "(select sum(Play_Bet_Stake) as 'total' from player_bets where Play_Bet_Status  in (202, 203) and DATE(Play_Bet_Timestamp) = '"+date+"')as 'GGR', " +
+                "(select ifnull(sum(Play_Bet_Stake),0) as 'total' from player_bets where Play_Bet_Status  in (202, 203) and DATE(Play_Bet_Timestamp) = '"+date+"')as 'GGR', " +
                 "(select ifnull(sum(Play_Bet_Stake),0) as 'total' from player_bets where Play_Bet_Status  in (202) and DATE(Play_Bet_Timestamp) = '"+date+"')as 'Won Amount', " +       
                 "(select count(id)  from player where DATE(registration_date) =  '"+date+"' ) as 'registered players'," +
                 "(select count(distinct(Play_Bet_Mobile))  from player_bets where DATE(Play_Bet_Timestamp) = '" + date + "') as 'players' "+

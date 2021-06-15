@@ -67,7 +67,7 @@ public class DailyReportAPI extends HttpServlet {
 
             if(function.equals("getDailyReport"))
             {
-                String []respo=new Utility().getDatesRange(-14);
+                String []respo=new Utility().getDatesRange(-7);
                 String fromdate=respo[0];
                 String todate=respo[1];
                 responseobj=new DairyReportProcessor().getDailyReport(fromdate ,todate);

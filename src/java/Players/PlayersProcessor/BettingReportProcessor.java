@@ -625,7 +625,7 @@ public class BettingReportProcessor {
             if(dataArray.length()==0)
             {
                 dataObj  = new JSONObject();
-                dataObj.put("BetDate", "0");
+                /*dataObj.put("BetDate", "0");
                 dataObj.put("BetSlipID", "0");
                 dataObj.put("BetStatus", "0");
                 dataObj.put("BetType", "0");
@@ -645,7 +645,7 @@ public class BettingReportProcessor {
                 dataObj.put("BMSettled", "0");
                 dataObj.put("BMWinAmount", "0");
                 dataObj.put("GGRBM", "0");
-                dataObj.put("RefundBM", "0");
+                dataObj.put("RefundBM", "0");*/
                 dataArray.put(dataObj);
             }
 
@@ -653,12 +653,12 @@ public class BettingReportProcessor {
             JSONObject dataObj1  = new JSONObject();
             JSONArray dataArray1 = new JSONArray();
             String query1=" select ifnull(sum(Acc_Amount),0),(select ifnull(sum(Acc_Bonus_Amount),0) from user_accounts where Acc_Mobile='"+mobile+"' and Acc_Bonus_Status=1),date(registration_date) ,(select ifnull(sum(Acc_Amount),0) from user_accounts where Acc_Trans_Type=4  and Acc_Mobile='"+mobile+"' ) as 'total betstake' ," +
-                          "(select ifnull(sum(Acc_Amount),0) from user_accounts where Acc_Mpesa_Trans_No like 'BET_WIN%' and Acc_Trans_Type=9 and Acc_Mobile='"+mobile+"' ) as 'total win' from user_accounts,player where Acc_Mobile='"+mobile+"' and msisdn='"+mobile+"' ";// group by Acc_Mobile
+                          "(select ifnull(sum(Acc_Amount),0) from user_accounts where Acc_Mpesa_Trans_No like 'BET_WIN%' and Acc_Trans_Type in (3,9) and Acc_Mobile='"+mobile+"' ) as 'total win' from user_accounts,player where Acc_Mobile='"+mobile+"' and msisdn='"+mobile+"' ";// group by Acc_Mobile
             System.out.println("getPlayerAcc==="+query1);
             rs = stmt.executeQuery(query1);
             while (rs.next())
             {
-                dataObj1.put("Balance", rs.getString(1));
+                dataObj1.put("Balance", String.format("%.2f", Double.valueOf(rs.getString(1))));
                 dataObj1.put("BonusBalance", rs.getString(2));
                 dataObj1.put("RegistrationDate", rs.getString(3));
                 dataObj1.put("TotalBetStake", rs.getString(4).replace("-", "") );//String.format("%.2f", Double.valueOf(rs.getString(2)))
