@@ -104,6 +104,22 @@ public class GamesHighlightAPI extends HttpServlet {
                         responseobj=new GamesHighlightsProcessor().setBannerunHighlights(data);
                    }
                    
+                   
+                   if(function.equals("setJackpotGames"))
+                   {
+                        String [] highlights=null;
+                        String data=maindata.trim();
+                        responseobj=new GamesHighlightsProcessor().setHighlightJackpot(data);
+                   } 
+                   
+                   if(function.equals("unHighlightJackpotGames"))
+                   {
+                        String [] highlights=null;
+                        String data=maindata.trim();
+                        
+                        responseobj=new GamesHighlightsProcessor().setunHighlightJackpot(data);
+                   }
+                   
                    if(function.equals("unHighlightGames"))
                    {
                         String [] highlights=null;

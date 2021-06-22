@@ -39,7 +39,7 @@ public class GamesHighlightsProcessor {
         query = "select  Torna_Sport_Name, Torna_Cat_Name, Torna_Name, Torna_Match_Event, Torna_Match_Event_Time, "
                      + "Torna_Match_ID, Torna_Sys_Game_ID, (case when Torna_Match_Status=0 then 'Active' when Torna_Match_Status=1 then 'Inactive' end), "
                      + "(case when Torna_Match_Special_Highlight=1 then 'Other Games' when Torna_Match_Special_Highlight=2 then 'Barner Highlights' when Torna_Match_Special_Highlight=0 then 'Page Highlights' end),"
-                     + "Torna_Match_Special_Highlight from tournament where date(Torna_Match_Event_Time) between '" + fromDate + "' and '" + toDate + "' and "
+                     + "Torna_Match_Special_Highlight,Jackpot_Status from tournament where date(Torna_Match_Event_Time) between '" + fromDate + "' and '" + toDate + "' and "
                      + "Torna_Match_Status = '0' and Torna_Match_Status='0' and Torna_Match_Stage !='Suspended' and Torna_Match_Stage !='Ended' "
                      + "and Torna_Match_Stage !='Deactivated' and Torna_Match_Event_Time >=now() order by Torna_Match_Highlight_Order desc";
         System.out.println("getgamesHighlits==="+query);
@@ -64,6 +64,7 @@ public class GamesHighlightsProcessor {
                 String matchstatus = rs.getString(8);
                 String matchmode = rs.getString(9);
                 String matchmodestatus = rs.getString(10);
+                String jackpotMatchmodestatus = rs.getString(11);
 
                 dataObj.put("TornamentMatchID", torna_match_id);
                 dataObj.put("GameID", torna_sys_game_id);
@@ -75,6 +76,7 @@ public class GamesHighlightsProcessor {
                 dataObj.put("MatchStatus", matchstatus);
                 dataObj.put("MatchMode", matchmode);
                 dataObj.put("MatchModeStatus", matchmodestatus);
+                dataObj.put("jackpotMatchmodestatus", jackpotMatchmodestatus);
 
                 dataArray.put(dataObj);
             }
@@ -105,7 +107,7 @@ public class GamesHighlightsProcessor {
         dataQuery = "select  Torna_Sport_Name, Torna_Cat_Name, Torna_Name, Torna_Match_Event, Torna_Match_Event_Time, "
                      + "Torna_Match_ID, Torna_Sys_Game_ID, (case when Torna_Match_Status=0 then 'Active' when Torna_Match_Status=1 then 'Inactive' end), "
                      + "(case when Torna_Match_Special_Highlight=1 then 'Other Games' when Torna_Match_Special_Highlight=2 then 'Barner Highlights' when Torna_Match_Special_Highlight=0 then 'Page Highlights' end),"
-                     + "Torna_Match_Special_Highlight from tournament where date(Torna_Match_Event_Time)='" + date + "' and "
+                     + "Torna_Match_Special_Highlight,Jackpot_Status from tournament where date(Torna_Match_Event_Time)='" + date + "' and "
                      + "Torna_Match_Status = '0' and Torna_Match_Status='0' and Torna_Match_Stage !='Suspended' and Torna_Match_Stage !='Ended' "
                      + "and Torna_Match_Stage !='Deactivated' and Torna_Match_Event_Time >=now() order by Torna_Match_Highlight_Order desc";
         System.out.println("filtersgamesHighlits==="+dataQuery);
@@ -130,17 +132,19 @@ public class GamesHighlightsProcessor {
                 String matchstatus = rs.getString(8);
                 String matchmode = rs.getString(9);
                 String matchmodestatus = rs.getString(10);
+                String jackpotMatchmodestatus = rs.getString(11);
 
                 dataObj.put("TornamentMatchID", torna_match_id);
                 dataObj.put("GameID", torna_sys_game_id);
-                dataObj.put("Country", countryname);
                 dataObj.put("Sport", sportname);
+                dataObj.put("Country", countryname);
                 dataObj.put("Tornament", torna_name);
                 dataObj.put("Event", event);
                 dataObj.put("EventTime", eventtime);
                 dataObj.put("MatchStatus", matchstatus);
                 dataObj.put("MatchMode", matchmode);
                 dataObj.put("MatchModeStatus", matchmodestatus);
+                dataObj.put("jackpotMatchmodestatus", jackpotMatchmodestatus);
 
                 dataArray.put(dataObj);
             }
@@ -325,6 +329,86 @@ public class GamesHighlightsProcessor {
         catch (SQLException | JSONException ex) 
         {
             System.out.println("Error setBannerunHighlights=== "+ex.getMessage());
+        }
+        finally
+        {
+            new Utility().doFinally(conn,stmt,rs,ps);
+        }
+
+    return dataArray;
+    }
+    
+    
+    public JSONArray setHighlightJackpot(String matchId)
+    {
+        ResultSet rs=null;Connection conn=null;Statement stmt=null;PreparedStatement ps=null;
+        String query="";
+        JSONObject dataObj  = new JSONObject();
+        JSONArray dataArray = new JSONArray();
+        query = " update tournament set Jackpot_Status =1,Torna_Match_Highlight_Order=1 where Torna_Match_ID ='" + matchId + "' limit 1 ";
+        //System.out.println("setHighlightJackpot==="+query);
+        try
+        {
+            conn = new DBManager().getDBConnection();
+            stmt = conn.createStatement();
+            int i=stmt.executeUpdate(query);
+            if(i > 0)
+            {
+                dataObj.put("message", "highlight successful");
+                dataArray.put(dataObj);
+            }
+            else
+            {
+                dataObj.put("error", "highlight failed");
+                dataArray.put(dataObj);
+            }
+        }
+        catch (SQLException | JSONException ex) 
+        {
+            System.out.println("Error setHighlightJackpot=== "+ex.getMessage());
+        }
+        finally
+        {
+            new Utility().doFinally(conn,stmt,rs,ps);
+        }
+
+    return dataArray;
+    }
+
+
+    
+    
+    
+    public JSONArray setunHighlightJackpot(String matchId)
+    {
+        ResultSet rs=null;Connection conn=null;Statement stmt=null;PreparedStatement ps=null;
+        String query="";
+        JSONObject dataObj  = new JSONObject();
+        JSONArray dataArray = new JSONArray();
+        query = " update tournament set Jackpot_Status=0,Torna_Match_Highlight_Order=0 where Torna_Match_ID ='" + matchId + "' limit 1 ";
+        //System.out.println("setHighlightJackpot==="+dataQuery);
+
+        try
+        {
+            conn = new DBManager().getDBConnection();
+            stmt = conn.createStatement();
+            int i=stmt.executeUpdate(query);
+            if(i > 0)
+            {
+                dataObj.put("message", "unhighlight successful");
+                dataArray.put(dataObj);
+            }
+            else
+            {
+                dataObj.put("error", "unhighlight failed");
+                dataArray.put(dataObj);
+            }
+            
+
+        }
+        catch (SQLException | JSONException ex) 
+        {
+            System.out.println("Error setHighlightJackpot=== "+ex.getMessage());
         }
         finally
         {
