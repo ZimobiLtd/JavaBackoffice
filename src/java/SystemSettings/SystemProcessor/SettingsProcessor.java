@@ -310,6 +310,7 @@ public class SettingsProcessor {
         try
         {
             conn = new DBManager().getDBConnection();
+            stmt = conn.createStatement();
             int i=stmt.executeUpdate(query);
             if(i > 0)
             {

@@ -7,6 +7,7 @@ package Sporting.SportingAPI;
  */
 
 import Sporting.SportingProcessor.GamesHighlightsProcessor;
+import Sporting.SportingProcessor.JackpotHighlights;
 import Utility.Utility;
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -107,9 +108,20 @@ public class GamesHighlightAPI extends HttpServlet {
                    
                    if(function.equals("setJackpotGames"))
                    {
-                        String [] highlights=null;
-                        String data=maindata.trim();
-                        responseobj=new GamesHighlightsProcessor().setHighlightJackpot(data);
+                       jsonobj  = new JSONObject();
+                        String []data=maindata.trim().split("#");
+                        int status=new JackpotHighlights().highlightJackpotGames(data);
+                        
+                        if(status == 200)
+                        {
+                            jsonobj.put("message", "highlight successful");
+                            responseobj.put(jsonobj);
+                        }
+                        else
+                        {
+                            jsonobj.put("error", "highlight failed");
+                            responseobj.put(jsonobj);
+                        }
                    } 
                    
                    if(function.equals("unHighlightJackpotGames"))

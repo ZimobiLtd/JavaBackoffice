@@ -94,7 +94,7 @@ public class BetDetails extends HttpServlet {
                     + " A.Mul_Prediction, B.Bet_Status_Name, A.Mul_Bet_Odd, A.Mul_Bet_Winning_Pred  from multibets A ,tournament, bet_status B ,match_type C  "
                     + "where A.Mul_Group_ID = "+betslipID+"  and Torna_Match_ID=A.Mul_Match_ID and A.Mul_Bet_Status = B.Bet_Status_Code and C.Match_Type_Status_ID =1 ";*/
             String query="select A.Mul_Game_ID,A.Mul_Match_ID,ifnull( A.Mul_Sportname,'no sport'), ifnull( A.Mul_EventTime,'no event time'), ifnull(Mul_Event,'no event'), A.Mul_Game_ID, A.Mul_Match_Name,"
-                    + " A.Mul_Prediction, B.Bet_Status_Name, A.Mul_Bet_Odd, A.Mul_Bet_Winning_Pred  from multibets A , bet_status B  where A.Mul_Group_ID ="+mulGroupID+"  and A.Mul_Bet_Status = B.Bet_Status_Code ";
+                    + " A.Mul_Prediction, B.Bet_Status_Name, A.Mul_Bet_Odd, A.Mul_Bet_Winning_Pred  from multibets A , bet_status B  where A.Mul_Group_ID ='"+mulGroupID+"'  and A.Mul_Bet_Status = B.Bet_Status_Code ";
             System.out.println("getAllMultibets==="+query);
             
             JSONObject dataObj  = null;

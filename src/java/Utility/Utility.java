@@ -165,11 +165,6 @@ public class Utility {
     {
         try 
         {
-            if(conn !=null)
-            {
-                conn.close();
-                System.out.println("<<<DB connection closed>>>");
-            }
             if(rs !=null)
             {
                 rs.close();
@@ -184,6 +179,11 @@ public class Utility {
             {
                 stmt.close();
                 System.out.println("<<<Statement closed>>>");
+            }
+            if(conn !=null)
+            {
+                conn.close();
+                System.out.println("<<<DB connection closed>>>");
             }
             
             
