@@ -35,7 +35,7 @@ public class JackpotHighlights {
         StringBuilder sb= new StringBuilder();
         for(String matchID : matchIDs)
         {
-            sb.append(matchID);
+            sb.append(","+matchID);
         }
         matchIDsValues=sb.substring(1);
         

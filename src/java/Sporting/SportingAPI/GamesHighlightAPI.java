@@ -108,20 +108,24 @@ public class GamesHighlightAPI extends HttpServlet {
                    
                    if(function.equals("setJackpotGames"))
                    {
-                       jsonobj  = new JSONObject();
+                        JSONObject dataObj  = new JSONObject();
+                        JSONArray dataArray = new JSONArray();
                         String []data=maindata.trim().split("#");
                         int status=new JackpotHighlights().highlightJackpotGames(data);
                         
                         if(status == 200)
                         {
-                            jsonobj.put("message", "highlight successful");
-                            responseobj.put(jsonobj);
+                            dataObj.put("message", "highlight successful");
+                            dataArray.put(dataObj);
                         }
                         else
                         {
-                            jsonobj.put("error", "highlight failed");
-                            responseobj.put(jsonobj);
+                            dataObj.put("error", "highlight failed");
+                            dataArray.put(dataObj);
                         }
+                        
+                        responseobj=dataArray;
+                        
                    } 
                    
                    if(function.equals("unHighlightJackpotGames"))
@@ -141,14 +145,14 @@ public class GamesHighlightAPI extends HttpServlet {
                    } 
                    
                    
-             }catch (IOException | JSONException ex) { ex.getMessage();}
+             }
+            catch (IOException | JSONException ex) 
+            { ex.getMessage();}
             
             PrintWriter out = resp.getWriter(); 
             out.print(responseobj);
         }
     
-      
-      
 
     // <editor-fold defaultstate="collapsed" desc="HttpServlet methods. Click on the + sign on the left to edit the code.">
     /**
