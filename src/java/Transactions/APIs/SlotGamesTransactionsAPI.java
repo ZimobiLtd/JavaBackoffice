@@ -7,7 +7,8 @@ package Transactions.APIs;
  */
 
 import Database.DBManager;
-import Transactions.TransactionsProcessor.TransactionsProcessor;
+import Transactions.TransactionsProcessor.GoldenRaceTransactionsProcessor;
+import Transactions.TransactionsProcessor.SlotGamesTransactionsProcessor;
 import Utility.Utility;
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -32,8 +33,8 @@ import org.json.JSONException;
  *
  * @author jac
  */
-@WebServlet(urlPatterns = {"/Transactions"})
-public class TransactionsAPI extends HttpServlet {
+@WebServlet(urlPatterns = {"/SlotGamesTransactions"})
+public class SlotGamesTransactionsAPI extends HttpServlet {
 
     /**
      * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
@@ -54,6 +55,7 @@ public class TransactionsAPI extends HttpServlet {
         resp.setHeader("Access-Control-Allow-Origin", "*");
         resp.setHeader("Access-Control-Allow-Methods", "POST");
 
+
         StringBuilder jb = new StringBuilder();
         String line = null;
 
@@ -65,61 +67,56 @@ public class TransactionsAPI extends HttpServlet {
                 jb.append(line);
             }
 
-            System.out.println("transactionsData===="+jb.toString());
+            System.out.println("getSlotGamesTransactions==="+jb.toString());
             jsonobj = new JSONObject(jb.toString());
             function=jsonobj.getString("function");
             maindata=jsonobj.getString("data");
 
 
-            if(function.equals("getTransactions"))
+            if(function.equals("getSlotGamesTransactions"))
             {
-                String []respo=new Utility().getDatesRange(0);
-                String fromdate=respo[0];
-                String todate=respo[1];
-                responseobj=new TransactionsProcessor().getTransactions(fromdate ,todate);
+                 String []respo=new Utility().getDatesRange(-2);
+                 String fromdate=respo[0];
+                 String todate=respo[1];
+                 responseobj=new SlotGamesTransactionsProcessor().getSlotGamesTransactions(fromdate,todate,"0");
             }
 
 
-            if(function.equals("filterTransactions"))
+            if(function.equals("filterSlotGamesTransactions"))
             {
                 String[]data=maindata.split("#");
                 String from=data[0];
                 String to=data[1];
                 String transtype=data[2];
-                String transstatus=data[3];  
+                String transstatus=data[3];
+                String player_mobile=data[4]; 
+                
+                if(player_mobile.startsWith("07") || player_mobile.startsWith("01"))
+                {
+                   player_mobile="254"+player_mobile.substring(1);
+                }
 
                 String trans_type="",trans_status="";
-                if(transtype.equals("Deposit"))
-                {
-                    trans_type="1";
-                }
-                else if(transtype.equals("User Withdrawal"))
-                {
-                    trans_type="2";
-                }
-                else if(transtype.equals("Withdrawal Charge"))
-                {
-                    trans_type="8";
-                }
-                else if(transtype.equals("Bet Withdrawal"))
-                {
-                    trans_type="4";
-                }
-                else if(transtype.equals("Bet Win"))
-                {
-                    trans_type="3";
-                }
-                else if(transtype.equals("Bonus Winning"))
-                {
-                    trans_type="9";
-                }
-                else
-                {
-                   trans_type="All"; 
-                }
+                //Acc_Trans_Type =1 then 'Deposit' when Acc_Trans_Type=2 then 'User Withdrawal'  when Acc_Trans_Type=8 then 'Withdrawal Charge' 
+                 //when Acc_Trans_Type=3 then 'GoldenRace Bet Withdrawal' when Acc_Trans_Type=4 then 'Bet Withdrawal'  end) as 'Trans_Type'
+                 if(transtype.equals("Bet"))
+                 {
+                     trans_type="'bet'";
+                 }
+                 else if(transtype.equals("Bet Win"))
+                 {
+                     trans_type="'win'";
+                 }
+                 else if(transtype.equals("Cancel Bet"))
+                 {
+                     trans_type="'cancelbet'";
+                 }
+                 else
+                 {
+                    trans_type="All"; 
+                 }
 
 
-                 
                 if(transstatus.equalsIgnoreCase("Processed"))
                 {
                     trans_status="0";
@@ -139,42 +136,30 @@ public class TransactionsAPI extends HttpServlet {
 
 
 
+
                 if(trans_type.equals("All") && trans_status.equals("All"))
                 {
-                    responseobj=new TransactionsProcessor().getTransactions(from,to);
+                    responseobj=new SlotGamesTransactionsProcessor().getSlotGamesTransactions(from,to,player_mobile);
                 }
                 else if(!trans_type.equals("All") && trans_status.equals("All"))
                 {
-                    if(trans_type.equals("3"))
-                    {
-                        trans_type="Acc_Trans_Type ="+trans_type+" and Acc_Mpesa_Trans_No like 'BET_WIN%'";
-                    }
-                    else
-                    {
-                        trans_type="Acc_Trans_Type ="+trans_type;
-                    }
-                    trans_status="Acc_Status in (0,1,2,3,4,8,9)";
-                    responseobj=new TransactionsProcessor().filterTransactions(from,to,trans_type,trans_status);
+                    trans_type="Golden_Race_Trans_Type="+trans_type;
+                    trans_status="Acc_Status in (0,1,2)";
+                    responseobj=new SlotGamesTransactionsProcessor().filterSlotGamesTransactions(from,to,trans_type,trans_status,player_mobile);
                 }
                 else if(trans_type.equals("All") && !trans_status.equals("All"))
                 {
-                    trans_type="Acc_Trans_Type in(0,1,2,3,4,8,9)";
+                    trans_type="Golden_Race_Trans_Type in('bet','win','cancelbet')";
                     trans_status="Acc_Status ="+trans_status;
-                    responseobj=new TransactionsProcessor().filterTransactions(from,to,trans_type,trans_status);
+                    responseobj=new SlotGamesTransactionsProcessor().filterSlotGamesTransactions(from,to,trans_type,trans_status,player_mobile);
                 }
                 else
                 {
-                    if(trans_type.equals("3"))
-                    {
-                        trans_type="Acc_Trans_Type ="+trans_type+" and Acc_Mpesa_Trans_No like 'BET_WIN%'";
-                    }
-                    else
-                    {
-                        trans_type="Acc_Trans_Type ="+trans_type;
-                    }
+                    trans_type="Golden_Race_Trans_Type ="+trans_type;
                     trans_status="Acc_Status ="+trans_status;
-                    responseobj=new TransactionsProcessor().filterTransactions(from,to,trans_type,trans_status);
+                    responseobj=new SlotGamesTransactionsProcessor().filterSlotGamesTransactions(from,to,trans_type,trans_status,player_mobile);
                 }
+
             }
 
         }catch (IOException | JSONException ex) { ex.getMessage();}
@@ -184,6 +169,36 @@ public class TransactionsAPI extends HttpServlet {
     }
     
     
+        
+        
+      
+      
+        
+      
+      
+        
+        public String[] initDates() 
+        {
+            String []data=null;
+
+            try 
+            {
+
+                String todate=LocalDate.now().toString();
+                
+                String fromdate=LocalDate.now().plusDays(-2).toString();
+
+                data=new String[]{fromdate,todate};//fromdate+"#"+todate ;
+
+            } catch (Exception ex) {
+
+            }
+
+        return data;
+        }
+      
+      
+
     // <editor-fold defaultstate="collapsed" desc="HttpServlet methods. Click on the + sign on the left to edit the code.">
     /**
      * Handles the HTTP <code>GET</code> method.

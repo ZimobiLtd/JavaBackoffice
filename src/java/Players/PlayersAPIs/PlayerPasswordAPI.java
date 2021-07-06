@@ -77,7 +77,7 @@ public class PlayerPasswordAPI extends HttpServlet {
                 }
                 String newMobile=mobile;
                 int status=new PlayerPasswordProcessor().updatePlayerPassword(mobile,pin);
-                String sms="Dear customer, your new StarBet password is: "+pin;
+                String sms="Dear customer, your new StarBet password is: "+pin+".Visit www.starbet.co.ke. Call: 0709758000 or Whatsapp 0114029659 for Assistance ";
                 if(status== 200)
                 {
                     Thread thread=new Thread(new Runnable()

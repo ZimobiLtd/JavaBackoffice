@@ -56,19 +56,19 @@ public class DairySummaryReportProcessor {
                 "(select ifnull(sum(Play_Bet_Stake),0) from player_bets where date(Play_Bet_Timestamp)='"+date+"'  and  Play_Bet_Type=3 and Play_Bet_Status in (201,202,203)) as 'multibets stake'," +
                 "(select ifnull(sum(Play_Bet_Possible_Winning),0) from player_bets where date(Play_Bet_Timestamp)='"+date+"' and  Play_Bet_Type=3 and  Play_Bet_Status=202)  as 'multibets won'," +
                 "(select ifnull(sum(Play_Bet_Stake),0) from player_bets where date(Play_Bet_Timestamp)='"+date+"'  and  Play_Bet_Type=3 and  Play_Bet_Status in (202, 203)) as 'multibets settled'," +
-                "(select count(Play_Bet_ID) from player_bets where date(Play_Bet_Timestamp)='"+date+"' and Play_Bet_Type=2 and Play_Bet_Status in (201,202,203)) as 'jpbets count'," +
-                "(select ifnull(sum(Play_Bet_Stake),0) from player_bets where date(Play_Bet_Timestamp)='"+date+"'  and  Play_Bet_Type=2 and Play_Bet_Status in (201,202,203)) as 'jp stake'," +
-                "(select ifnull(sum(Play_Bet_Possible_Winning),0) from player_bets where date(Play_Bet_Timestamp)='"+date+"' and  Play_Bet_Type=2 and  Play_Bet_Status=202) as 'jp won'," +
-                "(select ifnull(sum(Play_Bet_Stake),0) from player_bets where date(Play_Bet_Timestamp)='"+date+"'  and  Play_Bet_Type=2 and  Play_Bet_Status in (202, 203)) as 'jpbets settled'," +
+                "(select count(Play_Bet_ID) from player_bets where date(Play_Bet_Timestamp)='"+date+"' and Play_Bet_Type=4 and Play_Bet_Status in (201,202,203)) as 'jpbets count'," +
+                "(select ifnull(sum(Play_Bet_Stake),0) from player_bets where date(Play_Bet_Timestamp)='"+date+"'  and  Play_Bet_Type=4 and Play_Bet_Status in (201,202,203)) as 'jp stake'," +
+                "(select ifnull(sum(Play_Bet_Possible_Winning),0) from player_bets where date(Play_Bet_Timestamp)='"+date+"' and  Play_Bet_Type=4 and  Play_Bet_Status=202) as 'jp won'," +
+                "(select ifnull(sum(Play_Bet_Stake),0) from player_bets where date(Play_Bet_Timestamp)='"+date+"'  and  Play_Bet_Type=4 and  Play_Bet_Status in (202, 203)) as 'jpbets settled'," +
                 "(select ifnull(sum(Acc_Amount),0) from user_accounts where DATE(Acc_Date) ='"+date+"' and Acc_Trans_Type = 7) as 'bonus redeemed'," +
                 "(select ifnull(sum(Acc_Amount),0) from user_accounts where DATE(Acc_Date) = '"+date+"' and Acc_Trans_Type = 9) as 'bonus achieved'," +
                 "(select count(distinct(Play_Bet_Mobile)) from player_bets  where DATE(Play_Bet_Timestamp) = '"+date+"' and  Play_Bet_Type = 1 )as 'unique singlebets'," +
                 "(select count(distinct(Play_Bet_Mobile)) from player_bets  where DATE(Play_Bet_Timestamp) = '"+date+"' and  Play_Bet_Type = 3 )as 'unique multibets'," +
-                "(select count(distinct(Play_Bet_Mobile)) from player_bets  where DATE(Play_Bet_Timestamp) = '"+date+"' and  Play_Bet_Type = 2 )as 'unique jpbets'," +
+                "(select count(distinct(Play_Bet_Mobile)) from player_bets  where DATE(Play_Bet_Timestamp) = '"+date+"' and  Play_Bet_Type=4 )as 'unique jpbets'," +
                 "(select count(distinct(Play_Bet_Mobile)) from player_bets  where DATE(Play_Bet_Timestamp) = '"+date+"' and  Play_Bet_Type = 1 or Play_Bet_Type = 3  )as 'unique singleandmultibets'," +
-                "(select count(distinct(Play_Bet_Mobile)) from player_bets  where DATE(Play_Bet_Timestamp) = '"+date+"' and  Play_Bet_Type = 1 or Play_Bet_Type = 2  )as 'unique singleandjpbets'," +
-                "(select count(distinct(Play_Bet_Mobile)) from player_bets  where DATE(Play_Bet_Timestamp) = '"+date+"' and  Play_Bet_Type = 2 or Play_Bet_Type = 3  )as 'unique multiandjpbets'," +
-                "(select count(distinct(Play_Bet_Mobile)) from player_bets  where DATE(Play_Bet_Timestamp) = '"+date+"'  and  Play_Bet_Type = 1 or   Play_Bet_Type = 2 or Play_Bet_Type = 3  )as 'unique allbets'" +
+                "(select count(distinct(Play_Bet_Mobile)) from player_bets  where DATE(Play_Bet_Timestamp) = '"+date+"' and  Play_Bet_Type = 1 or Play_Bet_Type=4  )as 'unique singleandjpbets'," +
+                "(select count(distinct(Play_Bet_Mobile)) from player_bets  where DATE(Play_Bet_Timestamp) = '"+date+"' and  Play_Bet_Type=4 or Play_Bet_Type = 3  )as 'unique multiandjpbets'," +
+                "(select count(distinct(Play_Bet_Mobile)) from player_bets  where DATE(Play_Bet_Timestamp) = '"+date+"'  and  Play_Bet_Type = 1 or   Play_Bet_Type=4 or Play_Bet_Type = 3  )as 'unique allbets'" +
                 "from player  where date(registration_date)='"+date+"' order by registration_date ";
                 System.out.println("getDailySummary==="+dataQuery);
                 

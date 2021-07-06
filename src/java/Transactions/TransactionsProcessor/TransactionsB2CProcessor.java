@@ -57,12 +57,22 @@ public class TransactionsB2CProcessor {
                 String mpesa_code = rs.getString(5);
                 String trans_disburse_no = rs.getString(6);
                 String trans_status = rs.getString(7);
+                String withdrawCharge="0";
+                if(Integer.valueOf(trans_amnt) <1000 )
+                {
+                    withdrawCharge="16";
+                }
+                else
+                {
+                    withdrawCharge="23";
+                }
 
                 dataObj  = new JSONObject();
                 dataObj.put("Trans_ID", trans_id);
                 dataObj.put("Trans_Date", trans_date);
                 dataObj.put("Trans_Mobile", trans_mobile);
                 dataObj.put("Trans_Amount", trans_amnt);
+                dataObj.put("Withdraw_Charge", withdrawCharge);
                 dataObj.put("Trans_MpesaCode", mpesa_code);
                 dataObj.put("Trans_Disburse_Number", trans_disburse_no);
                 dataObj.put("Trans_Status", trans_status);
@@ -75,6 +85,7 @@ public class TransactionsB2CProcessor {
                 dataObj.put("Trans_Date", "0");
                 dataObj.put("Trans_Mobile", "0");
                 dataObj.put("Trans_Amount", "0");
+                dataObj.put("Withdraw_Charge", "0");
                 dataObj.put("Trans_MpesaCode", "0");
                 dataObj.put("Trans_Disburse_Number", "0");
                 dataObj.put("Trans_Status", "0");

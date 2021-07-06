@@ -36,11 +36,12 @@ public class GamesHighlightsProcessor {
         String query = "";
         JSONObject dataObj  = null;
         JSONArray dataArray = new JSONArray();
-        query = "select  Torna_Sport_Name, Torna_Cat_Name, Torna_Name, Torna_Match_Event, Torna_Match_Event_Time, "
+        query = "select Torna_Sport_Name, Torna_Cat_Name, Torna_Name, Torna_Match_Event, Torna_Match_Event_Time, "
                      + "Torna_Match_ID, Torna_Sys_Game_ID, (case when Torna_Match_Status=0 then 'Active' when Torna_Match_Status=1 then 'Inactive' end), "
                      + "(case when Torna_Match_Special_Highlight=1 then 'Other Games' when Torna_Match_Special_Highlight=2 then 'Barner Highlights' when Torna_Match_Special_Highlight=0 then 'Page Highlights' end),"
                      + "Torna_Match_Special_Highlight,Jackpot_Status from tournament where date(Torna_Match_Event_Time) between '" + fromDate + "' and '" + toDate + "' and "
-                     + "Torna_Match_Status = '0' and Torna_Match_Status='0' and Torna_Match_Stage !='Suspended' and Torna_Match_Stage !='Ended' "
+                     + "Torna_Match_Status = '0' and Torna_Match_Status='0' and Torna_Match_Stage !='Suspended' and Torna_Match_Stage !='Ended' and "
+                     + "Torna_Match_ID in (select Odd_Mark_Match_ID from the_odds where Odd_Mark_Status='Active' and Odd_Market_ID=1 and Odd_Mark_Match_ID = Torna_Match_ID)"
                      + "and Torna_Match_Stage !='Deactivated' and Torna_Match_Event_Time >=now() order by Torna_Match_Highlight_Order desc";
         System.out.println("getgamesHighlits==="+query);
 
@@ -108,7 +109,8 @@ public class GamesHighlightsProcessor {
                      + "Torna_Match_ID, Torna_Sys_Game_ID, (case when Torna_Match_Status=0 then 'Active' when Torna_Match_Status=1 then 'Inactive' end), "
                      + "(case when Torna_Match_Special_Highlight=1 then 'Other Games' when Torna_Match_Special_Highlight=2 then 'Barner Highlights' when Torna_Match_Special_Highlight=0 then 'Page Highlights' end),"
                      + "Torna_Match_Special_Highlight,Jackpot_Status from tournament where date(Torna_Match_Event_Time)='" + date + "' and "
-                     + "Torna_Match_Status = '0' and Torna_Match_Status='0' and Torna_Match_Stage !='Suspended' and Torna_Match_Stage !='Ended' "
+                     + "Torna_Match_Status = '0' and Torna_Match_Status='0' and Torna_Match_Stage !='Suspended' and Torna_Match_Stage !='Ended' and "
+                    + "Torna_Match_ID in (select Odd_Mark_Match_ID from the_odds where Odd_Mark_Status='Active' and Odd_Market_ID=1 and Odd_Mark_Match_ID = Torna_Match_ID)"
                      + "and Torna_Match_Stage !='Deactivated' and Torna_Match_Event_Time >=now() order by Torna_Match_Highlight_Order desc";
         System.out.println("filtersgamesHighlits==="+dataQuery);
 

@@ -6,8 +6,9 @@ package Sporting.SportingAPI;
  * and open the template in the editor.
  */
 
-import Sporting.SportingProcessor.GamesHighlightsProcessor;
+import Sporting.SportingProcessor.EventsProcessor;
 import Sporting.SportingProcessor.JackpotHighlights;
+import Sporting.SportingProcessor.JackpotProcessor;
 import Utility.Utility;
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -27,18 +28,18 @@ import org.json.JSONException;
  *
  * @author jac
  */
-@WebServlet(urlPatterns = {"/GamesHighlight"})
-public class GamesHighlightAPI extends HttpServlet {
+@WebServlet(urlPatterns = {"/api/jackpot/data"})
+public class JackpotAPI extends HttpServlet {
 
-/**
- * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
- * methods.
- *
- * @param request servlet request
- * @param response servlet response
- * @throws ServletException if a servlet-specific error occurs
- * @throws IOException if an I/O error occurs
- */
+    /**
+     * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
+     * methods.
+     *
+     * @param request servlet request
+     * @param response servlet response
+     * @throws ServletException if a servlet-specific error occurs
+     * @throws IOException if an I/O error occurs
+     */
     Connection conn;
     String response,username ,password,function,maindata;
     JSONObject jsonobj=null;JSONArray responseobj  = null;
@@ -61,106 +62,74 @@ public class GamesHighlightAPI extends HttpServlet {
             jb.append(line);
         }
 
-        System.out.println("gamesHighlightData==="+jb.toString());
+        System.out.println("jackpotData===="+jb.toString());
         jsonobj = new JSONObject(jb.toString());
         function=jsonobj.getString("function");
         maindata=jsonobj.getString("data");
 
-
-        if(function.equals("getGamesHighlight"))
+        if(function.equals("getJackpots"))
         {
-            String []respo=new Utility().getDatesRange(+2);
-            String todate=respo[0];
-            String fromdate=respo[1];
-            responseobj=new GamesHighlightsProcessor().getgamesHighlits(fromdate,todate);
+            String []respo=new Utility().getDatesRange(0);
+            String fromdate=respo[0];
+            String todate=respo[1];
+            System.out.println(fromdate+"==intidates=="+todate);
+            responseobj=new JackpotProcessor().getJackports();
         }
 
-
-        if(function.equals("filterGamesHighlight"))
+        if(function.equals("getJackpotGames"))
         {
-             String date=maindata.trim();
-             responseobj=new GamesHighlightsProcessor().filtergamesHighlits(date);
+            String jackpotID=maindata;
+            String matchIDs=new JackpotProcessor().getJackpotMatchIDs(jackpotID);
+
+            responseobj=new JackpotProcessor().getJackpotGames(matchIDs);
         }
 
-
-        if(function.equals("setGamesHighlight"))
+        if(function.equals("deleteJackpot"))
         {
-             String [] highlights=null;
-             String data=maindata.trim();
-             responseobj=new GamesHighlightsProcessor().setHighlights(data);
-        }
-
-        if(function.equals("setGamesBannerHighlight"))
-        {
-             String [] highlights=null;
-             String data=maindata.trim();
-             responseobj=new GamesHighlightsProcessor().setBannerHighlights(data);
-        } 
-
-        if(function.equals("unBannerHighlightGames"))
-        {
-             String [] highlights=null;
-             String data=maindata.trim();
-
-             responseobj=new GamesHighlightsProcessor().setBannerunHighlights(data);
-        }
-
-
-        if(function.equals("setJackpotGames"))
-        {
-            JSONObject dataObj  = new JSONObject();
-            JSONArray dataArray = new JSONArray();
-            String []data=maindata.trim().split("#");
-
-            int validateJackpot=new JackpotHighlights().validateJackpotCreation();
-            if(validateJackpot != 10)
+            String jackpotID=maindata;
+            int status=new JackpotHighlights().unMarkJackpotGames(Integer.valueOf(jackpotID));
+            if(status == 200)
             {
-                int status=new JackpotHighlights().highlightJackpotGames(data);
-               if(status == 200)
-               {
-                   dataObj.put("message", "highlight successful");
-                   dataArray.put(dataObj);
-               }
-               else
-               {
-                   dataObj.put("error", "highlight failed");
-                   dataArray.put(dataObj);
-               }
+                responseobj=new JackpotProcessor().getDeleteJackpot(jackpotID);
             }
             else
             {
-               dataObj.put("error", "Jackpot exist");
-               dataArray.put(dataObj);
+                JSONObject dataObj  = new JSONObject();
+                JSONArray dataArray = new JSONArray();
+                
+                dataObj.put("error", "Request failed");
+                dataArray.put(dataObj);
+                responseobj = dataArray;
             }
-            
-            responseobj=dataArray; 
-        } 
-
-        if(function.equals("unHighlightJackpotGames"))
+        }
+        
+        
+        if(function.equals("setJackpotWinners"))
         {
-             String [] highlights=null;
-             String data=maindata.trim();
-
-             responseobj=new GamesHighlightsProcessor().setunHighlightJackpot(data);
+            String []data=maindata.split("#");
+            String jackpotID=data[0];
+            String winners=data[1];
+            
+            responseobj=new JackpotProcessor().setJackpotWinners(jackpotID,winners);
+        }
+        
+        if(function.equals("getJackpotWinners"))
+        {
+            String jackpotID=maindata;
+            responseobj=new JackpotProcessor().getJackpotWinners(Integer.valueOf(jackpotID));
         }
 
-        if(function.equals("unHighlightGames"))
-        {
-             String [] highlights=null;
-             String data=maindata.trim();
-
-             responseobj=new GamesHighlightsProcessor().setunHighlights(data);
-        } 
-
-
-     }
+    }
     catch (IOException | JSONException ex) 
-    { ex.getMessage();}
+    { 
+        ex.getMessage();
+    }
 
     PrintWriter out = resp.getWriter(); 
     out.print(responseobj);
-}
+    }
     
+       
 
     // <editor-fold defaultstate="collapsed" desc="HttpServlet methods. Click on the + sign on the left to edit the code.">
     /**

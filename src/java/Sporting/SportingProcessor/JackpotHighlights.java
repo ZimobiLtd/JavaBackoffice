@@ -21,10 +21,42 @@ import java.text.SimpleDateFormat;
  */
 public class JackpotHighlights {
     
-    SimpleDateFormat sdf=new SimpleDateFormat("yyyy-MM-dd hh:mm:ss");
+    SimpleDateFormat sdf=new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
     
     public JackpotHighlights()
     {
+    }
+    
+    
+    public int validateJackpotCreation()
+    {
+        ResultSet rs=null;Connection conn=null;Statement stmt=null;PreparedStatement ps=null;
+        int count=0;
+        String query = "select count(id) from jackpot where  date(start_date)=curdate() ";
+        System.out.println("validateJackpotCreation==="+query);
+
+        try
+        {
+            conn = new DBManager().getDBConnection();
+            stmt = conn.createStatement();
+            rs = stmt.executeQuery(query);
+
+            while (rs.next())
+            {
+               count = rs.getInt(1);
+            }
+
+        }
+        catch (SQLException ex) 
+        {
+            System.out.println("Error validateJackpotCreation=== "+ex.getMessage());
+        }
+        finally
+        {
+            new Utility().doFinally(conn,stmt,rs,ps);
+        }
+
+    return count;
     }
     
     
@@ -72,7 +104,7 @@ public class JackpotHighlights {
         String []dates=null;
         
         ResultSet rs=null;Connection conn=null;Statement stmt=null;PreparedStatement ps=null;
-        String query = "select min(Torna_Match_Event_Time),max(Torna_Match_Event_Time) from tournament where Torna_Match_ID in ("+matchIDsValues+") limit 1";
+        String query = "select date_sub(min(Torna_Match_Event_Time),INTERVAL 15 MINUTE),max(Torna_Match_Event_Time) from tournament where Torna_Match_ID in ("+matchIDsValues+") limit 1";
         System.out.println("getMinMaxDate==="+query);
 
 
@@ -170,6 +202,38 @@ public class JackpotHighlights {
         catch (SQLException ex) 
         {
             System.out.println("Error markJackpotGames=== "+ex.getMessage());
+        }
+        finally
+        {
+            new Utility().doFinally(conn,stmt,rs,ps);
+        }
+    return status;    
+    }
+    
+    
+    
+    
+    public int unMarkJackpotGames(int jackpotID) 
+    {
+        ResultSet rs=null;Connection conn=null;Statement stmt=null;PreparedStatement ps=null;
+        int status=500; 
+        String query = "update tournament set jackpot_status=0,Jackpot_Ref_No=0  where Jackpot_Ref_No="+jackpotID+" ";
+        System.out.println("unMarkJackpotGames==="+query);
+        
+        try
+        {
+            conn = new DBManager().getDBConnection();
+            stmt = conn.createStatement();
+            
+            int i=stmt.executeUpdate(query);
+            if(i > 0)
+            {
+               status=200;  
+            }            
+        }
+        catch (SQLException ex) 
+        {
+            System.out.println("Error unMarkJackpotGames=== "+ex.getMessage());
         }
         finally
         {

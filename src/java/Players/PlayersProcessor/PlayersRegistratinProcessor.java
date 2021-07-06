@@ -32,12 +32,15 @@ public class PlayersRegistratinProcessor {
     public JSONArray getPlayerRegistrations(String from,String to)
     {
         ResultSet rs=null;Connection conn=null;Statement stmt=null;PreparedStatement ps=null;
-        String dataQuery = "select id, msisdn, ifnull(`name`,'no name'), ifnull(email,'no email'), registration_date, (select ifnull(sum(Acc_Amount),0) from user_accounts where Acc_Mobile = msisdn ), (select ifnull(sum(Acc_Bonus_Amount),0) from user_accounts where Acc_Mobile=msisdn and Acc_Bonus_Status=1),"
-                + "(case when User_Channel=1 then'USSD' when User_Channel=2 then 'SMS' when User_Channel=3 then 'Computer Web' when User_Channel=4 then 'Mobile Web' when User_Channel=0 then 'No Channel'  end), "
-                + "(case when `status`=1 then 'Inactive' when `status`=0 then 'Active' end), " +
-                " (select ifnull(max(Acc_Date),'0') from user_accounts where Acc_Mobile = msisdn and Acc_Trans_Type=1) as 'Last Deposit', " +
-                " (select count(Play_Bet_ID) from player_bets where Play_Bet_Mobile = msisdn and Play_Bet_Status <> 206) as 'Bets Count' " +
-                " from player where date(registration_date) between '"+from+"' and '"+to+"' order by registration_date desc ";
+        String dataQuery = "select id, msisdn, ifnull(`name`,'no name'), ifnull(email,'no email'), registration_date, (select ifnull(sum(Acc_Amount),0) from user_accounts "
+                        + "where Acc_Mobile = msisdn ), (select ifnull(sum(Acc_Bonus_Amount),0) from user_accounts where Acc_Mobile=msisdn and Acc_Bonus_Status=1),"
+                        + "(select ifnull(sum(Acc_Bonus_Amount),0) from user_accounts where Acc_Mobile=msisdn and Acc_Bonus_Status=12),"
+                        + "(case when User_Channel=1 then'USSD' when User_Channel=2 then 'SMS' when User_Channel=3 then 'Computer Web' when User_Channel=4 then 'Mobile Web' when User_Channel=0 then 'No Channel'  end), "
+                        + "(case when `status`=1 then 'Inactive' when `status`=0 then 'Active' end), " +
+                        " (select ifnull(max(Acc_Date),'0') from user_accounts where Acc_Mobile = msisdn and Acc_Trans_Type=1) as 'Last Deposit', " +
+                        " (select count(Play_Bet_ID) from player_bets where Play_Bet_Mobile = msisdn and Play_Bet_Status <> 206) as 'Bets Count', " +
+                        "(select referee  from refferafriend where refered=msisdn limit 1) as 'Referee' "+
+                        " from player where date(registration_date) between '"+from+"' and '"+to+"' order by registration_date desc ";
         System.out.println("getPlayerRegistrations==="+dataQuery);
 
         JSONObject dataObj  = null;
@@ -63,10 +66,22 @@ public class PlayersRegistratinProcessor {
                 String regdate = sdf.format(rs.getTimestamp(5));
                 String balanceRM = rs.getString(6);
                 String balanceBM = rs.getString(7);
-                String channel = rs.getString(8);
-                String status = rs.getString(9);
-                String lastdepositdate = rs.getString(10);
-                String betscount = rs.getString(11);
+                String refferalBM = rs.getString(8);
+                String channel = rs.getString(9);
+                String status = rs.getString(10);
+                String lastdepositdate = rs.getString(11);
+                String betscount = rs.getString(12);
+                String referee = rs.getString(13);
+                String referalStatus="0";
+                if(referee == null)
+                {
+                    referee="No referee";
+                    referalStatus="Not refered";
+                }
+                else
+                {
+                    referalStatus="Referred";
+                }
 
                 dataObj  = new JSONObject();
                 dataObj.put("ID", id);
@@ -76,10 +91,13 @@ public class PlayersRegistratinProcessor {
                 dataObj.put("Registration_Date", regdate);
                 dataObj.put("BalanceRM", String.format("%.2f", Double.valueOf(balanceRM)));
                 dataObj.put("BalanceBM", String.format("%.2f", Double.valueOf(balanceBM)));
+                dataObj.put("RefferalBM", String.format("%.2f", Double.valueOf(refferalBM)));
                 dataObj.put("Registration_Channel", channel);
                 dataObj.put("LastDeposit_Date", lastdepositdate);
                 dataObj.put("BetsCount", betscount);
                 dataObj.put("Status", status);
+                dataObj.put("Referee", referee);
+                dataObj.put("ReferalStatus", referalStatus);
                 dataArray.put(dataObj);
             }
 
@@ -111,7 +129,8 @@ public class PlayersRegistratinProcessor {
                 + "(case when User_Channel=1 then'USSD' when User_Channel=2 then 'SMS' when User_Channel=3 then 'Computer Web' when User_Channel=4 then 'Mobile Web' end), "
                 + "(case when `status`=1 then 'Inactive' when `status`=0 then 'Active' end), " +
                 " (select ifnull(max(Acc_Date),'0') from user_accounts where Acc_Mobile = msisdn and Acc_Trans_Type=1) as 'Last Deposit', " +
-                " (select count(Play_Bet_ID) from player_bets where Play_Bet_Mobile = msisdn and Play_Bet_Status <> 206) as 'Bets Count' " +
+                " (select count(Play_Bet_ID) from player_bets where Play_Bet_Mobile = msisdn and Play_Bet_Status <> 206) as 'Bets Count', " +
+                " (select referee  from refferafriend where refered=msisdn limit 1) as 'Referee' "+
                 " from player where msisdn='"+mobile_no+"' order by registration_date desc ";
         System.out.println("getPlayerRegistrations==="+dataQuery);
 
@@ -142,6 +161,17 @@ public class PlayersRegistratinProcessor {
                 String status = rs.getString(9);
                 String lastdepositdate = rs.getString(10);
                 String betscount = rs.getString(11);
+                String referee = rs.getString(12);
+                String referalStatus="0";
+                if(referee == null)
+                {
+                    referee="No referee";
+                    referalStatus="Not refered";
+                }
+                else
+                {
+                    referalStatus="Referred";
+                }
 
                 dataObj  = new JSONObject();
                 dataObj.put("ID", id);
@@ -154,6 +184,8 @@ public class PlayersRegistratinProcessor {
                 dataObj.put("Registration_Channel", channel);
                 dataObj.put("LastDeposit_Date", lastdepositdate);
                 dataObj.put("BetsCount", betscount);
+                dataObj.put("Referee", referee);
+                dataObj.put("ReferalStatus", referalStatus);
                 dataObj.put("Status", status);
                 dataArray.put(dataObj);
             }

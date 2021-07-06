@@ -53,7 +53,8 @@ public class EventsProcessor {
                     + "(select Odd_Mark_Odd from the_odds where Odd_Mark_Match_ID = Torna_Match_ID  "
                     + "and Odd_Mark_Desc='no' and Odd_Market_ID=29 limit 1) as 'ng' from tournament "
                     + "where date(Torna_Match_Event_Time) between '" + fromDate + "' and '" + toDate + "' and Torna_Match_Status = 0 and "
-                    + "(select count(Odd_Mark_Table_ID) from the_odds where Odd_Mark_Match_ID = Torna_Match_ID ) > 0 "
+                    + "(select count(Odd_Mark_Table_ID) from the_odds where Odd_Mark_Match_ID = Torna_Match_ID ) > 0 and "
+                    + "Torna_Match_ID in (select Odd_Mark_Match_ID from the_odds where Odd_Mark_Status='Active' and Odd_Market_ID=1 and Odd_Mark_Match_ID = Torna_Match_ID)"
                     + "order by Torna_Match_Event_Time desc";
         System.out.println("getevents==="+query);
 
@@ -141,6 +142,7 @@ public class EventsProcessor {
                     + "(select Odd_Mark_Odd from the_odds where Odd_Mark_Match_ID = Torna_Match_ID  "
                     + "and Odd_Mark_Desc='no' and Odd_Market_ID=29 limit 1) as 'ng' from tournament "
                     + "where Torna_Match_Event_Time between '" + fromDate + "' and '" + toDate + "' and Torna_Match_Status = 0 and "
+                    + "Torna_Match_ID in (select Odd_Mark_Match_ID from the_odds where Odd_Mark_Status='Active' and Odd_Market_ID=1 and Odd_Mark_Match_ID = Torna_Match_ID) and "
                     + "(select count(Odd_Mark_Table_ID) from the_odds where Odd_Mark_Match_ID = Torna_Match_ID ) > 0  "+filters+" "
                     + "order by Torna_Match_Event_Time desc";
 

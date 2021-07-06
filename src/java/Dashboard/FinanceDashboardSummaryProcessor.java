@@ -136,7 +136,7 @@ public class FinanceDashboardSummaryProcessor {
                 + "(select count(Play_Bet_Slip_ID) from player_bets where date(Play_Bet_Timestamp) between '" + fromDate + "' and '" + toDate + "' and Play_Bet_Channel = 4) "
                 + "from player_bets where date(Play_Bet_Timestamp) between '" + fromDate + "' and '" + toDate + "' and Play_Bet_Channel = 1 " ;
 
-        dataQueryBetsByBetType="select ifnull(Play_Bet_Type,0), ifnull(count(Play_Bet_Type),0) from player_bets  where date(Play_Bet_Timestamp) between '" + fromDate + "' and '" + toDate + "' GROUP BY Play_Bet_Type";
+        dataQueryBetsByBetType="select ifnull(Play_Bet_Type,0), ifnull(count(Play_Bet_Type),0) from player_bets  where date(Play_Bet_Timestamp) between '" + fromDate + "' and '" + toDate + "' and Play_Bet_Status in (201,202,203) GROUP BY Play_Bet_Type";
         
         
         String financequeries=dataQueryDeposit+"#"+dataQueryWithdrawals+"#"+dataQueryBalance;
@@ -335,7 +335,7 @@ public class FinanceDashboardSummaryProcessor {
                             case 1:
                                 Single_Bets = rs.getString(2);
                             break;
-                            case 2:
+                            case 4:
                                 Jackpot_Bets = rs.getString(2);
                             break;
                             case 3:

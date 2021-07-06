@@ -48,8 +48,8 @@ public class BettingReportProcessor {
             stmt = conn.createStatement();
             dataQuery = "select Play_Bet_Timestamp, Play_Bet_Slip_ID, (case when Play_Bet_Status=200 then 'Pending'  when Play_Bet_Status=201 then 'Placed' when Play_Bet_Status=202 then 'Won' when Play_Bet_Status=203 then 'Lost' when Play_Bet_Status=204 then 'Rejected' when Play_Bet_Status=205 then 'Cancelled' when Play_Bet_Status=209 then 'Voided' end)as 'bet_status', "+
                     " Chan_Mode_Name , Play_Bet_Mobile, Play_Bet_Stake, Play_Bet_Bonus_Stake , Play_Bet_Possible_Winning, Play_Bet_Gross_Possible_Winning, " +
-                    "Play_Bet_Group_ID, Play_Bet_Possible_BonusWinning,(Case when Play_Bet_Type=1 then 'Single Bet' when Play_Bet_Type=2 then 'Jackpot' when Play_Bet_Type=3 then 'Multi Bet' end)  from player_bets ,channels_used where  Chan_Table_ID = play_bet_Channel  " +
-                    "and play_Bet_Type in (0,1,2,3)  and Play_Bet_Status in (200,201, 202, 203, 204,205,209) and  player_bets.Play_Bet_Slip_ID='"+betSlipID+"' order by Play_Bet_Timestamp desc ";        
+                    "Play_Bet_Group_ID, Play_Bet_Possible_BonusWinning,(Case when Play_Bet_Type=1 then 'Single Bet' when Play_Bet_Type=4 then 'Jackpot' when Play_Bet_Type=3 then 'Multi Bet' end)  from player_bets ,channels_used where  Chan_Table_ID = play_bet_Channel  " +
+                    "and play_Bet_Type in (0,1,2,3,4)  and Play_Bet_Status in (200,201, 202, 203, 204,205,209) and  player_bets.Play_Bet_Slip_ID='"+betSlipID+"' order by Play_Bet_Timestamp desc ";        
 
             System.out.println("getBettingReportByBetslipID==="+dataQuery);
 
@@ -251,8 +251,8 @@ public class BettingReportProcessor {
         {
             dataQuery = "select Play_Bet_Timestamp, Play_Bet_Slip_ID, (case when Play_Bet_Status=200 then 'Pending'  when Play_Bet_Status=201 then 'Placed' when Play_Bet_Status=202 then 'Won' when Play_Bet_Status=203 then 'Lost' when Play_Bet_Status=204 then 'Rejected' when Play_Bet_Status=205 then 'Cancelled' when Play_Bet_Status=209 then 'Voided' end)as 'bet_status', "+
                         " Chan_Mode_Name , Play_Bet_Mobile, Play_Bet_Stake, Play_Bet_Bonus_Stake , Play_Bet_Possible_Winning, Play_Bet_Gross_Possible_Winning, " +
-                        "Play_Bet_Group_ID, Play_Bet_Possible_BonusWinning,(Case when Play_Bet_Type=1 then 'Single Bet' when Play_Bet_Type=2 then 'Jackpot' when Play_Bet_Type=3 then 'Multi Bet' end) from player_bets ,channels_used where  Chan_Table_ID = play_bet_Channel and  date(Play_Bet_Timestamp) between   '"+fromDate+"' and '"+toDate+"'  " +
-                        "and play_Bet_Type in (0,1,2,3)  and Play_Bet_Status in (200,201, 202, 203, 204,205) order by Play_Bet_Timestamp desc ";
+                        "Play_Bet_Group_ID, Play_Bet_Possible_BonusWinning,(Case when Play_Bet_Type=1 then 'Single Bet' when Play_Bet_Type=4 then 'Jackpot' when Play_Bet_Type=3 then 'Multi Bet' end) from player_bets ,channels_used where  Chan_Table_ID = play_bet_Channel and  date(Play_Bet_Timestamp) between   '"+fromDate+"' and '"+toDate+"'  " +
+                        "and play_Bet_Type in (0,1,2,3,4)  and Play_Bet_Status in (200,201, 202, 203, 204,205,209) order by Play_Bet_Timestamp desc ";
             
             conn = new DBManager().getDBConnection();
             stmt = conn.createStatement();
@@ -467,15 +467,15 @@ public class BettingReportProcessor {
             {
                 dataQuery = "select Play_Bet_Timestamp, Play_Bet_Slip_ID, (case when Play_Bet_Status=200 then 'Pending'  when Play_Bet_Status=201 then 'Placed' when Play_Bet_Status=202 then 'Won' when Play_Bet_Status=203 then 'Lost' when Play_Bet_Status=204 then 'Rejected' when Play_Bet_Status=205 then 'Cancelled' when Play_Bet_Status=209 then 'Voided' end)as 'bet_status', "+
                         " Chan_Mode_Name , Play_Bet_Mobile, Play_Bet_Stake, Play_Bet_Bonus_Stake , Play_Bet_Possible_Winning, Play_Bet_Gross_Possible_Winning, " +
-                        "Play_Bet_Group_ID, Play_Bet_Possible_BonusWinning,(Case when Play_Bet_Type=1 then 'Single Bet' when Play_Bet_Type=2 then 'Jackpot' when Play_Bet_Type=3 then 'Multi Bet' end) from player_bets ,channels_used where  Chan_Table_ID = play_bet_Channel  " +
-                        "and play_Bet_Type in (0,1,2,3)  and Play_Bet_Status in (200,201, 202, 203, 204,205,209) and  player_bets.Play_Bet_Mobile='"+mobile+"' order by Play_Bet_Timestamp desc ";        
+                        "Play_Bet_Group_ID, Play_Bet_Possible_BonusWinning,(Case when Play_Bet_Type=1 then 'Single Bet' when Play_Bet_Type=4 then 'Jackpot' when Play_Bet_Type=3 then 'Multi Bet' end) from player_bets ,channels_used where  Chan_Table_ID = play_bet_Channel  " +
+                        "and play_Bet_Type in (0,1,2,3,4)  and Play_Bet_Status in (200,201, 202, 203, 204,205,209) and  player_bets.Play_Bet_Mobile='"+mobile+"' order by Play_Bet_Timestamp desc ";        
             }
             else
             {
                 dataQuery = "select Play_Bet_Timestamp, Play_Bet_Slip_ID, (case when Play_Bet_Status=200 then 'Pending'  when Play_Bet_Status=201 then 'Placed' when Play_Bet_Status=202 then 'Won' when Play_Bet_Status=203 then 'Lost' when Play_Bet_Status=204 then 'Rejected' when Play_Bet_Status=205 then 'Cancelled'  when Play_Bet_Status=209 then 'Voided' end)as 'bet_status', "+
                         " Chan_Mode_Name , Play_Bet_Mobile, Play_Bet_Stake, Play_Bet_Bonus_Stake , Play_Bet_Possible_Winning, Play_Bet_Gross_Possible_Winning, " +
-                        "Play_Bet_Group_ID, Play_Bet_Possible_BonusWinning,(Case when Play_Bet_Type=1 then 'Single Bet' when Play_Bet_Type=2 then 'Jackpot' when Play_Bet_Type=3 then 'Multi Bet' end)  from player_bets ,channels_used where  Chan_Table_ID = play_bet_Channel and  date(Play_Bet_Timestamp) between   '"+fromDate+"' and '"+toDate+"'  " +
-                        "and play_Bet_Type in (0,1,2,3)  and Play_Bet_Status in (200,201, 202, 203, 204,205,209) and  player_bets.Play_Bet_Mobile='"+mobile+"' order by Play_Bet_Timestamp desc ";                
+                        "Play_Bet_Group_ID, Play_Bet_Possible_BonusWinning,(Case when Play_Bet_Type=1 then 'Single Bet' when Play_Bet_Type=4 then 'Jackpot' when Play_Bet_Type=3 then 'Multi Bet' end)  from player_bets ,channels_used where  Chan_Table_ID = play_bet_Channel and  date(Play_Bet_Timestamp) between   '"+fromDate+"' and '"+toDate+"'  " +
+                        "and play_Bet_Type in (0,1,2,3,4)  and Play_Bet_Status in (200,201, 202, 203, 204,205,209) and  player_bets.Play_Bet_Mobile='"+mobile+"' order by Play_Bet_Timestamp desc ";                
             }
             System.out.println("getPlayerBettingReport==="+dataQuery);
 
@@ -652,7 +652,9 @@ public class BettingReportProcessor {
 
             JSONObject dataObj1  = new JSONObject();
             JSONArray dataArray1 = new JSONArray();
-            String query1=" select ifnull(sum(Acc_Amount),0),(select ifnull(sum(Acc_Bonus_Amount),0) from user_accounts where Acc_Mobile='"+mobile+"' and Acc_Bonus_Status=1),date(registration_date) ,(select ifnull(sum(Acc_Amount),0) from user_accounts where Acc_Trans_Type=4  and Acc_Mobile='"+mobile+"' ) as 'total betstake' ," +
+            String query1="select ifnull(sum(Acc_Amount),0),(select ifnull(sum(Acc_Bonus_Amount),0) from user_accounts where Acc_Mobile='"+mobile+"' and Acc_Bonus_Ref_No=1),"
+                        + "(select ifnull(sum(Acc_Bonus_Amount),0) from user_accounts where Acc_Mobile='"+mobile+"' and Acc_Bonus_Ref_No=12),"
+                        + "date(registration_date) ,(select ifnull(sum(Acc_Amount),0) from user_accounts where Acc_Trans_Type=4  and Acc_Mobile='"+mobile+"' ) as 'total betstake' ," +
                           "(select ifnull(sum(Acc_Amount),0) from user_accounts where Acc_Mpesa_Trans_No like 'BET_WIN%' and Acc_Trans_Type in (3,9) and Acc_Mobile='"+mobile+"' ) as 'total win' from user_accounts,player where Acc_Mobile='"+mobile+"' and msisdn='"+mobile+"' ";// group by Acc_Mobile
             System.out.println("getPlayerAcc==="+query1);
             rs = stmt.executeQuery(query1);
@@ -660,9 +662,10 @@ public class BettingReportProcessor {
             {
                 dataObj1.put("Balance", String.format("%.2f", Double.valueOf(rs.getString(1))));
                 dataObj1.put("BonusBalance", rs.getString(2));
-                dataObj1.put("RegistrationDate", rs.getString(3));
-                dataObj1.put("TotalBetStake", rs.getString(4).replace("-", "") );//String.format("%.2f", Double.valueOf(rs.getString(2)))
-                dataObj1.put("TotalWinnings", rs.getString(5));//String.format("%.2f", Double.valueOf(rs.getString(3)))
+                dataObj1.put("RefferalBonusBalance", rs.getString(3));
+                dataObj1.put("RegistrationDate", rs.getString(4));
+                dataObj1.put("TotalBetStake", rs.getString(5).replace("-", "") );//String.format("%.2f", Double.valueOf(rs.getString(2)))
+                dataObj1.put("TotalWinnings", rs.getString(6));//String.format("%.2f", Double.valueOf(rs.getString(3)))
 
                 dataArray1.put(dataObj1);
 
@@ -703,8 +706,8 @@ public class BettingReportProcessor {
         {
             dataQuery = "select Play_Bet_Timestamp, Play_Bet_Slip_ID, (case when Play_Bet_Status=200 then 'Pending'  when Play_Bet_Status=201 then 'Placed' when Play_Bet_Status=202 then 'Won' when Play_Bet_Status=203 then 'Lost' when Play_Bet_Status=204 then 'Rejected' when Play_Bet_Status=205 then 'Cancelled'  when Play_Bet_Status=209 then 'Voided' end)as 'bet_status', "+
                      " Chan_Mode_Name , Play_Bet_Mobile, Play_Bet_Stake, Play_Bet_Bonus_Stake , Play_Bet_Possible_Winning, Play_Bet_Gross_Possible_Winning, " +
-                     "Play_Bet_Group_ID, Play_Bet_Possible_BonusWinning,(Case when Play_Bet_Type=1 then 'Single Bet' when Play_Bet_Type=2 then 'Jackpot' when Play_Bet_Type=3 then 'Multi Bet' end)  from player_bets ,channels_used where  Chan_Table_ID = play_bet_Channel  " +
-                     "and play_Bet_Type in (0,1,2,3)  and Play_Bet_Status in (200,201, 202, 203, 204,205,209) and  player_bets.Play_Bet_Mobile='"+mobile+"' order by Play_Bet_Timestamp desc ";        
+                     "Play_Bet_Group_ID, Play_Bet_Possible_BonusWinning,(Case when Play_Bet_Type=1 then 'Single Bet' when Play_Bet_Type=4 then 'Jackpot' when Play_Bet_Type=3 then 'Multi Bet' end)  from player_bets ,channels_used where  Chan_Table_ID = play_bet_Channel  " +
+                     "and play_Bet_Type in (0,1,2,3,4)  and Play_Bet_Status in (200,201, 202, 203, 204,205,209) and  player_bets.Play_Bet_Mobile='"+mobile+"' order by Play_Bet_Timestamp desc ";        
             System.out.println("getPlayerBettingReportByMobile==="+dataQuery);
 
             conn = new DBManager().getDBConnection();

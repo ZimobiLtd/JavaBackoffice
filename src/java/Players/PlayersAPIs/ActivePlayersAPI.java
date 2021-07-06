@@ -93,11 +93,11 @@ public class ActivePlayersAPI extends HttpServlet {
                 }
                 else if(type.equals("Jackpot"))
                 {
-                    filters="and Play_Bet_Type=1";
+                    filters="and Play_Bet_Type=4";
                 }
                 else if(type.equals("All"))
                 {
-                    filters="and Play_Bet_Type in(1,2,3)";
+                    filters="and Play_Bet_Type in(1,2,3,4)";
                 }
 
                 responseobj=new ActivePlayersProcessor().getActivePlayer(fromdate ,todate,filters);                       

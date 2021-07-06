@@ -221,7 +221,7 @@ public class Betting_TurnOver extends HttpServlet {
                 ResultSet rs=null;
                 
                 dataQuery = "SELECT Play_Bet_ID,Play_Bet_Slip_ID, Play_Bet_Mobile,Play_Bet_Timestamp,Play_Bet_Stake,Play_Bet_Status,Play_Bet_Possible_Winning, ifnull(Play_Bet_Settle_Bet_Time,'0000-00-00 00:00'), "+
-                "Play_Bet_Bonus_Stake, (case when Play_Bet_Type=1 then'Singlebet' when Play_Bet_Type=2 then 'Jackpot' when Play_Bet_Type=3 then 'Multibet' end) as 'bet _type', "+
+                "Play_Bet_Bonus_Stake, (case when Play_Bet_Type=1 then'Singlebet' when Play_Bet_Type=4 then 'Jackpot' when Play_Bet_Type=3 then 'Multibet' end) as 'bet _type', "+
                 "Play_Bet_Bonus_Winning FROM player_bets where date(Play_Bet_Timestamp) between '"+fromDate+"' and '"+toDate+"'   and play_Bet_Type in (1,2,3) and "+
                 "Play_Bet_Status in (201, 202, 203, 204, 205, 206) order by Play_Bet_Timestamp desc";              
                   
@@ -453,7 +453,7 @@ public class Betting_TurnOver extends HttpServlet {
                 ResultSet rs=null;
                 
                 dataQuery = "SELECT Play_Bet_ID,Play_Bet_Slip_ID, Play_Bet_Mobile,Play_Bet_Timestamp,Play_Bet_Stake,Play_Bet_Status,Play_Bet_Possible_Winning, ifnull(ifnull(Play_Bet_Settle_Bet_Time,'0000-00-00 00:00'),'0000-00-00 00:00'), "+
-                "Play_Bet_Bonus_Stake, (case when Play_Bet_Type=1 then'Singlebet' when Play_Bet_Type=2 then 'Jackpot' when Play_Bet_Type=3 then 'Multibet' end) as 'bet _type', "+
+                "Play_Bet_Bonus_Stake, (case when Play_Bet_Type=1 then'Singlebet' when Play_Bet_Type=4 then 'Jackpot' when Play_Bet_Type=3 then 'Multibet' end) as 'bet _type', "+
                 "Play_Bet_Bonus_Winning FROM player_bets where date(Play_Bet_Timestamp) between '"+fromDate+"' and '"+toDate+"'  and "+bet_type+" and "+bet_status+"  order by Play_Bet_Timestamp desc";              
                   
                 rs = stmt.executeQuery(dataQuery);
@@ -695,7 +695,7 @@ public class Betting_TurnOver extends HttpServlet {
                 ResultSet rs=null;
                 
                 dataQuery = "SELECT Play_Bet_ID,Play_Bet_Slip_ID, Play_Bet_Mobile,Play_Bet_Timestamp,Play_Bet_Stake,Play_Bet_Status,Play_Bet_Possible_Winning, ifnull(Play_Bet_Settle_Bet_Time,'0000-00-00 00:00'), "+
-                "Play_Bet_Bonus_Stake, (case when Play_Bet_Type=1 then'Singlebet' when Play_Bet_Type=2 then 'Jackpot' when Play_Bet_Type=3 then 'Multibet' end) as 'bet _type', "+
+                "Play_Bet_Bonus_Stake, (case when Play_Bet_Type=1 then'Singlebet' when Play_Bet_Type=4 then 'Jackpot' when Play_Bet_Type=3 then 'Multibet' end) as 'bet _type', "+
                 "Play_Bet_Bonus_Winning FROM player_bets where "+data+"  and play_Bet_Type in (1,2,3) and "+
                 "Play_Bet_Status in (201, 202, 203, 204, 205, 206) order by Play_Bet_Timestamp desc";              
                   
