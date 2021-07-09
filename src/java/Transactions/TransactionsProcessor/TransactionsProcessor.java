@@ -33,7 +33,7 @@ public class TransactionsProcessor {
     public JSONArray getTransactions(String from,String to)
     {
         ResultSet rs=null;Connection conn=null;Statement stmt=null;PreparedStatement ps=null;
-        String query = "select Acc_Id, Acc_Date, Acc_Mobile, Acc_Amount, Acc_Mpesa_Trans_No, ifnull(Acc_Comment,'Success'),if(Acc_Status =0,'Processed','Pending'),"
+        String query = "select Acc_Id, Acc_Date, Acc_Mobile,if(Acc_Amount=0,Acc_Bonus_Amount,Acc_Amount), Acc_Mpesa_Trans_No, ifnull(Acc_Comment,'Success'),if(Acc_Status =0,'Processed','Pending'),"
                          + "(CASE when Acc_Trans_Type =1 then 'Deposit' when Acc_Trans_Type=2 then 'User Withdrawal'  when Acc_Trans_Type=8 then 'Withdrawal Charge' when Acc_Trans_Type=9 then 'Bonus Winning' when Acc_Trans_Type=3 then 'Bet Win' when Acc_Trans_Type=4 then 'Bet Withdrawal'  end) as 'Trans_Type'"
                          + ",ifnull(Acc_Gateway,'SPORTBET') from user_accounts where date(Acc_Date) between '"+from+"' and '"+to+"' order by Acc_Date desc ";
         System.out.println("getTransactions==="+query);
@@ -108,7 +108,7 @@ public class TransactionsProcessor {
     public JSONArray filterTransactions(String from,String to,String transtype,String transstatus)
     {
         ResultSet rs=null;Connection conn=null;Statement stmt=null;PreparedStatement ps=null;
-        String query = "select Acc_Id, Acc_Date, Acc_Mobile, Acc_Amount, Acc_Mpesa_Trans_No, ifnull(Acc_Comment,'Success'),if(Acc_Status =0,'Processed','Pending'),"
+        String query = "select Acc_Id, Acc_Date, Acc_Mobile,if(Acc_Amount=0,Acc_Bonus_Amount,Acc_Amount), Acc_Mpesa_Trans_No, ifnull(Acc_Comment,'Success'),if(Acc_Status =0,'Processed','Pending'),"
                          + "(CASE when Acc_Trans_Type =1 then 'Deposit' when Acc_Trans_Type=2 then 'User Withdrawal'  when Acc_Trans_Type=8 then 'Withdrawal Charge' when Acc_Trans_Type=9 then 'Bonus Winning' when Acc_Trans_Type=3 then 'Bet Win' when Acc_Trans_Type=4 then 'Bet Withdrawal'   end) as 'Trans_Type',ifnull(Acc_Gateway,'Mpesa') "
                          + "from user_accounts where date(Acc_Date) between '"+from+"' and '"+to+"' and "+transtype+" and "+transstatus+" order by Acc_Date desc ";
         System.out.println("filterTransactions==="+query);

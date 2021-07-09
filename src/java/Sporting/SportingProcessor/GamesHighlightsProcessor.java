@@ -41,7 +41,7 @@ public class GamesHighlightsProcessor {
                      + "(case when Torna_Match_Special_Highlight=1 then 'Other Games' when Torna_Match_Special_Highlight=2 then 'Barner Highlights' when Torna_Match_Special_Highlight=0 then 'Page Highlights' end),"
                      + "Torna_Match_Special_Highlight,Jackpot_Status from tournament where date(Torna_Match_Event_Time) between '" + fromDate + "' and '" + toDate + "' and "
                      + "Torna_Match_Status = '0' and Torna_Match_Status='0' and Torna_Match_Stage !='Suspended' and Torna_Match_Stage !='Ended' and "
-                     + "Torna_Match_ID in (select Odd_Mark_Match_ID from the_odds where Odd_Mark_Status='Active' and Odd_Market_ID=1 and Odd_Mark_Match_ID = Torna_Match_ID)"
+                     + "Torna_Match_ID in (select Odd_Mark_Match_ID from the_odds where Odd_Mark_Status='Active' and Odd_Mark_Match_ID = Torna_Match_ID)"
                      + "and Torna_Match_Stage !='Deactivated' and Torna_Match_Event_Time >=now() order by Torna_Match_Highlight_Order desc";
         System.out.println("getgamesHighlits==="+query);
 
@@ -110,7 +110,7 @@ public class GamesHighlightsProcessor {
                      + "(case when Torna_Match_Special_Highlight=1 then 'Other Games' when Torna_Match_Special_Highlight=2 then 'Barner Highlights' when Torna_Match_Special_Highlight=0 then 'Page Highlights' end),"
                      + "Torna_Match_Special_Highlight,Jackpot_Status from tournament where date(Torna_Match_Event_Time)='" + date + "' and "
                      + "Torna_Match_Status = '0' and Torna_Match_Status='0' and Torna_Match_Stage !='Suspended' and Torna_Match_Stage !='Ended' and "
-                    + "Torna_Match_ID in (select Odd_Mark_Match_ID from the_odds where Odd_Mark_Status='Active' and Odd_Market_ID=1 and Odd_Mark_Match_ID = Torna_Match_ID)"
+                    + "Torna_Match_ID in (select Odd_Mark_Match_ID from the_odds where Odd_Mark_Status='Active' and Odd_Mark_Match_ID = Torna_Match_ID)"
                      + "and Torna_Match_Stage !='Deactivated' and Torna_Match_Event_Time >=now() order by Torna_Match_Highlight_Order desc";
         System.out.println("filtersgamesHighlits==="+dataQuery);
 
