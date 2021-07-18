@@ -55,7 +55,8 @@ public class MainDashBoardSummaryProcessor {
         String betWinDepositAccBal="0";
         String depositPlayers="0";
         String b2cwithdrawAccBal="0";
-        String wallet2BetwithdrawAccBal="0";
+        String wallet2CashBetwithdrawAccBal="0";
+        String wallet2BonusBetwithdrawAccBal="0";
         String wallet2GoldenraceBetwithdrawAccBal="0";
         String wallet2SlotGameBetwithdrawAccBal="0";
         String wallet2JackpotBetwithdrawAccBal="0";
@@ -136,7 +137,8 @@ public class MainDashBoardSummaryProcessor {
                 + "FROM user_accounts where Acc_Trans_Type = 1 and  date(Acc_Date) between '" + fromDate + "' and '" + toDate + "' and Acc_Mpesa_Trans_No not like 'BET%' ";
 
         dataQueryWithdrawals = "SELECT  count(Acc_ID),ifnull(sum(Acc_Amount),0) as 'user b2c withdrawal', "
-                            + "(select  ifnull(sum(Play_Bet_Stake),0) as 'betstakes' from player_bets where DATE(Play_Bet_Timestamp) between '" + fromDate + "' and '" + toDate + "' and Play_Bet_Status in (201,202,203)) as 'normal bet withdrawal' , "
+                            + "(select  ifnull(sum(Play_Bet_Cash_Stake),0) as 'betstakes' from player_bets where DATE(Play_Bet_Timestamp) between '" + fromDate + "' and '" + toDate + "' and Play_Bet_Status in (201,202,203)) as 'cash bet withdrawal' , "
+                           + "(select  ifnull(sum(Play_Bet_Bonus_Stake),0) as 'betstakes' from player_bets where DATE(Play_Bet_Timestamp) between '" + fromDate + "' and '" + toDate + "' and Play_Bet_Status in (201,202,203)) as 'bonus bet withdrawal' , "
                             + "(select ifnull(sum(Acc_Amount),0) from user_accounts where Acc_Trans_Type = 4 and Acc_Gateway like '%GOLDENRACE_BET%' and date(Acc_Date) between '" + fromDate + "' and '" + toDate + "' ) as 'goldenrace bet withdrawal' , "
                             + "(select ifnull(sum(Acc_Amount),0) from user_accounts where Acc_Trans_Type = 4 and Golden_Race_GameCycleId like 'SM%' and date(Acc_Date) between '" + fromDate + "' and '" + toDate + "' ) as 'slotgame bet withdrawal' , "
                             + "(select ifnull(sum(Acc_Amount),0) from user_accounts where Acc_Trans_Type = 3 and Golden_Race_Trans_Type like 'win%' and Acc_Gateway like '%GOLDENRACE_BET%' and date(Acc_Date) between '" + fromDate + "' and '" + toDate + "' ) as 'goldenrace bet win' , "
@@ -183,15 +185,16 @@ public class MainDashBoardSummaryProcessor {
                                c2bDepositAccBal=String.valueOf((Math.round(Double.valueOf(rs.getString(2)).intValue())));
                             break;
                             case 1:
-                               withdrawPlayers=rs.getString(1);
-                               b2cwithdrawAccBal=String.valueOf((Math.round(Double.valueOf(rs.getString(2)).intValue())));
-                               wallet2BetwithdrawAccBal=String.valueOf((Math.round(Double.valueOf(rs.getString(3)).intValue())));
-                               wallet2GoldenraceBetwithdrawAccBal=String.valueOf((Math.round(Double.valueOf(rs.getString(4)).intValue())));
-                               wallet2SlotGameBetwithdrawAccBal=String.valueOf((Math.round(Double.valueOf(rs.getString(5)).intValue())));
-                               goldenRaceBetwinAccBal=String.valueOf((Math.round(Double.valueOf(rs.getString(6)).intValue())));
-                               slotGameBetwinAccBal=String.valueOf((Math.round(Double.valueOf(rs.getString(7)).intValue())));
-                               betsWonAccBal=String.valueOf((Math.round(Double.valueOf(rs.getString(8)).intValue())));
-                               wallet2JackpotBetwithdrawAccBal=String.valueOf((Math.round(Double.valueOf(rs.getString(9)).intValue())));
+                                withdrawPlayers=rs.getString(1);
+                                b2cwithdrawAccBal=String.valueOf((Math.round(Double.valueOf(rs.getString(2)).intValue())));
+                                wallet2CashBetwithdrawAccBal=String.valueOf((Math.round(Double.valueOf(rs.getString(3)).intValue())));
+                                wallet2BonusBetwithdrawAccBal=String.valueOf((Math.round(Double.valueOf(rs.getString(4)).intValue())));
+                                wallet2GoldenraceBetwithdrawAccBal=String.valueOf((Math.round(Double.valueOf(rs.getString(5)).intValue())));
+                                wallet2SlotGameBetwithdrawAccBal=String.valueOf((Math.round(Double.valueOf(rs.getString(6)).intValue())));
+                                goldenRaceBetwinAccBal=String.valueOf((Math.round(Double.valueOf(rs.getString(7)).intValue())));
+                                slotGameBetwinAccBal=String.valueOf((Math.round(Double.valueOf(rs.getString(8)).intValue())));
+                                betsWonAccBal=String.valueOf((Math.round(Double.valueOf(rs.getString(9)).intValue())));
+                                wallet2JackpotBetwithdrawAccBal=String.valueOf((Math.round(Double.valueOf(rs.getString(10)).intValue())));
                             break;
                             case 2:
                                 playersRMBalance=String.valueOf((Math.round(Double.valueOf(rs.getString(1)).intValue())));
@@ -207,7 +210,8 @@ public class MainDashBoardSummaryProcessor {
                 dataObj  = new JSONObject();
                 dataObj.put("C2BDepositsValue", c2bDepositAccBal);
                 dataObj.put("B2CWithdrawalValue", b2cwithdrawAccBal.replace("-", ""));
-                dataObj.put("TotalBetStake", wallet2BetwithdrawAccBal.replace("-", ""));
+                dataObj.put("TotalBetStake", wallet2CashBetwithdrawAccBal.replace("-", ""));
+                dataObj.put("TotalBetBonusStake", wallet2BonusBetwithdrawAccBal.replace("-", ""));
                 dataObj.put("TotalGoldenRaceBetStake", wallet2GoldenraceBetwithdrawAccBal.replace("-", ""));
                 dataObj.put("SlotGamesBetStake", wallet2SlotGameBetwithdrawAccBal.replace("-", ""));
                 dataObj.put("TotalJackPotBetStake", wallet2JackpotBetwithdrawAccBal.replace("-", ""));
