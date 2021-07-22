@@ -25,7 +25,7 @@ public class DBManager
     
     public DBManager() 
     {
-        this.type="betting"; 
+        this.type="0"; 
     }
           
     String type,data_source;

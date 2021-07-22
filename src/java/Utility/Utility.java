@@ -1,8 +1,6 @@
 package Utility;
 
 
-import static BCLB.BclbAPI.sdf;
-import static DairyReports.DailyReportAPI.sdf;
 import java.io.BufferedReader;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -51,7 +49,9 @@ public class Utility {
         {
             dataObj.put(msgType, msg);
             dataArray.put(dataObj);
-        } catch (JSONException ex) {
+        } 
+        catch (JSONException ex) 
+        {
             System.out.println("Error handleResponse==="+ex.getMessage());
         }
         
@@ -71,7 +71,8 @@ public class Utility {
 
             data=new String[]{fromdate,todate};//fromdate+"#"+todate ;
 
-        } catch (Exception ex) 
+        } 
+        catch (Exception ex) 
         {
             System.out.println("Error getDatesRange=== "+ex.getMessage());
         }
@@ -98,7 +99,8 @@ public class Utility {
                 curTime -= interval;
             }
 
-        } catch (ParseException ex) 
+        }
+        catch (ParseException ex) 
         {
             System.out.println("Error getDatesList=== "+ex.getMessage());
         }
@@ -184,10 +186,10 @@ public class Utility {
             {
                 conn.close();
                 System.out.println("<<<DB connection closed>>>");
-            }
-            
-            
-        } catch (SQLException ex) {
+            } 
+        } 
+        catch (SQLException ex) 
+        {
             System.out.println("Error doFinally=== "+ex.getMessage());
         } 
     }
