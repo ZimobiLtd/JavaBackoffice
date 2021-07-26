@@ -21,19 +21,17 @@ import javax.sql.DataSource;
  */
 public class DBManager 
 {
-
-    
-    public DBManager() 
-    {
-        this.type="0"; 
-    }
-          
     String type,data_source;
     String user ="mysqld_user";
     String url1 = "jdbc:mysql://62.171.191.3:3306/starbet?useSSL=false";//192.168.0.88
     String user_password ="+q4LY9.F:29:3b(q";
     String driver="com.mysql.cj.jdbc.Driver";
     
+    public DBManager() 
+    {
+        this.type="betting"; 
+    }
+        
     public Connection getDBConnection()
     {
         Connection connection = null;
@@ -41,7 +39,7 @@ public class DBManager
         try 
         {
             Class.forName("com.mysql.cj.jdbc.Driver");
-
+            
             if(type.equals("betting"))
             {
                data_source="jdbc/betting"; 
@@ -70,12 +68,5 @@ public class DBManager
                 
     return connection;
     }
-    
-//   public static void main(String[] args)
-//    {
-//        new DataBaseManager("kopakaro").getDBConnection();
-//    }
-   
-          
-          
+      
 }
