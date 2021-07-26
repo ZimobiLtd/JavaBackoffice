@@ -70,32 +70,12 @@ public class ActivePlayersAPI extends HttpServlet {
         resp.setHeader("Access-Control-Allow-Origin", "*");
         PrintWriter out = resp.getWriter(); 
 
-        StringBuilder jb = new StringBuilder();
-        String line = null;
-
-        try 
-        {
-            BufferedReader reader = req.getReader();
-            while ((line = reader.readLine()) != null)
-            {
-                jb.append(line);
-            }
-
-            System.out.println("getActivePlayers==="+jb.toString());
-            jsonobj = new JSONObject(jb.toString());
-            maindata=jsonobj.getString("data");
-
-            String filters=" and Play_Bet_Type in(1,2,3,4)";
-            String []respo=new Utility().getDatesRange(-7);
-            String fromdate=respo[0];
-            String todate=respo[1];
-            String betsCount="20";
-            responseObj=new ActivePlayersImpl().getActivePlayer(fromdate ,todate,filters,betsCount);
-        }
-        catch (IOException | JSONException ex) 
-        { 
-            ex.getMessage();
-        }
+        String filters=" and Play_Bet_Type in(1,2,3,4)";
+        String []respo=new Utility().getDatesRange(-7);
+        String fromdate=respo[0];
+        String todate=respo[1];
+        String betsCount="20";
+        responseObj=new ActivePlayersImpl().getActivePlayer(fromdate ,todate,filters,betsCount);
         
         out.print(responseObj);
     }

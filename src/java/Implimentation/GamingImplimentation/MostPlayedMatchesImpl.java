@@ -40,9 +40,8 @@ public class MostPlayedMatchesImpl {
 
         try
         {
-            dataQuery = "select A.Mul_Match_ID, A.Mul_EventTime, A.Mul_Sportname, A.Mul_Tournament, A.Mul_Event,sum(A.Mul_Bet_Odd * B.Play_Bet_Stake),ifnull(A.Mul_Finished_Timestamp,'0') " +
-                        "from multibets A,player_bets B where A.Mul_Bet_Status = '201'  and  B.Play_Bet_Group_ID = A.Mul_Group_ID  and date(B.Play_Bet_Timestamp) between '" + dateFrom + "' and '" + dateTo + "'  GROUP BY A.Mul_Match_ID  " +
-                        "order by count(A.Mul_Match_ID) desc";
+            dataQuery = "select distinct(Mul_Match_ID), Mul_EventTime, Mul_Sportname, Mul_Tournament, Mul_Event,count(Mul_Match_ID) as 'bets on game',ifnull(Mul_Finished_Timestamp,'0') "
+                    + "from multibets  where  date(Mul_EventTime) between '"+dateFrom+"' and '"+dateTo+"' group by Mul_Match_ID order by count(Mul_Match_ID) desc";
             System.out.println("getMostPlayed==="+dataQuery);
             
             conn = new DBManager().getDBConnection();
@@ -58,14 +57,8 @@ public class MostPlayedMatchesImpl {
                 String sport = rs.getString(3);
                 String tornament = rs.getString(4);
                 String event = rs.getString(5);
-                String totalstake = rs.getString(6);
+                String totalbets = rs.getString(6);
                 String betsettleddate = rs.getString(7);
-                settledQuery = "select count(B.Mul_Match_ID) from player_bets A inner join multibets B on A.Play_Bet_Group_ID = B.Mul_Group_ID "
-                             + "where B.Mul_Match_ID = '" + matchid + "' and B.Mul_Bet_Status in ('202','203')  ";
-                String settledBets = String.valueOf(getMostPlayedCount(conn,stmt,rs,settledQuery));
-                placedQuery = "select count(B.Mul_Match_ID) from player_bets A inner join multibets B on A.Play_Bet_Group_ID = B.Mul_Group_ID "
-                            + "where B.Mul_Match_ID = '" + matchid + "' and B.Mul_Bet_Status = '201'  ";
-                String placedBets = String.valueOf(getMostPlayedCount(conn,stmt,rs,placedQuery));
 
                 dataObj.put("MatchID", matchid);
                 dataObj.put("EventDate", eventdate);
@@ -73,9 +66,7 @@ public class MostPlayedMatchesImpl {
                 dataObj.put("Sport", sport);
                 dataObj.put("Tornament", tornament);
                 dataObj.put("Event", event);
-                dataObj.put("TotalStake", totalstake);
-                dataObj.put("SettledBets", settledBets);
-                dataObj.put("placedBets", placedBets);
+                dataObj.put("TotalBets", totalbets);
 
                 dataArray.put(dataObj);
             }
@@ -95,26 +86,26 @@ public class MostPlayedMatchesImpl {
 
 
     // return record count in a result set
-    public int getMostPlayedCount( Connection conn,Statement stmt,ResultSet rs, String query) 
+    public int getMostPlayedCount( Connection conn,Statement stmt,String query) 
     {
         int count = 0;
-
+        ResultSet rs=null;    
         try 
         {
-            ResultSet resultSetCount = (ResultSet) stmt.executeQuery(query);
-            while (resultSetCount.next()) 
+            rs =stmt.executeQuery(query);
+            while (rs.next()) 
             {
-                count = resultSetCount.getInt(1);
+                count = rs.getInt(1);
             }
         }
         catch (SQLException ex) 
         {
             System.out.println("Error getMostPlayedCount=== "+ex.getMessage());
         }
-        finally
+        /*finally
         {
-            new Utility().doFinally(null,null,rs,null);
-        }
+            new Utility().doFinally(null,null,null,null);
+        }*/
         return count;
     } 
     

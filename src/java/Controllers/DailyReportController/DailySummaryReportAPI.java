@@ -1,4 +1,4 @@
-package Controllers.DairyReportController;
+package Controllers.DailyReportController;
 
 /*
  * To change this license header, choose License Headers in Project Properties.
@@ -6,7 +6,7 @@ package Controllers.DairyReportController;
  * and open the template in the editor.
  */
 
-import Implimentation.DairyReportImplimentation.DairyReportImpl;
+import Implimentation.DailyReportImplimentation.DailySummaryReportImpl;
 import Utility.Utility;
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -25,8 +25,8 @@ import org.json.JSONException;
  *
  * @author jac
  */
-@WebServlet(urlPatterns = {"/report/daily"})
-public class DailyReportAPI extends HttpServlet {
+@WebServlet(urlPatterns = {"/report/dailysummary"})
+public class DailySummaryReportAPI extends HttpServlet {
 
     /**
      * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
@@ -37,6 +37,7 @@ public class DailyReportAPI extends HttpServlet {
      * @throws ServletException if a servlet-specific error occurs
      * @throws IOException if an I/O error occurs
      */
+    
     private String maindata;
     private JSONObject jsonobj=null;JSONArray responseObj  = null;
     private SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
@@ -58,8 +59,7 @@ public class DailyReportAPI extends HttpServlet {
                 resp.sendError(HttpServletResponse.SC_NOT_IMPLEMENTED, errMsg);
                 break;
         }
-    }  
-    
+    } 
     
 
     @Override
@@ -70,30 +70,12 @@ public class DailyReportAPI extends HttpServlet {
         resp.setHeader("Access-Control-Allow-Origin", "*");
         PrintWriter out = resp.getWriter(); 
 
-        StringBuilder jb = new StringBuilder();
-        String line = null;
+        System.out.println("getDailySummaryReport===");
 
-        try 
-        {
-            BufferedReader reader = req.getReader();
-            while ((line = reader.readLine()) != null)
-            {
-                jb.append(line);
-            }
-
-            System.out.println("getDailyReport==="+jb.toString());
-            jsonobj = new JSONObject(jb.toString());
-            maindata=jsonobj.getString("data");
-
-            String []respo=new Utility().getDatesRange(-7);
-            String fromdate=respo[0];
-            String todate=respo[1];
-            responseObj=new DairyReportImpl().getDailyReport(fromdate ,todate);
-        }
-        catch (IOException | JSONException ex) 
-        { 
-            ex.getMessage();
-        }
+        String []respo=new Utility().getDatesRange(-14);
+        String fromdate=respo[0];
+        String todate=respo[1];
+        responseObj=new DailySummaryReportImpl().getDailySummary(fromdate ,todate);
         
         out.print(responseObj);
     }
@@ -118,14 +100,14 @@ public class DailyReportAPI extends HttpServlet {
                 jb.append(line);
             }
             
-            System.out.println("filterDailyReport==="+jb.toString());
+            System.out.println("filterDailySummaryReport==="+jb.toString());
             jsonobj = new JSONObject(jb.toString());
             maindata=jsonobj.getString("data");
 
             String[]data=maindata.split("#");
-            String fromdate=data[0];
-            String todate=data[1];  
-            responseObj=new DairyReportImpl().getDailyReport(fromdate ,todate);
+            String from=data[0];
+            String to=data[1];  
+            responseObj=new DailySummaryReportImpl().getDailySummary(from,to);
         }
         catch (IOException | JSONException ex) 
         { 

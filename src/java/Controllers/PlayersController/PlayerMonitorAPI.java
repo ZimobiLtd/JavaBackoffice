@@ -69,27 +69,9 @@ public class PlayerMonitorAPI extends HttpServlet {
         resp.setHeader("Access-Control-Allow-Origin", "*");
         PrintWriter out = resp.getWriter(); 
 
-        StringBuilder jb = new StringBuilder();
-        String line = null;
+        System.out.println("getPlayersMonitor===");
 
-        try 
-        {
-            BufferedReader reader = req.getReader();
-            while ((line = reader.readLine()) != null)
-            {
-                jb.append(line);
-            }
-
-            System.out.println("getPlayersMonitor==="+jb.toString());
-            jsonobj = new JSONObject(jb.toString());
-            maindata=jsonobj.getString("data");
-
-            responseObj=new PlayerMonitorImpl().monitorAccounts();
-        }
-        catch (IOException | JSONException ex) 
-        { 
-            ex.getMessage();
-        }
+        responseObj=new PlayerMonitorImpl().monitorAccounts();
         
         out.print(responseObj);
     }

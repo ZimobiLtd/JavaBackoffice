@@ -77,8 +77,9 @@ public class PlayerBettingReportAPI extends HttpServlet {
                     String mobile=maindata;
                     if(mobile.startsWith("07") || mobile.startsWith("01"))
                     {
-                        mobile="254"+mobile.substring(3);
-                    }   responseObj=new BettingReportImpl().getPlayerBettingReportByMobile(mobile);
+                        mobile="254"+mobile.substring(1);
+                    }  
+                    responseObj=new BettingReportImpl().getPlayerBettingReportByMobile(mobile);
                     break;
                 case "betslip":
                     String betSlip=maindata;
@@ -92,7 +93,8 @@ public class PlayerBettingReportAPI extends HttpServlet {
                     if(player_mobile.startsWith("07") || player_mobile.startsWith("01"))
                     {
                         player_mobile="254"+player_mobile.substring(1);
-                    }   responseObj=new BettingReportImpl().getPlayerBettingReport(from,to,player_mobile);
+                    }   
+                    responseObj=new BettingReportImpl().getPlayerBettingReport(from,to,player_mobile);
                     break;
                 default:
                     JSONObject dataObj  = new JSONObject();

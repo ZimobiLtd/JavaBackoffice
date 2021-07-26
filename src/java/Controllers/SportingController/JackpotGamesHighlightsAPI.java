@@ -49,8 +49,8 @@ public class JackpotGamesHighlightsAPI extends HttpServlet {
         String method = req.getMethod();
         switch (method) 
         {
-            case "METHOD_PUT":
-                doGet(req, resp);
+            case "METHOD_POST":
+                doPost(req, resp);
                 break;
             default:
                 String errMsg = "Method Not Supported";
@@ -62,7 +62,7 @@ public class JackpotGamesHighlightsAPI extends HttpServlet {
     
 
     @Override
-    protected void doPut(HttpServletRequest req, HttpServletResponse resp)
+    protected void doPost(HttpServletRequest req, HttpServletResponse resp)
     throws ServletException, IOException 
     {
         resp.setContentType("application/json;charset=UTF-8");

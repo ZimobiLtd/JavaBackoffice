@@ -69,30 +69,12 @@ public class TransactionsC2BAPI extends HttpServlet {
         resp.setHeader("Access-Control-Allow-Origin", "*");
         PrintWriter out = resp.getWriter(); 
 
-        StringBuilder jb = new StringBuilder();
-        String line = null;
-
-        try 
-        {
-            BufferedReader reader = req.getReader();
-            while ((line = reader.readLine()) != null)
-            {
-                jb.append(line);
-            }
-
-            System.out.println("getTransactionsC2B==="+jb.toString());
-            jsonobj = new JSONObject(jb.toString());
-            maindata=jsonobj.getString("data");
-
-            String []respo=new Utility().getDatesRange(-1);
-            String fromdate=respo[0];
-            String todate=respo[1];
-            responseObj=new TransactionsC2BImpl().getTransactionsC2B(fromdate ,todate);
-        }
-        catch (IOException | JSONException ex) 
-        { 
-            ex.getMessage();
-        }
+        System.out.println("getTransactionsC2B===");
+        
+        String []respo=new Utility().getDatesRange(-1);
+        String fromdate=respo[0];
+        String todate=respo[1];
+        responseObj=new TransactionsC2BImpl().getTransactionsC2B(fromdate ,todate);
         
         out.print(responseObj);
     }

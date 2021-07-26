@@ -46,8 +46,8 @@ public class OddsAPI extends HttpServlet {
         String method = req.getMethod();
         switch (method) 
         {
-            case "METHOD_GET":
-                doGet(req, resp);
+            case "METHOD_POST":
+                doPost(req, resp);
                 break;
             default:
                 String errMsg = "Method Not Supported";
@@ -59,7 +59,7 @@ public class OddsAPI extends HttpServlet {
     
 
     @Override
-    protected void doGet(HttpServletRequest req, HttpServletResponse resp)
+    protected void doPost(HttpServletRequest req, HttpServletResponse resp)
     throws ServletException, IOException 
     {
         resp.setContentType("application/json;charset=UTF-8");

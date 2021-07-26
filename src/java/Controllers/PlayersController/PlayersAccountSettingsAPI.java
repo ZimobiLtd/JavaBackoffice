@@ -49,9 +49,6 @@ public class PlayersAccountSettingsAPI extends HttpServlet {
         String method = req.getMethod();
         switch (method) 
         {
-            case "METHOD_GET":
-                doGet(req, resp);
-                break;
             case "METHOD_POST":
                 doPost(req, resp);
                 break;
@@ -63,58 +60,9 @@ public class PlayersAccountSettingsAPI extends HttpServlet {
     }
     
     
-        
-    @Override
-    protected void doGet(HttpServletRequest req, HttpServletResponse resp)
-    throws ServletException, IOException 
-    {
-        resp.setContentType("application/json;charset=UTF-8");
-        resp.setHeader("Access-Control-Allow-Origin", "*");
-        PrintWriter out = resp.getWriter(); 
-
-        StringBuilder jb = new StringBuilder();
-        String line = null;
-
-        try 
-        {
-            BufferedReader reader = req.getReader();
-            while ((line = reader.readLine()) != null)
-            {
-                jb.append(line);
-            }
-
-            System.out.println("getPlayerAccountNarration==="+jb.toString());
-            jsonobj = new JSONObject(jb.toString());
-            maindata=jsonobj.getString("data");
-
-            String []data=maindata.split("#");
-            String mobile=data[0];
-            String mobile_no;
-
-            if(mobile.startsWith("07") || mobile.startsWith("01"))
-            {
-                mobile_no="254"+mobile.substring(1);
-            }
-            else
-            {
-                mobile_no=mobile;
-            }
-
-            responseObj=new PlayersRegistrationImpl().getDeactivationNarration(mobile_no);
-        }
-        catch (IOException | JSONException ex) 
-        { 
-            ex.getMessage();
-        }
-        
-        out.print(responseObj);
-    }
-    
-    
-    
     
     @Override
-    protected void doPut(HttpServletRequest req, HttpServletResponse resp)
+    protected void doPost(HttpServletRequest req, HttpServletResponse resp)
     throws ServletException, IOException 
     {
         resp.setContentType("application/json;charset=UTF-8");
@@ -137,7 +85,24 @@ public class PlayersAccountSettingsAPI extends HttpServlet {
             String action=jsonobj.getString("action");
             maindata=jsonobj.getString("data");
 
-            if(action.equals("deactivate"))
+            if(action.equals("get_account_narration"))
+            {
+                String []data=maindata.split("#");
+                String mobile=data[0];
+                String mobile_no;
+
+                if(mobile.startsWith("07") || mobile.startsWith("01"))
+                {
+                    mobile_no="254"+mobile.substring(1);
+                }
+                else
+                {
+                    mobile_no=mobile;
+                }
+
+                responseObj=new PlayersRegistrationImpl().getDeactivationNarration(mobile_no);
+            }
+            else if(action.equals("deactivate"))
             {
                 String []data=maindata.split("#");
                 String mobile=data[0];
@@ -155,7 +120,7 @@ public class PlayersAccountSettingsAPI extends HttpServlet {
                 }
                 responseObj=new PlayersRegistrationImpl().setDeactivatePlayer(mobile_no,narration,deactivatedBy);  
             }
-            if(action.equals("activate"))
+            else if(action.equals("activate"))
             {
                 String []data=maindata.split("#");
                 String mobile=data[0];

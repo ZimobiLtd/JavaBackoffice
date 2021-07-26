@@ -71,30 +71,12 @@ public class PlayersRegistrationAPI extends HttpServlet {
         resp.setHeader("Access-Control-Allow-Origin", "*");
         PrintWriter out = resp.getWriter(); 
 
-        StringBuilder jb = new StringBuilder();
-        String line = null;
-
-        try 
-        {
-            BufferedReader reader = req.getReader();
-            while ((line = reader.readLine()) != null)
-            {
-                jb.append(line);
-            }
-
-            System.out.println("getPlayerRegistrations==="+jb.toString());
-            jsonobj = new JSONObject(jb.toString());
-            maindata=jsonobj.getString("data");
-
-            String []respo=new Utility().getDatesRange(-1);
-            String fromdate=respo[0];
-            String todate=respo[1];
-            responseObj=new PlayersRegistrationImpl().getPlayerRegistrations(fromdate,todate);
-        }
-        catch (IOException | JSONException ex) 
-        { 
-            ex.getMessage();
-        }
+        System.out.println("getPlayerRegistrations===");
+        
+        String []respo=new Utility().getDatesRange(-1);
+        String fromdate=respo[0];
+        String todate=respo[1];
+        responseObj=new PlayersRegistrationImpl().getPlayerRegistrations(fromdate,todate);
         
         out.print(responseObj);
     }

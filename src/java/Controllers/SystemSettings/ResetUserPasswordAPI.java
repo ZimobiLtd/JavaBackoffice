@@ -48,9 +48,6 @@ public class ResetUserPasswordAPI extends HttpServlet {
         String method = req.getMethod();
         switch (method) 
         {
-            case "METHOD_GET":
-                doGet(req, resp);
-                break;
             case "METHOD_POST":
                 doPost(req, resp);
                 break;
@@ -65,62 +62,6 @@ public class ResetUserPasswordAPI extends HttpServlet {
     }
         
 
-    @Override
-    protected void doGet(HttpServletRequest req, HttpServletResponse resp)
-    throws ServletException, IOException 
-    {
-        resp.setContentType("application/json;charset=UTF-8");
-        resp.setHeader("Access-Control-Allow-Origin", "*");
-        PrintWriter out = resp.getWriter(); 
-
-        StringBuilder jb = new StringBuilder();
-        String line = null;
-
-        try 
-        {
-            BufferedReader reader = req.getReader();
-            while ((line = reader.readLine()) != null)
-            {
-                jb.append(line);
-            }
-
-            System.out.println("getVerificationCodeStatus==="+jb.toString());
-            jsonobj = new JSONObject(jb.toString());
-            maindata=jsonobj.getString("data");
-
-            String []data=maindata.split("#");
-            String code=data[0];
-
-            int status=new SystemUsersImpl().verifyCode(code) ;
-            if(status==1)
-            {
-                JSONObject dataObj  = new JSONObject();
-                JSONArray dataArray = new JSONArray();
-
-                dataObj.put(",message", "Valid code");
-                dataArray.put(dataObj);
-                resp.setStatus(500);
-                responseObj=dataArray;   
-            }
-            else
-            {
-                JSONObject dataObj  = new JSONObject();
-                JSONArray dataArray = new JSONArray();
-
-                dataObj.put("error", "Invalid code");
-                dataArray.put(dataObj);
-                resp.setStatus(500);
-                responseObj=dataArray;   
-            }
-        }
-        catch (IOException | JSONException ex) 
-        { 
-            ex.getMessage();
-        }
-        
-        out.print(responseObj);
-    }
-    
     
     @Override
     protected void doPost(HttpServletRequest req, HttpServletResponse resp)
@@ -141,122 +82,127 @@ public class ResetUserPasswordAPI extends HttpServlet {
                 jb.append(line);
             }
             
-            System.out.println("resetUserPassword==="+jb.toString());
+            System.out.println("UserPassword==="+jb.toString());
             jsonobj = new JSONObject(jb.toString());
+            String action=jsonobj.getString("action");
             maindata=jsonobj.getString("data");
 
-            JSONObject dataObj;
-            JSONArray dataArray = new JSONArray();
-            String email=maindata;
-
-            int email_status=new SystemUsersImpl().validateEmail(email);
-            if(email_status==1)
+            if(action.equals("verify_code"))
             {
-                String code=new Utility().generateCode(7);
-                String text="We received a request to reset the password on your StarBet Back Office Account.<br>Kindly click on the link below.<br><br>" +
-                            "http://167.86.68.102:7074/resetPass/"+code+"<br><br>" +
-                            "Regards,<br>" +
-                            "StartBet Team";
-                int status=new SystemUsersImpl().saveCode(email, code);
-                
-                if(status>0)
+                String []data=maindata.split("#");
+                String code=data[0];
+
+                int status=new SystemUsersImpl().verifyCode(code) ;
+                if(status==1)
+                {
+                    JSONObject dataObj  = new JSONObject();
+                    JSONArray dataArray = new JSONArray();
+
+                    dataObj.put(",message", "Valid code");
+                    dataArray.put(dataObj);
+                    resp.setStatus(500);
+                    responseObj=dataArray;   
+                }
+                else
+                {
+                    JSONObject dataObj  = new JSONObject();
+                    JSONArray dataArray = new JSONArray();
+
+                    dataObj.put("error", "Invalid code");
+                    dataArray.put(dataObj);
+                    resp.setStatus(500);
+                    responseObj=dataArray;   
+                }
+            }
+            else if(action.equals("reset_password"))
+            {
+                String email=maindata;
+                String new_pass=new Utility().generateCode(7);
+
+                JSONObject dataObj;
+                JSONArray dataArray = new JSONArray();
+
+                int respo=new SystemUsersImpl().changePassword(email,new_pass,0);
+                if(respo==200)
                 {
                     dataObj  = new JSONObject();
-                    dataObj.put("message", "Password reset link has been sent to your email"); 
+                    dataObj.put("message", "Password changed successfully"); 
                     dataArray.put(dataObj);
                     resp.setStatus(200);
                     responseObj=dataArray;
+
+                    Runnable myrunnable=new Runnable()
+                    {
+                        public void run()
+                        {
+                            String text="Hi,<br>Your starbet password was changed.New password is: "+new_pass+".Thanks,<br>StarBet Team.";
+                            new EmailSender().postEmail(email,text);
+                        }
+                    };
+                    new Thread(myrunnable).start();
                 }
                 else
                 {
                     dataObj  = new JSONObject();
-                    dataObj.put("error", "request failed");
+                    dataObj.put("error", "Password change failed");
                     dataArray.put(dataObj);
                     resp.setStatus(500);
                     responseObj=dataArray;                            
                 }
+
+            }
+            else if(action.equals("update_password"))
+            {
+                String []data=maindata.split("#");
+                String email=data[0];
+                String newPassword=data[1];
+                String currentPassword=data[2];
+
+                JSONObject dataObj;
+                JSONArray dataArray = new JSONArray();
+
+                int status=new SystemUsersImpl().validateOldPassword (email,currentPassword);
+                if(status == 1)
+                {
+                    int respo=new SystemUsersImpl().changePassword(email,newPassword,1);
+                    if(respo==200)
+                    {
+                        dataObj  = new JSONObject();
+                        dataObj.put("message", "Password changed successfully"); 
+                        dataArray.put(dataObj);
+                        resp.setStatus(200);
+                        responseObj=dataArray;
+
+                        Runnable myrunnable=new Runnable()
+                        {
+                            public void run()
+                            {
+                                String text="Hi,<br>Your starbet password was changed.New password is: "+newPassword+".Thanks,<br>StarBet Team.";
+                                new EmailSender().postEmail(email,text);
+                            }
+                        };
+                        new Thread(myrunnable).start();
+                    }
+                    else
+                    {
+                        dataObj  = new JSONObject();
+                        dataObj.put("error", "Password change failed");
+                        dataArray.put(dataObj);
+                        resp.setStatus(500);
+                        responseObj=dataArray;                            
+                    }
+                }
+                else
+                {
+                    dataObj  = new JSONObject();
+                    dataObj.put("error", "Password not verified");
+                    dataArray.put(dataObj);
+                    resp.setStatus(500);
+                    responseObj=dataArray; 
+                }
                 
-                Runnable myrunnable=() -> {
-                    new EmailSender().postEmail(email,text);
-                };
-                new Thread(myrunnable).start();
-            }
-            else
-            {
-                dataObj  = new JSONObject();
-                dataObj.put("error", "Invalid email address");
-                dataArray.put(dataObj);
-                resp.setStatus(500);
-                responseObj=dataArray;  
-            }
-        }
-        catch (IOException | JSONException ex) 
-        { 
-            ex.getMessage();
-        }
-        
-        out.print(responseObj);
-    }
-    
-    
-    @Override
-    protected void doPut(HttpServletRequest req, HttpServletResponse resp)
-    throws ServletException, IOException 
-    {
-        resp.setContentType("application/json;charset=UTF-8");
-        resp.setHeader("Access-Control-Allow-Origin", "*");
-        PrintWriter out = resp.getWriter(); 
-
-        StringBuilder jb = new StringBuilder();
-        String line = null;
-
-        try 
-        {
-            BufferedReader reader = req.getReader();
-            while ((line = reader.readLine()) != null)
-            {
-                jb.append(line);
             }
             
-            System.out.println("updateUserPassword==="+jb.toString());
-            jsonobj = new JSONObject(jb.toString());
-            maindata=jsonobj.getString("data");
-
-            String []data=maindata.split("#");
-            String email=data[0];
-            //String new_pass=data[1];
-            String new_pass=new Utility().generateCode(7);
-
-            JSONObject dataObj  = new JSONObject();
-            JSONArray dataArray = new JSONArray();
-
-            int respo=new SystemUsersImpl().changePassword(email,new_pass,0);
-            if(respo==200)
-            {
-                dataObj  = new JSONObject();
-                dataObj.put("message", "Password changed successfully"); 
-                dataArray.put(dataObj);
-                resp.setStatus(200);
-                responseObj=dataArray;
-
-                Runnable myrunnable=new Runnable()
-                {
-                    public void run()
-                    {
-                        String text="Hi,<br>Your starbet password was changed.New password is: "+new_pass+".Thanks,<br>StarBet Team.";
-                        new EmailSender().postEmail(email,text);
-                    }
-                };
-                new Thread(myrunnable).start();
-            }
-            else
-            {
-                dataObj  = new JSONObject();
-                dataObj.put("error", "Password change failed");
-                dataArray.put(dataObj);
-                resp.setStatus(500);
-                responseObj=dataArray;                            
-            } 
         }
         catch (IOException | JSONException ex) 
         { 
@@ -265,7 +211,6 @@ public class ResetUserPasswordAPI extends HttpServlet {
         
         out.print(responseObj);
     }
-    
     
 
 }

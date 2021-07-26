@@ -70,30 +70,12 @@ public class TransactionsB2CAPI extends HttpServlet {
         resp.setHeader("Access-Control-Allow-Origin", "*");
         PrintWriter out = resp.getWriter(); 
 
-        StringBuilder jb = new StringBuilder();
-        String line = null;
+        System.out.println("getransactionsB2C===");
 
-        try 
-        {
-            BufferedReader reader = req.getReader();
-            while ((line = reader.readLine()) != null)
-            {
-                jb.append(line);
-            }
-
-            System.out.println("getransactionsB2C==="+jb.toString());
-            jsonobj = new JSONObject(jb.toString());
-            maindata=jsonobj.getString("data");
-
-            String []respo=new Utility().getDatesRange(-1);
-            String fromdate=respo[0];
-            String todate=respo[1];
-            responseObj=new TransactionsB2CImpl().getTransactionsB2C(fromdate ,todate);
-        }
-        catch (IOException | JSONException ex) 
-        { 
-            ex.getMessage();
-        }
+        String []respo=new Utility().getDatesRange(-1);
+        String fromdate=respo[0];
+        String todate=respo[1];
+        responseObj=new TransactionsB2CImpl().getTransactionsB2C(fromdate ,todate);
         
         out.print(responseObj);
     }

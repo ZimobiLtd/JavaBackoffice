@@ -50,10 +50,10 @@ public class PlayerPasswordAPI extends HttpServlet {
         String method = req.getMethod();
         switch (method) 
         {
-            case "METHOD_GET":
-                doGet(req, resp);
-                break;
             case "METHOD_POST":
+                doPost(req, resp);
+                break;
+            case "METHOD_PUT":
                 doPost(req, resp);
                 break;
             default:
@@ -65,7 +65,7 @@ public class PlayerPasswordAPI extends HttpServlet {
     
     
     @Override
-    protected void doGet(HttpServletRequest req, HttpServletResponse resp)
+    protected void doPost(HttpServletRequest req, HttpServletResponse resp)
     throws ServletException, IOException 
     {
         resp.setContentType("application/json;charset=UTF-8");
@@ -83,23 +83,63 @@ public class PlayerPasswordAPI extends HttpServlet {
                 jb.append(line);
             }
             
-            System.out.println("getPlayerPassword==="+jb.toString());
+            System.out.println("playerPassword==="+jb.toString());
             jsonobj = new JSONObject(jb.toString());
+            String action=jsonobj.getString("action");
             maindata=jsonobj.getString("data");
-            String mobile=maindata;
+            
+            if(action.equals("get_password"))
+            {
                 
-            if(mobile.startsWith("07") || mobile.startsWith("01"))
-            {
-               mobile="254"+mobile.substring(1);
-            }
-            String newMobile=mobile;
+                String mobile=maindata;
+                if(mobile.startsWith("07") || mobile.startsWith("01"))
+                {
+                   mobile="254"+mobile.substring(1);
+                }
+                String newMobile=mobile;
 
-            String password=new PlayerPasswordImpl().getPlayerPassword(newMobile);
-            JSONObject dataObj  = new JSONObject();
-            JSONArray dataArray = new JSONArray();
-            dataObj.put("message", "PLAYER PASSWORD: "+password);
-            dataArray.put(dataObj);
-            responseObj=dataArray;
+                String password=new PlayerPasswordImpl().getPlayerPassword(newMobile);
+                JSONObject dataObj  = new JSONObject();
+                JSONArray dataArray = new JSONArray();
+                dataObj.put("message", "PLAYER PASSWORD: "+password);
+                dataArray.put(dataObj);
+                responseObj=dataArray;
+            }
+            if(action.equals("reset_password"))
+            {
+                String mobile=maindata;
+                String pin=new Utility().generateCode(4);
+
+                if(mobile.startsWith("07") || mobile.startsWith("01"))
+                {
+                   mobile="254"+mobile.substring(1);
+                }
+                String newMobile=mobile;
+                int status=new PlayerPasswordImpl().updatePlayerPassword(mobile,pin);
+                String sms="Dear customer, your new StarBet password is: "+pin+".Visit www.starbet.co.ke. Call: 0709758000 or Whatsapp 0114029659 for Assistance ";
+                if(status== 200)
+                {
+                    Thread thread=new Thread(() -> {
+                        new Utility().sendSMS(newMobile,sms);
+                    });
+                    thread.start();
+
+                    JSONObject dataObj  = new JSONObject();
+                    JSONArray dataArray = new JSONArray();
+                    dataObj.put("message", "Password reset successful");
+                    dataArray.put(dataObj);
+                    responseObj=dataArray;
+                }
+                else
+                {
+                    JSONObject dataObj  = new JSONObject();
+                    JSONArray dataArray = new JSONArray();
+                    dataObj.put("error", "Password reset failed");
+                    dataArray.put(dataObj);
+                    responseObj=dataArray;
+                }
+            }
+                
         }
         catch (IOException | JSONException ex) 
         { 
@@ -108,73 +148,6 @@ public class PlayerPasswordAPI extends HttpServlet {
         
         out.print(responseObj);
     }
-    
-    
-
-    @Override
-    protected void doPut(HttpServletRequest req, HttpServletResponse resp)
-    throws ServletException, IOException 
-    {
-        resp.setContentType("application/json;charset=UTF-8");
-        resp.setHeader("Access-Control-Allow-Origin", "*");
-        PrintWriter out = resp.getWriter(); 
-
-        StringBuilder jb = new StringBuilder();
-        String line = null;
-
-        try 
-        {
-            BufferedReader reader = req.getReader();
-            while ((line = reader.readLine()) != null)
-            {
-                jb.append(line);
-            }
-
-            System.out.println("resetPlayerPassword==="+jb.toString());
-            jsonobj = new JSONObject(jb.toString());
-            maindata=jsonobj.getString("data");
-
-            String mobile=maindata;
-            String pin=new Utility().generateCode(4);
-
-            if(mobile.startsWith("07") || mobile.startsWith("01"))
-            {
-               mobile="254"+mobile.substring(1);
-            }
-            String newMobile=mobile;
-            int status=new PlayerPasswordImpl().updatePlayerPassword(mobile,pin);
-            String sms="Dear customer, your new StarBet password is: "+pin+".Visit www.starbet.co.ke. Call: 0709758000 or Whatsapp 0114029659 for Assistance ";
-            if(status== 200)
-            {
-                Thread thread=new Thread(() -> {
-                    new Utility().sendSMS(newMobile,sms);
-                });
-                thread.start();
-
-                JSONObject dataObj  = new JSONObject();
-                JSONArray dataArray = new JSONArray();
-                dataObj.put("message", "Password reset successful");
-                dataArray.put(dataObj);
-                responseObj=dataArray;
-            }
-            else
-            {
-                JSONObject dataObj  = new JSONObject();
-                JSONArray dataArray = new JSONArray();
-                dataObj.put("error", "Password reset failed");
-                dataArray.put(dataObj);
-                responseObj=dataArray;
-            }
-        }
-        catch (IOException | JSONException ex) 
-        { 
-            ex.getMessage();
-        }
-        
-        out.print(responseObj);
-    }
-    
-    
     
 
 }

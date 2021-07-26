@@ -70,30 +70,12 @@ public class SlotGamesTransactionsAPI extends HttpServlet {
         resp.setHeader("Access-Control-Allow-Origin", "*");
         PrintWriter out = resp.getWriter(); 
 
-        StringBuilder jb = new StringBuilder();
-        String line = null;
+        System.out.println("getSlotGamesTransactions===");
 
-        try 
-        {
-            BufferedReader reader = req.getReader();
-            while ((line = reader.readLine()) != null)
-            {
-                jb.append(line);
-            }
-
-            System.out.println("getSlotGamesTransactions==="+jb.toString());
-            jsonobj = new JSONObject(jb.toString());
-            maindata=jsonobj.getString("data");
-
-            String []respo=new Utility().getDatesRange(-2);
-            String fromdate=respo[0];
-            String todate=respo[1];
-            responseObj=new SlotGamesTransactionsProcessorImpl().getSlotGamesTransactions(fromdate,todate,"0");
-        }
-        catch (IOException | JSONException ex) 
-        { 
-            ex.getMessage();
-        }
+        String []respo=new Utility().getDatesRange(-2);
+        String fromdate=respo[0];
+        String todate=respo[1];
+        responseObj=new SlotGamesTransactionsProcessorImpl().getSlotGamesTransactions(fromdate,todate,"0");
         
         out.print(responseObj);
     }

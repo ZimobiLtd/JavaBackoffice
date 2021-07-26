@@ -3,7 +3,7 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package Implimentation.DairyReportImplimentation;
+package Implimentation.DailyReportImplimentation;
 
 import Database.DBManager;
 import Utility.Utility;

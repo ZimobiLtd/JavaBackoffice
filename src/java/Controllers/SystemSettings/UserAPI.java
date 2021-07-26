@@ -51,7 +51,7 @@ public class UserAPI extends HttpServlet {
             case "METHOD_GET":
                 doGet(req, resp);
                 break;
-            case "METHOD_PUT":
+            case "METHOD_POST":
                 doPost(req, resp);
                 break;
             default:
@@ -100,7 +100,7 @@ public class UserAPI extends HttpServlet {
     
     
     @Override
-    protected void doPut(HttpServletRequest req, HttpServletResponse resp)
+    protected void doPost(HttpServletRequest req, HttpServletResponse resp)
     throws ServletException, IOException 
     {
         resp.setContentType("application/json;charset=UTF-8");

@@ -3,7 +3,7 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package Implimentation.DairyReportImplimentation;
+package Implimentation.DailyReportImplimentation;
 
 import Database.DBManager;
 import Utility.Utility;
@@ -20,9 +20,9 @@ import org.json.JSONObject;
  *
  * @author jac
  */
-public class DairySummaryReportImpl {
+public class DailySummaryReportImpl {
     
-    public DairySummaryReportImpl()
+    public DailySummaryReportImpl()
     {
         
     }
@@ -56,7 +56,7 @@ public class DairySummaryReportImpl {
                 "(select ifnull(sum(Play_Bet_Stake),0) from player_bets where date(Play_Bet_Timestamp)='"+date+"'  and  Play_Bet_Type=3 and  Play_Bet_Status in (202, 203)) as 'multibets settled'," +
                 "(select count(Play_Bet_ID) from player_bets where date(Play_Bet_Timestamp)='"+date+"' and Play_Bet_Type=4 and Play_Bet_Status in (201,202,203)) as 'jpbets count'," +
                 "(select ifnull(sum(Play_Bet_Stake),0) from player_bets where date(Play_Bet_Timestamp)='"+date+"'  and  Play_Bet_Type=4 and Play_Bet_Status in (201,202,203)) as 'jp stake'," +
-                "(select ifnull(sum(Play_Bet_Possible_Winning),0) from player_bets where date(Play_Bet_Timestamp)='"+date+"' and  Play_Bet_Type=4 and  Play_Bet_Status=202) as 'jp won'," +
+                "(select ifnull(sum(Play_Bet_Possible_Winning),0) from player_bets where date(Play_Bet_Timestamp)='"+date+"' and  Play_Bet_Type=4 and  Play_Bet_Status=202/(select jp_winners from jackpot where id=Play_Bet_Jackpot_ID)) as 'jp won'," +
                 "(select ifnull(sum(Play_Bet_Stake),0) from player_bets where date(Play_Bet_Timestamp)='"+date+"'  and  Play_Bet_Type=4 and  Play_Bet_Status in (202, 203)) as 'jpbets settled'," +
                 "(select ifnull(sum(Acc_Amount),0) from user_accounts where DATE(Acc_Date) ='"+date+"' and Acc_Trans_Type = 7) as 'bonus redeemed'," +
                 "(select ifnull(sum(Acc_Amount),0) from user_accounts where DATE(Acc_Date) = '"+date+"' and Acc_Trans_Type = 9) as 'bonus achieved'," +
@@ -93,7 +93,7 @@ public class DairySummaryReportImpl {
                     String mbProfits = String.format("%.2f", multibet_proft);
                     String jpbets=rs.getString(11);
                     String jpbetsamount = rs.getString(12);
-                    double jp_payout=Double.valueOf(rs.getString(13))-(Double.valueOf(rs.getString(12))*0.2);
+                    double jp_payout=Double.valueOf(rs.getString(13));//-(Double.valueOf(jpbetsamount)*0.2);
                     String jpbetspayout = String.format("%.2f", jp_payout);
                     String settledjpbetsamount = rs.getString(14);
                     double jackpot_proft=Double.valueOf(settledjpbetsamount) - Double.valueOf(jpbetspayout);

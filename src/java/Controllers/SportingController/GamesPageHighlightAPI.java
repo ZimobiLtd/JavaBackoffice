@@ -52,7 +52,8 @@ public class GamesPageHighlightAPI extends HttpServlet {
                 break;
             case "METHOD_POST":
                 doPost(req, resp);
-                break;
+                break;       
+                
             default:
                 String errMsg = "Method Not Supported";
                 resp.sendError(HttpServletResponse.SC_NOT_IMPLEMENTED, errMsg);
@@ -70,30 +71,12 @@ public class GamesPageHighlightAPI extends HttpServlet {
         resp.setHeader("Access-Control-Allow-Origin", "*");
         PrintWriter out = resp.getWriter(); 
 
-        StringBuilder jb = new StringBuilder();
-        String line = null;
+        System.out.println("getGamesHighlights===");
 
-        try 
-        {
-            BufferedReader reader = req.getReader();
-            while ((line = reader.readLine()) != null)
-            {
-                jb.append(line);
-            }
-
-            System.out.println("getGamesHighlights==="+jb.toString());
-            jsonobj = new JSONObject(jb.toString());
-            maindata=jsonobj.getString("data");
-
-            String []respo=new Utility().getDatesRange(+2);
-            String todate=respo[0];
-            String fromdate=respo[1];
-            responseObj=new GamesHighlightsImpl().getgamesHighlits(fromdate,todate);
-        }
-        catch (IOException | JSONException ex) 
-        { 
-            ex.getMessage();
-        }
+        String []respo=new Utility().getDatesRange(+2);
+        String todate=respo[0];
+        String fromdate=respo[1];
+        responseObj=new GamesHighlightsImpl().getgamesHighlits(fromdate,todate);
         
         out.print(responseObj);
     }
@@ -120,45 +103,15 @@ public class GamesPageHighlightAPI extends HttpServlet {
             
             System.out.println("filterGamesHighlights==="+jb.toString());
             jsonobj = new JSONObject(jb.toString());
-            maindata=jsonobj.getString("data");
-
-            String date=maindata.trim();
-            responseObj=new GamesHighlightsImpl().filtergamesHighlits(date); 
-        }
-        catch (IOException | JSONException ex) 
-        { 
-            ex.getMessage();
-        }
-        
-        out.print(responseObj);
-    }
-    
-    
-    @Override
-    protected void doPut(HttpServletRequest req, HttpServletResponse resp)
-    throws ServletException, IOException 
-    {
-        resp.setContentType("application/json;charset=UTF-8");
-        resp.setHeader("Access-Control-Allow-Origin", "*");
-        PrintWriter out = resp.getWriter(); 
-
-        StringBuilder jb = new StringBuilder();
-        String line = null;
-
-        try 
-        {
-            BufferedReader reader = req.getReader();
-            while ((line = reader.readLine()) != null)
-            {
-                jb.append(line);
-            }
-            
-            System.out.println("filterGamesHighlights==="+jb.toString());
-            jsonobj = new JSONObject(jb.toString());
             String action=jsonobj.getString("action");
             maindata=jsonobj.getString("data");
 
-            if(action.equals("highlight_game"))
+            if(action.equals("filter_highlights"))
+            {
+                String date=maindata.trim();
+                responseObj=new GamesHighlightsImpl().filtergamesHighlits(date); 
+            }
+            else if(action.equals("highlight_game"))
             {
                 String data=maindata.trim();
                 responseObj=new GamesHighlightsImpl().setHighlights(data);
@@ -176,5 +129,7 @@ public class GamesPageHighlightAPI extends HttpServlet {
         
         out.print(responseObj);
     }
+    
+    
 
 }

@@ -1,4 +1,4 @@
-package Controllers.SystemSettings;
+package Controllers.Messages;
 
 /*
  * To change this license header, choose License Headers in Project Properties.
@@ -6,7 +6,8 @@ package Controllers.SystemSettings;
  * and open the template in the editor.
  */
 
-import Implimentation.SystemSettingsImplimentation.SettingsImpl;
+import Implimentation.MessageImplimentation.MessageImpl;
+import Utility.Utility;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.PrintWriter;
@@ -24,8 +25,8 @@ import org.json.JSONException;
  *
  * @author jac
  */
-@WebServlet(urlPatterns = {"/system/user/roles"})
-public class UsersRolesAPI extends HttpServlet {
+@WebServlet(urlPatterns = {"/messages"})
+public class MessageAPI extends HttpServlet {
 
     /**
      * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
@@ -58,8 +59,8 @@ public class UsersRolesAPI extends HttpServlet {
                 break;
         }
     }
-        
-
+    
+    
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp)
     throws ServletException, IOException 
@@ -68,33 +69,18 @@ public class UsersRolesAPI extends HttpServlet {
         resp.setHeader("Access-Control-Allow-Origin", "*");
         PrintWriter out = resp.getWriter(); 
 
-        StringBuilder jb = new StringBuilder();
-        String line = null;
-
-        try 
-        {
-            BufferedReader reader = req.getReader();
-            while ((line = reader.readLine()) != null)
-            {
-                jb.append(line);
-            }
-
-            System.out.println("getUsersRolesByUsername==="+jb.toString());
-            jsonobj = new JSONObject(jb.toString());
-            maindata=jsonobj.getString("data");
-
-            String username=maindata;
-            responseObj=new SettingsImpl().getUserRoles(username);
-        }
-        catch (IOException | JSONException ex) 
-        { 
-            ex.getMessage();
-        }
+        System.out.println("getSentMessages===");
+        
+        String []respo=new Utility().getDatesRange(-7);
+        String fromDate=respo[0];
+        String toDate=respo[1];
+        
+        responseObj=new MessageImpl().getSentMessages(fromDate, toDate);
         
         out.print(responseObj);
     }
-    
-    
+       
+
     @Override
     protected void doPost(HttpServletRequest req, HttpServletResponse resp)
     throws ServletException, IOException 
@@ -102,7 +88,7 @@ public class UsersRolesAPI extends HttpServlet {
         resp.setContentType("application/json;charset=UTF-8");
         resp.setHeader("Access-Control-Allow-Origin", "*");
         PrintWriter out = resp.getWriter(); 
- 
+
         StringBuilder jb = new StringBuilder();
         String line = null;
 
@@ -113,52 +99,38 @@ public class UsersRolesAPI extends HttpServlet {
             {
                 jb.append(line);
             }
-            
+
+            System.out.println("filterSentMessages==="+jb.toString());
             jsonobj = new JSONObject(jb.toString());
+            String action=jsonobj.getString("action");
             maindata=jsonobj.getString("data");
 
-            System.out.println("filterSystemRolesByUsername==="+jb.toString());
-            String username=maindata;
-            responseObj=new SettingsImpl().getUserRoles(username);
-
-            JSONObject dataObj;
-            JSONArray dataArray = new JSONArray();
-
-            String []data=maindata.split("#");
-            String name=data[0];
-            String value=data[1];
-            String description=data[2];
-            String createdby=data[3];
-            String modifiedby=data[4];
-
-            int status=new SettingsImpl().validateSettings(name);
-            if(status==0)
+            if(action.equals("filter_messages"))
             {
-                int respo_id=new SettingsImpl().saveSystemSettings(name,value,description,createdby,modifiedby) ;
-                if(respo_id>0)
+                String[]data=maindata.split("#");
+                String fromDate=data[0];
+                String toDate=data[1];
+                
+                responseObj=new MessageImpl().getSentMessages(fromDate,toDate);
+            }
+            else if(action.equals("save_message"))
+            {
+                String[]data=maindata.split("#");
+                String messageSender=data[0];
+                String messageReceiver=data[1];
+                String message=data[2];
+                
+                String receiverMobile="0";
+                if(messageReceiver.startsWith("07") || messageReceiver.startsWith("01"))
                 {
-                    dataObj  = new JSONObject();
-                    dataObj.put("message", "Setting saved successfully"); 
-                    dataArray.put(dataObj);
-                    resp.setStatus(200);
-                    responseObj=dataArray;
+                   receiverMobile="254"+messageReceiver.substring(1);
                 }
                 else
                 {
-                    dataObj  = new JSONObject();
-                    dataObj.put("error", "request failed");
-                    dataArray.put(dataObj);
-                    resp.setStatus(500);
-                    responseObj=dataArray;                            
+                    receiverMobile=messageReceiver;
                 }
-            }
-            else
-            {
-                dataObj  = new JSONObject();
-                dataObj.put("error", "setting already exist");
-                dataArray.put(dataObj);
-                resp.setStatus(500);
-                responseObj=dataArray;
+                
+                responseObj=new MessageImpl().saveSentMessage(messageSender,receiverMobile,message); 
             }
         }
         catch (IOException | JSONException ex) 
@@ -168,6 +140,7 @@ public class UsersRolesAPI extends HttpServlet {
         
         out.print(responseObj);
     }
+    
     
     
 

@@ -35,7 +35,7 @@ public class JackpotImpl {
     
     
     
-    public JSONArray getJackports()
+    public JSONArray getJackpots()
     {
         JSONObject dataObj  = null;
         JSONArray dataArray = new JSONArray();

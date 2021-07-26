@@ -30,9 +30,9 @@ public class DBManager
           
     String type,data_source;
     String user ="mysqld_user";
-    String url1 = "jdbc:mysql://62.171.191.3:3306/starbet";//192.168.0.88
+    String url1 = "jdbc:mysql://62.171.191.3:3306/starbet?useSSL=false";//192.168.0.88
     String user_password ="+q4LY9.F:29:3b(q";
-    String driver="com.mysql.jdbc.Driver";
+    String driver="com.mysql.cj.jdbc.Driver";
     
     public Connection getDBConnection()
     {
@@ -40,7 +40,7 @@ public class DBManager
 
         try 
         {
-            Class.forName("com.mysql.jdbc.Driver");
+            Class.forName("com.mysql.cj.jdbc.Driver");
 
             if(type.equals("betting"))
             {

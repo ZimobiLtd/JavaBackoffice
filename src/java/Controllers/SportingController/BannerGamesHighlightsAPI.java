@@ -6,9 +6,7 @@ package Controllers.SportingController;
  * and open the template in the editor.
  */
 
-import Implimentation.SportingImplimentation.EventsImpl;
 import Implimentation.SportingImplimentation.GamesHighlightsImpl;
-import Utility.Utility;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.PrintWriter;
@@ -48,8 +46,8 @@ public class BannerGamesHighlightsAPI extends HttpServlet {
         String method = req.getMethod();
         switch (method) 
         {
-                case "METHOD_PUT":
-                doGet(req, resp);
+            case "METHOD_POST":
+                doPost(req, resp);
                 break;
             default:
                 String errMsg = "Method Not Supported";
@@ -61,7 +59,7 @@ public class BannerGamesHighlightsAPI extends HttpServlet {
     
 
     @Override
-    protected void doPut(HttpServletRequest req, HttpServletResponse resp)
+    protected void doPost(HttpServletRequest req, HttpServletResponse resp)
     throws ServletException, IOException 
     {
         resp.setContentType("application/json;charset=UTF-8");

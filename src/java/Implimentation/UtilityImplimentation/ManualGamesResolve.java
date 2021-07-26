@@ -215,6 +215,14 @@ public class ManualGamesResolve {
         {
             correctMarket="no";
         }
+        else if(market.equalsIgnoreCase("o1.5"))
+        {
+            correctMarket="over 1.5";
+        }
+        else if(market.equalsIgnoreCase("u1.5"))
+        {
+            correctMarket="under 1.5";
+        }
         else if(market.equalsIgnoreCase("o2.5"))
         {
             correctMarket="over 2.5";
@@ -222,6 +230,14 @@ public class ManualGamesResolve {
         else if(market.equalsIgnoreCase("u2.5"))
         {
             correctMarket="under 2.5";
+        }
+        else if(market.equalsIgnoreCase("o3.5"))
+        {
+            correctMarket="over 3.5";
+        }
+        else if(market.equalsIgnoreCase("u3.5"))
+        {
+            correctMarket="under 3.5";
         }
         else if(market.equalsIgnoreCase("x2"))
         {

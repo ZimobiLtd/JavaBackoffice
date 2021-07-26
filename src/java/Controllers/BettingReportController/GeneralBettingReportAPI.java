@@ -60,30 +60,12 @@ public class GeneralBettingReportAPI extends HttpServlet {
         resp.setHeader("Access-Control-Allow-Origin", "*");
         PrintWriter out = resp.getWriter(); 
 
-        StringBuilder jb = new StringBuilder();
-        String line = null;
+        System.out.println("getGeneralBettingReport===");
 
-        try 
-        {
-            BufferedReader reader = req.getReader();
-            while ((line = reader.readLine()) != null)
-            {
-                jb.append(line);
-            }
-
-            System.out.println("getGeneralBettingReport==="+jb.toString());
-            jsonobj = new JSONObject(jb.toString());
-            maindata=jsonobj.getString("data");
-
-            String []respo=new Utility().getDatesRange(0);
-            String fromdate=respo[0];
-            String todate=respo[1];
-            responseObj=new BettingReportImpl().getAllBettingReport(fromdate ,todate);
-        }
-        catch (IOException | JSONException ex) 
-        { 
-            ex.getMessage();
-        }
+        String []respo=new Utility().getDatesRange(0);
+        String fromdate=respo[0];
+        String todate=respo[1];
+        responseObj=new BettingReportImpl().getAllBettingReport(fromdate ,todate);
         
         out.print(responseObj);
     }
