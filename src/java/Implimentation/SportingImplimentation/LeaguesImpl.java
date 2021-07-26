@@ -37,7 +37,7 @@ public class LeaguesImpl {
         String query = "";
         JSONObject dataObj  = null;
         JSONArray dataArray = new JSONArray();
-        query = "select league_id,league,league_status from leagues order by league_status desc";
+        query = "select league_id,league,if(league_status=0,'Inactive','Active') from leagues order by league_status desc";
         System.out.println("getLeagues==="+query);
 
         try
