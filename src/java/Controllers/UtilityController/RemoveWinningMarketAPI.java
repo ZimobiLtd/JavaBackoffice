@@ -23,8 +23,8 @@ import org.json.JSONArray;
  *
  * @author jac
  */
-@WebServlet(urlPatterns = {"/manualresolve"})
-public class ManualResolveAPI extends HttpServlet {
+@WebServlet(urlPatterns = {"/remove_winning_market"})
+public class RemoveWinningMarketAPI extends HttpServlet {
 
     /**
      * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
@@ -56,21 +56,21 @@ public class ManualResolveAPI extends HttpServlet {
             if(matchIDStatus == 200)
             {
                 int dataStatus=new ManualGamesResolve().checkBetEventData(matchID,market);
-                if(dataStatus == 404)
+                if(dataStatus == 200)
                 {
-                    int status=new ManualGamesResolve().resolveGames(matchID,market);
+                    int status=new ManualGamesResolve().removeMarket(matchID,market);
                     if(status == 200)
                     {
-                        response="======\n\n "+matchID+" Market "+market+" Saved Successfully \n\n===========================================================";
+                        response="======\n\n "+matchID+" Market "+market+" Remove Successfully \n\n===========================================================";
                     }
                     else
                     {
-                        response="======\n\n "+matchID+" Failed To Save "+market+" Market \n\n===========================================================";
+                        response="======\n\n "+matchID+" Failed To Remove "+market+" Market \n\n===========================================================";
                     }
                 }
                 else
                 {
-                    response="======\n\n Match ID "+matchID+" Already Exist In Bet_Event_Winers \n\n===========================================================";
+                    response="======\n\n Match ID "+matchID+" Does Not Exist In Bet_Event_Winers \n\n===========================================================";
                 }
             }
             else

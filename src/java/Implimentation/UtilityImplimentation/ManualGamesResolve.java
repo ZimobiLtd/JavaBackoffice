@@ -331,4 +331,33 @@ public class ManualGamesResolve {
     return status;    
     }
     
+    
+    public int removeMarket(String matchID,String market) 
+    {
+        ResultSet rs=null;Connection conn=null;Statement stmt=null;PreparedStatement ps=null;
+        int status=500; 
+        String query = "delete  from bet_event_winners  where  Bet_Ev_Match_ID='"+matchID+"' and Bet_Ev_Winning_Prediction in ('"+market+"') and Bet_Ev_Type=1";
+        //System.out.println("removeMarket==="+query);
+        
+        try
+        {
+            conn = new DBManager().getDBConnection();
+            stmt = conn.createStatement();
+            int i=stmt.executeUpdate(query);
+            if(i > 0)
+            {
+               status=400;  
+            }            
+        }
+        catch (SQLException ex) 
+        {
+            System.out.println("Error removeMarket=== "+ex.getMessage());
+        }
+        finally
+        {
+            new Utility().doFinally(conn,stmt,rs,ps);
+        }
+    return status;    
+    }
+    
 }

@@ -1,4 +1,4 @@
-package Controllers.SystemSettings;
+package Controllers.SystemSettingsController;
 
 /*
  * To change this license header, choose License Headers in Project Properties.

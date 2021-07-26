@@ -1,4 +1,4 @@
-package Controllers.Messages;
+package Controllers.SystemSettingsController;
 
 /*
  * To change this license header, choose License Headers in Project Properties.
@@ -6,7 +6,8 @@ package Controllers.Messages;
  * and open the template in the editor.
  */
 
-import Implimentation.MessageImplimentation.MessageImpl;
+import Implimentation.SystemSettingsImplimentation.SystemUsersImpl;
+import Utility.EmailSender;
 import Utility.Utility;
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -25,8 +26,8 @@ import org.json.JSONException;
  *
  * @author jac
  */
-@WebServlet(urlPatterns = {"/messages"})
-public class MessageAPI extends HttpServlet {
+@WebServlet(urlPatterns = {"/system/user"})
+public class UserAPI extends HttpServlet {
 
     /**
      * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
@@ -39,7 +40,7 @@ public class MessageAPI extends HttpServlet {
      */
     private String maindata;
     private JSONObject jsonobj=null;JSONArray responseObj  = null;
-    private SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+    private final SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
     
     protected void processRequest(HttpServletRequest req, HttpServletResponse resp)
     throws ServletException, IOException, JSONException 
@@ -59,8 +60,8 @@ public class MessageAPI extends HttpServlet {
                 break;
         }
     }
-    
-    
+        
+
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp)
     throws ServletException, IOException 
@@ -69,18 +70,35 @@ public class MessageAPI extends HttpServlet {
         resp.setHeader("Access-Control-Allow-Origin", "*");
         PrintWriter out = resp.getWriter(); 
 
-        System.out.println("getSentMessages===");
-        
-        String []respo=new Utility().getDatesRange(-7);
-        String fromDate=respo[0];
-        String toDate=respo[1];
-        
-        responseObj=new MessageImpl().getSentMessages(fromDate, toDate);
+        StringBuilder jb = new StringBuilder();
+        String line = null;
+
+        try 
+        {
+            BufferedReader reader = req.getReader();
+            while ((line = reader.readLine()) != null)
+            {
+                jb.append(line);
+            }
+
+            System.out.println("getSystemUser==="+jb.toString());
+            jsonobj = new JSONObject(jb.toString());
+            maindata=jsonobj.getString("data");
+
+            String username=maindata;
+            responseObj=new SystemUsersImpl().getUser(username);
+        }
+        catch (IOException | JSONException ex) 
+        { 
+            ex.getMessage();
+        }
         
         out.print(responseObj);
     }
-       
-
+    
+    
+    
+    
     @Override
     protected void doPost(HttpServletRequest req, HttpServletResponse resp)
     throws ServletException, IOException 
@@ -99,39 +117,44 @@ public class MessageAPI extends HttpServlet {
             {
                 jb.append(line);
             }
-
-            System.out.println("filterSentMessages==="+jb.toString());
+            
+            System.out.println("updateUserAccess==="+jb.toString());
             jsonobj = new JSONObject(jb.toString());
-            String action=jsonobj.getString("action");
             maindata=jsonobj.getString("data");
 
-            if(action.equals("filter_messages"))
+            String []data=maindata.split("#");
+            String phoneNumber=data[0];
+            int userStatus=Integer.valueOf(data[1]);
+            String msg="";
+            if(userStatus==0)
             {
-                String[]data=maindata.split("#");
-                String fromDate=data[0];
-                String toDate=data[1];
-                
-                responseObj=new MessageImpl().getSentMessages(fromDate,toDate);
+               msg="User deactivated" ;
             }
-            else if(action.equals("save_message"))
+            else if(userStatus==1)
             {
-                String[]data=maindata.split("#");
-                String messageSender=data[0];
-                String messageReceiver=data[1];
-                String message=data[2];
-                
-                String receiverMobile="0";
-                if(messageReceiver.startsWith("07") || messageReceiver.startsWith("01"))
-                {
-                   receiverMobile="254"+messageReceiver.substring(1);
-                }
-                else
-                {
-                    receiverMobile=messageReceiver;
-                }
-                
-                responseObj=new MessageImpl().saveSentMessage(messageSender,receiverMobile,message); 
+               msg="User activated" ;
             }
+
+
+            int respo_id=new SystemUsersImpl().updateUserAccess(phoneNumber,userStatus) ;
+            JSONObject dataObj;
+            JSONArray dataArray = new JSONArray();
+            if(respo_id>0)
+            {
+                dataObj  = new JSONObject();
+                dataObj.put("message", msg); 
+                dataArray.put(dataObj);
+                resp.setStatus(200);
+                responseObj=dataArray;
+            }
+            else
+            {
+                dataObj  = new JSONObject();
+                dataObj.put("error", "request failed");
+                dataArray.put(dataObj);
+                resp.setStatus(500);
+                responseObj=dataArray;                            
+            }  
         }
         catch (IOException | JSONException ex) 
         { 
@@ -140,7 +163,6 @@ public class MessageAPI extends HttpServlet {
         
         out.print(responseObj);
     }
-    
     
     
 
