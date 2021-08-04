@@ -75,7 +75,8 @@ public class BettingReportImpl {
                 String bettype = rs.getString(12);//bet type
 
 
-                String settled_rm="0.00",settled_bm="0.00",openbet_bm="0.00",ggr_rm="0.00",ngr_rm="0.00",ngrtax_rm="0.00",taxedngr_rm="0.00",bonusamountopen="0.00",bonusmoneysettled="0.00",openbet_rm="0.00",winamount_rm="0.00",winamount_bm="0.00",
+                String settled_rm="0.00",settled_bm="0.00",openbet_bm="0.00",ggr_rm="0.00",ngr_rm="0.00",ngrtax_rm="0.00",
+                taxedngr_rm="0.00",bonusamountopen="0.00",bonusmoneysettled="0.00",openbet_rm="0.00",winamount_rm="0.00",winamount_bm="0.00",
                 ggr_bm="0.00",ngr_bm="0.00",refund_rm="0.00",taxedwinamount_rm="0.00",refund_bm="0.00",winning_tax="0.00",ngr_tax="0.00";
 
                 if (betstatus.equalsIgnoreCase("Placed")) 
@@ -99,7 +100,7 @@ public class BettingReportImpl {
                     openbet_rm = "0.00"; // open rm
                     settled_rm = String.valueOf(betstake); // settled rm
 
-                    double win_tax=( Double.valueOf(betgrosspossiblewinning)-Double.valueOf(betpossiblewinning) );
+                    double win_tax=(Double.valueOf(betgrosspossiblewinning)-Double.valueOf(betpossiblewinning) );
                     double taxedamount_won=Double.valueOf(betgrosspossiblewinning);
 
                     taxedwinamount_rm=String.format("%.2f", taxedamount_won);
@@ -171,6 +172,9 @@ public class BettingReportImpl {
                     refund_rm = String.valueOf(betstake); // rm refund
                     refund_bm = String.valueOf(betbonusstake);  // bm refund
                 }
+                
+                double exciseTaxMultiplierValue=1.075;
+                double exciseTax=(Double.valueOf(betstake)- (Double.valueOf(betstake)/exciseTaxMultiplierValue));
 
                 dataObj.put("BetDate", betdate);
                 dataObj.put("BetSlipID", betslip_id);
@@ -193,6 +197,7 @@ public class BettingReportImpl {
                 dataObj.put("BMWinAmount", winamount_bm);
                 dataObj.put("GGRBM", ggr_bm);
                 dataObj.put("RefundBM", refund_bm);
+                dataObj.put("ExciseTax", exciseTax);
 
                 dataArray.put(dataObj);
             }
@@ -220,11 +225,11 @@ public class BettingReportImpl {
                 dataObj.put("BMWinAmount", "0");
                 dataObj.put("GGRBM", "0");
                 dataObj.put("RefundBM", "0");
+                dataObj.put("ExciseTax", "0");
                 dataArray.put(dataObj);
             }
 
             respoArray.put(dataArray);
-
 
         }
         catch (SQLException | JSONException ex) 
@@ -381,6 +386,9 @@ public class BettingReportImpl {
                     refund_rm = String.valueOf(betstake); // rm refund
                     refund_bm = String.valueOf(betbonusstake);  // bm refund
                 }
+                
+                double exciseTaxMultiplierValue=1.075;
+                double exciseTax=(Double.valueOf(betstake)- (Double.valueOf(betstake)/exciseTaxMultiplierValue));
 
                 dataObj.put("BetDate", betdate);
                 dataObj.put("BetSlipID", betslip_id);
@@ -403,6 +411,7 @@ public class BettingReportImpl {
                 dataObj.put("BMWinAmount", winamount_bm);
                 dataObj.put("GGRBM", ggr_bm);
                 dataObj.put("RefundBM", refund_bm);
+                dataObj.put("ExciseTax", exciseTax);
 
                 dataArray.put(dataObj);
             }
@@ -599,6 +608,9 @@ public class BettingReportImpl {
                     refund_rm = String.valueOf(betstake); // rm refund
                     refund_bm = String.valueOf(betbonusstake);  // bm refund
                 }
+                
+                double exciseTaxMultiplierValue=1.075;
+                double exciseTax=(Double.valueOf(betstake)- (Double.valueOf(betstake)/exciseTaxMultiplierValue));
 
                 dataObj.put("BetDate", betdate);
                 dataObj.put("BetSlipID", betslip_id);
@@ -621,6 +633,7 @@ public class BettingReportImpl {
                 dataObj.put("BMWinAmount", winamount_bm);
                 dataObj.put("GGRBM", ggr_bm);
                 dataObj.put("RefundBM", refund_bm);
+                dataObj.put("ExciseTax", exciseTax);
 
                 dataArray.put(dataObj);
             }
@@ -830,6 +843,9 @@ public class BettingReportImpl {
                     refund_rm = String.valueOf(betstake); // rm refund
                     refund_bm = String.valueOf(betbonusstake);  // bm refund
                 }
+                
+                double exciseTaxMultiplierValue=1.075;
+                double exciseTax=(Double.valueOf(betstake)- (Double.valueOf(betstake)/exciseTaxMultiplierValue));
 
                 dataObj.put("BetDate", betdate);
                 dataObj.put("BetSlipID", betslip_id);
@@ -852,6 +868,7 @@ public class BettingReportImpl {
                 dataObj.put("BMWinAmount", winamount_bm);
                 dataObj.put("GGRBM", ggr_bm);
                 dataObj.put("RefundBM", refund_bm);
+                dataObj.put("ExciseTax", exciseTax);
 
                 dataArray.put(dataObj);
             }
@@ -879,6 +896,7 @@ public class BettingReportImpl {
                 dataObj.put("BMWinAmount", "0");
                 dataObj.put("GGRBM", "0");
                 dataObj.put("RefundBM", "0");
+                dataObj.put("ExciseTax", "0");
                 dataArray.put(dataObj);
             }
 

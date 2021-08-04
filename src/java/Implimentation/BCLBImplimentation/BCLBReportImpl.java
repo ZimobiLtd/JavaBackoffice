@@ -68,10 +68,13 @@ public class BCLBReportImpl {
                     //dataObj.put("WitholdingTax", "0.00");
                 }
                 double []taxData=getTaxData(conn,stmt,date);
-                 String totalPayout = String.format("%.2f", taxData[0]);
+                String totalPayout = String.format("%.2f", taxData[0]);
                 String withholdingtax = String.format("%.2f", taxData[1]);
+                String exciseTax = String.format("%.2f", taxData[2]);
+                
                 dataObj.put("Payout", totalPayout);
                 dataObj.put("WitholdingTax", withholdingtax);
+                dataObj.put("ExciseTax", exciseTax);
 
                 dataArray.put(dataObj);
             }
@@ -95,7 +98,7 @@ public class BCLBReportImpl {
     {
         ResultSet rs=null;
         String dataQuery = "";double [] respo=null;
-        double betStake=0.0,possibleWinning=0.0,taxedpossibleWinning=0.0,withholdingTax=0.0;
+        double betStake=0.0,ExciseTax=0.0,possibleWinning=0.0,taxedpossibleWinning=0.0,withholdingTax=0.0;
 
         try
         {
@@ -113,8 +116,21 @@ public class BCLBReportImpl {
                 withholdingTax += Double.valueOf( rs.getString(4));
             }
             
+            dataQuery = " select  Play_Bet_Cash_Stake from player_bets where DATE(Play_Bet_Timestamp)='"+date+"' and Play_Bet_Status in (201,202,203) and  Play_Bet_Cash_Stake > 0 group by Play_Bet_ID";
+            System.out.println("getExciseTaxData==="+dataQuery);
+
+            rs = stmt.executeQuery(dataQuery);
+            while (rs.next())
+            {
+                double exciseTaxMultiplierValue=1.075;
+                String stake =rs.getString(1);
+                double exciseTax=(Double.valueOf(stake)- (Double.valueOf(stake)/exciseTaxMultiplierValue));
+                ExciseTax += exciseTax;
+            }
+            
+            
             double finPossibleWinning=possibleWinning;//-withholdingTax;
-            respo=new double[] {finPossibleWinning,withholdingTax};
+            respo=new double[] {finPossibleWinning,withholdingTax,ExciseTax};
             
         } catch (SQLException ex) 
         {

@@ -80,7 +80,7 @@ public class JackpotGamesHighlightsAPI extends HttpServlet {
                 jb.append(line);
             }
             
-            System.out.println("bannerGamesHighlights==="+jb.toString());
+            System.out.println("jackpotGamesHighlights==="+jb.toString());
             jsonobj = new JSONObject(jb.toString());
             String action=jsonobj.getString("action");
             maindata=jsonobj.getString("data");
