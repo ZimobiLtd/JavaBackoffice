@@ -190,22 +190,14 @@ public class SystemUsersAPI extends HttpServlet {
                 String role=data[10];
 
                 int status=new SystemUsersImpl().validateUser(username,emailaddress);
-                if(status==0)
+                if(status==1)
                 {
                     int respo_id=new SystemUsersImpl().updateSystemUser(username,emailaddress,phoneNumber,firstname,lastname,modifiedBy,userStatus,isactive,role) ;
                     JSONObject dataObj  = new JSONObject();
                     JSONArray dataArray = new JSONArray();
                     if(respo_id>0)
                     {
-                        Runnable myrunnable=() -> {
-                            String text="Welcome to Starbet Back Office: Username:"+username+" Password:"+password+"<br><br>"+
-                                        "Regards,<br>" +
-                                        "StartBet Team";
-                            new EmailSender().postEmail(emailaddress,text);
-                        };
-                        new Thread(myrunnable).start();
-
-                        dataObj.put("message", "User created successfully"); 
+                        dataObj.put("message", "User updated successfully"); 
                         dataArray.put(dataObj);
                         resp.setStatus(200);
                         responseObj=dataArray;
@@ -223,7 +215,7 @@ public class SystemUsersAPI extends HttpServlet {
                 {
                     JSONObject dataObj  = new JSONObject();
                     JSONArray dataArray = new JSONArray();
-                    dataObj.put("error", "user exist");
+                    dataObj.put("error", "user does not exist");
                     dataArray.put(dataObj);
                     resp.setStatus(500);
                     responseObj=dataArray; 

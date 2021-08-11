@@ -42,7 +42,7 @@ public class BCLBReportImpl {
             for (String date : new Utility().getDatesList(datefrom ,dateto)) 
             {
                 dataObj  = new JSONObject();
-                dataQuery ="select ifnull(sum(Play_Bet_Cash_Stake),0) as 'betstakes' ,count(Play_Bet_ID) ,"
+                dataQuery ="select ifnull(sum((Play_Bet_Cash_Stake-Play_Bet_Tax)),0) as 'betstakes' ,count(Play_Bet_ID) ,"
                          + "(select ifnull(sum(Play_Bet_Possible_Winning),0) from player_bets where DATE(Play_Bet_Timestamp) ='"+date+"' and Play_Bet_Status  in (202) and  Play_Bet_Cash_Stake > 0) as 'payouts' " 
                          + "from player_bets where DATE(Play_Bet_Timestamp) =  '"+date+"'  and Play_Bet_Status in (202,203) and  Play_Bet_Cash_Stake > 0 ";
                 System.out.println("getBCLBReport==="+dataQuery);
