@@ -13,6 +13,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.text.SimpleDateFormat;
+import java.util.Date;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -43,7 +44,7 @@ public class GamesHighlightsImpl {
                      + "Torna_Match_Special_Highlight,Jackpot_Status from tournament where date(Torna_Match_Event_Time) between '" + fromDate + "' and '" + toDate + "' and "
                      + "Torna_Match_Status = '0' and Torna_Match_Status='0' and Torna_Match_Stage !='Suspended' and Torna_Match_Stage !='Ended' and "
                      + "Torna_Match_ID in (select Odd_Mark_Match_ID from the_odds where Odd_Mark_Status='Active' and Odd_Mark_Match_ID = Torna_Match_ID)"
-                     + "and Torna_Match_Stage !='Deactivated' and Torna_Match_Event_Time >=now() order by Torna_Match_Highlight_Order desc";
+                     + "and Torna_Match_Stage !='Deactivated' and Torna_Match_Event_Time >=now() and Torna_Sport_ID in(1,2,5) order by Torna_Match_Highlight_Order desc";
         System.out.println("getgamesHighlits==="+query);
 
         try
@@ -60,7 +61,7 @@ public class GamesHighlightsImpl {
                 String countryname = rs.getString(2);
                 String torna_name = rs.getString(3);
                 String event = rs.getString(4);
-                String eventtime =sdf.format(rs.getTimestamp(5));
+                String eventtime =rs.getString(5);//sdf.format(rs.getTimestamp(5));
                 String torna_match_id = rs.getString(6);
                 String torna_sys_game_id = rs.getString(7);
                 String matchstatus = rs.getString(8);
@@ -112,7 +113,7 @@ public class GamesHighlightsImpl {
                      + "Torna_Match_Special_Highlight,Jackpot_Status from tournament where date(Torna_Match_Event_Time)='" + date + "' and "
                      + "Torna_Match_Status = '0' and Torna_Match_Status='0' and Torna_Match_Stage !='Suspended' and Torna_Match_Stage !='Ended' and "
                     + "Torna_Match_ID in (select Odd_Mark_Match_ID from the_odds where Odd_Mark_Status='Active' and Odd_Mark_Match_ID = Torna_Match_ID)"
-                     + "and Torna_Match_Stage !='Deactivated' and Torna_Match_Event_Time >=now() order by Torna_Match_Highlight_Order desc";
+                     + "and Torna_Match_Stage !='Deactivated' and Torna_Match_Event_Time >=now() and Torna_Sport_ID in(1,2,5) order by Torna_Match_Highlight_Order desc";
         System.out.println("filtersgamesHighlits==="+dataQuery);
 
         try
@@ -129,7 +130,7 @@ public class GamesHighlightsImpl {
                 String countryname = rs.getString(2);
                 String torna_name = rs.getString(3);
                 String event = rs.getString(4);
-                String eventtime =sdf.format(rs.getTimestamp(5));
+                String eventtime =rs.getString(5);
                 String torna_match_id = rs.getString(6);
                 String torna_sys_game_id = rs.getString(7);
                 String matchstatus = rs.getString(8);

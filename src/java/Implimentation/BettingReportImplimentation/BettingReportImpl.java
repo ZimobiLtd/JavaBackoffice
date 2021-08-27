@@ -49,8 +49,8 @@ public class BettingReportImpl {
             conn = new DBManager().getDBConnection();
             stmt = conn.createStatement();
             dataQuery = "select Play_Bet_Timestamp, Play_Bet_Slip_ID, (case when Play_Bet_Status=200 then 'Pending'  when Play_Bet_Status=201 then 'Placed' when Play_Bet_Status=202 then 'Won' when Play_Bet_Status=203 then 'Lost' when Play_Bet_Status=204 then 'Rejected' when Play_Bet_Status=205 then 'Cancelled' when Play_Bet_Status=209 then 'Voided' end)as 'bet_status', "+
-                        " Chan_Mode_Name , Play_Bet_Mobile,(Play_Bet_Cash_Stake-Play_Bet_Tax) as 'stake', Play_Bet_Bonus_Stake , Play_Bet_Possible_Winning, Play_Bet_Gross_Possible_Winning, " +
-                        "Play_Bet_Group_ID, Play_Bet_Possible_BonusWinning,(Case when Play_Bet_Type=1 then 'Single Bet' when Play_Bet_Type=4 then 'Jackpot' when Play_Bet_Type=3 then 'Multi Bet' end)  from player_bets ,channels_used where  Chan_Table_ID = play_bet_Channel  " +
+                        " Chan_Mode_Name , Play_Bet_Mobile,Play_Bet_Cash_Stake, Play_Bet_Bonus_Stake , Play_Bet_Possible_Winning, Play_Bet_Gross_Possible_Winning, " +
+                        "Play_Bet_Group_ID, Play_Bet_Possible_BonusWinning,(Case when Play_Bet_Type=1 then 'Single Bet' when Play_Bet_Type=4 then 'Jackpot' when Play_Bet_Type=3 then 'Multi Bet' end),Play_Bet_BetType from player_bets ,channels_used where  Chan_Table_ID = play_bet_Channel  " +
                         "and play_Bet_Type in (0,1,2,3,4)  and Play_Bet_Status in (200,201, 202, 203, 204,205,209) and  player_bets.Play_Bet_Slip_ID='"+betSlipID+"' order by Play_Bet_Timestamp desc ";        
 
             System.out.println("getBettingReportByBetslipID==="+dataQuery);
@@ -68,11 +68,13 @@ public class BettingReportImpl {
                 String betmobile = rs.getString(5);
                 String betstake = rs.getString(6);//bet rm 
                 String betbonusstake = rs.getString(7);//bet bm 
-                String betpossiblewinning = rs.getString(8);//bet rm possible win
-                String betgrosspossiblewinning = rs.getString(9);//bet rm possible win
-                String betgroup_id = rs.getString(10);
-                String betbonuspossiblewinning = rs.getString(11);//bet rm possible win
-                String bettype = rs.getString(12);//bet type
+                String betgrossstake = rs.getString(8);//gross rm 
+                String betpossiblewinning = rs.getString(9);//bet rm possible win
+                String betgrosspossiblewinning = rs.getString(10);//bet rm possible win
+                String betgroup_id = rs.getString(11);
+                String betbonuspossiblewinning = rs.getString(12);//bet rm possible win
+                String bettype = rs.getString(13);//bet type
+                String game_bettype = rs.getString(14);//(prelive or live)
 
 
                 String settled_rm="0.00",settled_bm="0.00",openbet_bm="0.00",ggr_rm="0.00",ngr_rm="0.00",ngrtax_rm="0.00",
@@ -93,7 +95,7 @@ public class BettingReportImpl {
                     refund_rm = "0.00"; // rm refund
                     refund_bm = "0.00"; // bm refund
 
-                    totalBetStake+=Integer.valueOf(betstake);
+                    totalBetStake+=Double.valueOf(betstake);
                 } 
                 else if (betstatus.equalsIgnoreCase("Won")) 
                 {
@@ -106,11 +108,11 @@ public class BettingReportImpl {
                     taxedwinamount_rm=String.format("%.2f", taxedamount_won);
                     winning_tax=String.format("%.2f", win_tax);// win_tax rm
                     winamount_rm =String.format("%.2f", Double.valueOf(betpossiblewinning)); // win rm
-                    ggr_rm = String.valueOf(Integer.valueOf(betstake)); // ggr rm
+                    ggr_rm = String.valueOf(Double.valueOf(betstake)); // ggr rm
                     openbet_bm = "0.00"; // open bm
                     settled_bm = String.valueOf(betbonusstake); // settled bm
                     winamount_bm = String.valueOf(betbonuspossiblewinning); // win bm
-                    ggr_bm = String.valueOf(Integer.valueOf(betbonusstake)); // ggr bm
+                    ggr_bm = String.valueOf(Double.valueOf(betbonusstake)); // ggr bm
                     refund_rm = "0.00"; // rm refund
                     refund_bm = "0.00"; // bm refund
 
@@ -180,8 +182,10 @@ public class BettingReportImpl {
                 dataObj.put("BetSlipID", betslip_id);
                 dataObj.put("BetStatus", betstatus);
                 dataObj.put("BetType", bettype);
+                dataObj.put("GameBetType", game_bettype);
                 dataObj.put("BetChannel", betchannel);
                 dataObj.put("BetMobile", betmobile);
+                dataObj.put("GrossStake", betgrossstake);
                 dataObj.put("RMOpen", openbet_rm);
                 dataObj.put("RMSettled", settled_rm);
                 dataObj.put("RMWinAmountTax", winning_tax);
@@ -208,8 +212,10 @@ public class BettingReportImpl {
                 dataObj.put("BetSlipID", "0");
                 dataObj.put("BetStatus", "0");
                 dataObj.put("BetType", "0");
+                dataObj.put("GameBetType", "0");
                 dataObj.put("BetChannel", "0");
                 dataObj.put("BetMobile", "0");
+                dataObj.put("GrossStake", "0");
                 dataObj.put("RMOpen", "0");
                 dataObj.put("RMSettled", "0");
                 dataObj.put("RMWinAmountTax", "0");
@@ -257,8 +263,8 @@ public class BettingReportImpl {
         try
         {
             dataQuery = "select Play_Bet_Timestamp, Play_Bet_Slip_ID, (case when Play_Bet_Status=200 then 'Pending'  when Play_Bet_Status=201 then 'Placed' when Play_Bet_Status=202 then 'Won' when Play_Bet_Status=203 then 'Lost' when Play_Bet_Status=204 then 'Rejected' when Play_Bet_Status=205 then 'Cancelled' when Play_Bet_Status=209 then 'Voided' end)as 'bet_status', "+
-                        " Chan_Mode_Name , Play_Bet_Mobile,(Play_Bet_Cash_Stake-Play_Bet_Tax) as 'stake', Play_Bet_Bonus_Stake , Play_Bet_Possible_Winning, Play_Bet_Gross_Possible_Winning, " +
-                        "Play_Bet_Group_ID, Play_Bet_Possible_BonusWinning,(Case when Play_Bet_Type=1 then 'Single Bet' when Play_Bet_Type=4 then 'Jackpot' when Play_Bet_Type=3 then 'Multi Bet' end) from player_bets ,channels_used where  Chan_Table_ID = play_bet_Channel and  date(Play_Bet_Timestamp) between   '"+fromDate+"' and '"+toDate+"'  " +
+                        " Chan_Mode_Name , Play_Bet_Mobile,Play_Bet_Cash_Stake, Play_Bet_Bonus_Stake,Play_Bet_Gross_Stake , Play_Bet_Possible_Winning, Play_Bet_Gross_Possible_Winning, " +
+                        "Play_Bet_Group_ID, Play_Bet_Possible_BonusWinning,(Case when Play_Bet_Type=1 then 'Single Bet' when Play_Bet_Type=4 then 'Jackpot' when Play_Bet_Type=3 then 'Multi Bet' end),Play_Bet_BetType from player_bets ,channels_used where  Chan_Table_ID = play_bet_Channel and  date(Play_Bet_Timestamp) between   '"+fromDate+"' and '"+toDate+"'  " +
                         "and play_Bet_Type in (0,1,2,3,4)  and Play_Bet_Status in (200,201, 202, 203, 204,205,209) order by Play_Bet_Timestamp desc ";
             
             conn = new DBManager().getDBConnection();
@@ -278,11 +284,13 @@ public class BettingReportImpl {
                 String betmobile = rs.getString(5);
                 String betstake = rs.getString(6);//bet rm 
                 String betbonusstake = rs.getString(7);//bet bm 
-                String betpossiblewinning = rs.getString(8);//bet rm possible win
-                String betgrosspossiblewinning = rs.getString(9);//bet rm possible win
-                String betgroup_id = rs.getString(10);
-                String betbonuspossiblewinning = rs.getString(11);//bet rm possible win
-                String bettype = rs.getString(12);//bet type
+                String betgrossstake = rs.getString(8);//gross rm 
+                String betpossiblewinning = rs.getString(9);//bet rm possible win
+                String betgrosspossiblewinning = rs.getString(10);//bet rm possible win
+                String betgroup_id = rs.getString(11);
+                String betbonuspossiblewinning = rs.getString(12);//bet rm possible win
+                String bettype = rs.getString(13);//bet type
+                String game_bettype = rs.getString(14);//(prelive or live)
 
 
                 String settled_rm="0.00",settled_bm="0.00",openbet_bm="0.00",ggr_rm="0.00",ngr_rm="0.00",ngrtax_rm="0.00",taxedngr_rm="0.00",bonusamountopen="0.00",bonusmoneysettled="0.00",openbet_rm="0.00",winamount_rm="0.00",winamount_bm="0.00",
@@ -317,11 +325,11 @@ public class BettingReportImpl {
                     taxedwinamount_rm=String.format("%.2f", taxedamount_won);
                     winning_tax=String.format("%.2f", win_tax);// win_tax rm
                     winamount_rm =String.format("%.2f", Double.valueOf(betpossiblewinning)); // win rm
-                    ggr_rm = String.valueOf(Integer.valueOf(betstake)); // ggr rm
+                    ggr_rm = String.valueOf(Double.valueOf(betstake)); // ggr rm
                     openbet_bm = "0.00"; // open bm
                     settled_bm = String.valueOf(betbonusstake); // settled bm
                     winamount_bm = String.valueOf(betbonuspossiblewinning); // win bm
-                    ggr_bm = String.valueOf(Integer.valueOf(betbonusstake)); // ggr bm
+                    ggr_bm = String.valueOf(Double.valueOf(betbonusstake)); // ggr bm
                     refund_rm = "0.00"; // rm refund
                     refund_bm = "0.00"; // bm refund
                 } 
@@ -394,8 +402,10 @@ public class BettingReportImpl {
                 dataObj.put("BetSlipID", betslip_id);
                 dataObj.put("BetStatus", betstatus);
                 dataObj.put("BetType", bettype);
+                dataObj.put("GameBetType", game_bettype);
                 dataObj.put("BetChannel", betchannel);
                 dataObj.put("BetMobile", betmobile);
+                dataObj.put("GrossStake", betgrossstake);
                 dataObj.put("RMOpen", openbet_rm);
                 dataObj.put("RMSettled", settled_rm);
                 dataObj.put("RMWinAmountTax", winning_tax);
@@ -423,9 +433,11 @@ public class BettingReportImpl {
                 dataObj.put("BetSlipID", "0");
                 dataObj.put("BetStatus", "0");
                 dataObj.put("BetType", "0");
+                dataObj.put("GameBetType", "0");
                 dataObj.put("BetChannel", "0");
                 dataObj.put("BetMobile", "0");
                 dataObj.put("RMOpen", "0");
+                dataObj.put("GrossStake", "0");
                 dataObj.put("RMSettled", "0");
                 dataObj.put("RMWinAmountTax", "0");
                 dataObj.put("RMWinAmount", "0");
@@ -477,15 +489,15 @@ public class BettingReportImpl {
             if(fromDate.equals("")&& fromDate.equals(""))
             {
                 dataQuery = "select Play_Bet_Timestamp, Play_Bet_Slip_ID, (case when Play_Bet_Status=200 then 'Pending'  when Play_Bet_Status=201 then 'Placed' when Play_Bet_Status=202 then 'Won' when Play_Bet_Status=203 then 'Lost' when Play_Bet_Status=204 then 'Rejected' when Play_Bet_Status=205 then 'Cancelled' when Play_Bet_Status=209 then 'Voided' end)as 'bet_status', "+
-                        " Chan_Mode_Name , Play_Bet_Mobile,(Play_Bet_Cash_Stake-Play_Bet_Tax) as 'stake', Play_Bet_Bonus_Stake , Play_Bet_Possible_Winning, Play_Bet_Gross_Possible_Winning, " +
-                        "Play_Bet_Group_ID, Play_Bet_Possible_BonusWinning,(Case when Play_Bet_Type=1 then 'Single Bet' when Play_Bet_Type=4 then 'Jackpot' when Play_Bet_Type=3 then 'Multi Bet' end) from player_bets ,channels_used where  Chan_Table_ID = play_bet_Channel  " +
+                        " Chan_Mode_Name , Play_Bet_Mobile,Play_Bet_Cash_Stake, Play_Bet_Bonus_Stake , Play_Bet_Possible_Winning, Play_Bet_Gross_Possible_Winning, " +
+                        "Play_Bet_Group_ID, Play_Bet_Possible_BonusWinning,(Case when Play_Bet_Type=1 then 'Single Bet' when Play_Bet_Type=4 then 'Jackpot' when Play_Bet_Type=3 then 'Multi Bet' end),Play_Bet_BetType from player_bets ,channels_used where  Chan_Table_ID = play_bet_Channel  " +
                         "and play_Bet_Type in (0,1,2,3,4)  and Play_Bet_Status in (200,201, 202, 203, 204,205,209) and  player_bets.Play_Bet_Mobile='"+mobile+"' order by Play_Bet_Timestamp desc ";        
             }
             else
             {
                 dataQuery = "select Play_Bet_Timestamp, Play_Bet_Slip_ID, (case when Play_Bet_Status=200 then 'Pending'  when Play_Bet_Status=201 then 'Placed' when Play_Bet_Status=202 then 'Won' when Play_Bet_Status=203 then 'Lost' when Play_Bet_Status=204 then 'Rejected' when Play_Bet_Status=205 then 'Cancelled'  when Play_Bet_Status=209 then 'Voided' end)as 'bet_status', "+
                         " Chan_Mode_Name , Play_Bet_Mobile, Play_Bet_Stake, Play_Bet_Bonus_Stake , Play_Bet_Possible_Winning, Play_Bet_Gross_Possible_Winning, " +
-                        "Play_Bet_Group_ID, Play_Bet_Possible_BonusWinning,(Case when Play_Bet_Type=1 then 'Single Bet' when Play_Bet_Type=4 then 'Jackpot' when Play_Bet_Type=3 then 'Multi Bet' end)  from player_bets ,channels_used where  Chan_Table_ID = play_bet_Channel and  date(Play_Bet_Timestamp) between   '"+fromDate+"' and '"+toDate+"'  " +
+                        "Play_Bet_Group_ID, Play_Bet_Possible_BonusWinning,(Case when Play_Bet_Type=1 then 'Single Bet' when Play_Bet_Type=4 then 'Jackpot' when Play_Bet_Type=3 then 'Multi Bet' end),Play_Bet_BetType from player_bets ,channels_used where  Chan_Table_ID = play_bet_Channel and  date(Play_Bet_Timestamp) between   '"+fromDate+"' and '"+toDate+"'  " +
                         "and play_Bet_Type in (0,1,2,3,4)  and Play_Bet_Status in (200,201, 202, 203, 204,205,209) and  player_bets.Play_Bet_Mobile='"+mobile+"' order by Play_Bet_Timestamp desc ";                
             }
             System.out.println("getPlayerBettingReport==="+dataQuery);
@@ -505,11 +517,13 @@ public class BettingReportImpl {
                 String betmobile = rs.getString(5);
                 String betstake = rs.getString(6);//bet rm 
                 String betbonusstake = rs.getString(7);//bet bm 
-                String betpossiblewinning = rs.getString(8);//bet rm possible win
-                String betgrosspossiblewinning = rs.getString(9);//bet rm possible win
-                String betgroup_id = rs.getString(10);
-                String betbonuspossiblewinning = rs.getString(11);//bet rm possible win
-                String bettype = rs.getString(12);//bet type
+                String betgrossstake = rs.getString(8);//gross rm 
+                String betpossiblewinning = rs.getString(9);//bet rm possible win
+                String betgrosspossiblewinning = rs.getString(10);//bet rm possible win
+                String betgroup_id = rs.getString(11);
+                String betbonuspossiblewinning = rs.getString(12);//bet rm possible win
+                String bettype = rs.getString(13);//bet type
+                String game_bettype = rs.getString(14);//(prelive or live)
 
 
                 String settled_rm="0.00",settled_bm="0.00",openbet_bm="0.00",ggr_rm="0.00",ngr_rm="0.00",ngrtax_rm="0.00",taxedngr_rm="0.00",bonusamountopen="0.00",bonusmoneysettled="0.00",openbet_rm="0.00",winamount_rm="0.00",winamount_bm="0.00",
@@ -529,7 +543,7 @@ public class BettingReportImpl {
                     refund_rm = "0.00"; // rm refund
                     refund_bm = "0.00"; // bm refund
 
-                    totalBetStake+=Integer.valueOf(betstake);
+                    totalBetStake+=Double.valueOf(betstake);
                 } 
                 else if (betstatus.equalsIgnoreCase("Won")) 
                 {
@@ -542,11 +556,11 @@ public class BettingReportImpl {
                     taxedwinamount_rm=String.format("%.2f", taxedamount_won);
                     winning_tax=String.format("%.2f", win_tax);// win_tax rm
                     winamount_rm =String.format("%.2f", Double.valueOf(betpossiblewinning)); // win rm
-                    ggr_rm = String.valueOf(Integer.valueOf(betstake)); // ggr rm
+                    ggr_rm = String.valueOf(Double.valueOf(betstake)); // ggr rm
                     openbet_bm = "0.00"; // open bm
                     settled_bm = String.valueOf(betbonusstake); // settled bm
                     winamount_bm = String.valueOf(betbonuspossiblewinning); // win bm
-                    ggr_bm = String.valueOf(Integer.valueOf(betbonusstake)); // ggr bm
+                    ggr_bm = String.valueOf(Double.valueOf(betbonusstake)); // ggr bm
                     refund_rm = "0.00"; // rm refund
                     refund_bm = "0.00"; // bm refund
 
@@ -616,8 +630,10 @@ public class BettingReportImpl {
                 dataObj.put("BetSlipID", betslip_id);
                 dataObj.put("BetStatus", betstatus);
                 dataObj.put("BetType", bettype);
+                dataObj.put("GameBetType", game_bettype);
                 dataObj.put("BetChannel", betchannel);
                 dataObj.put("BetMobile", betmobile);
+                dataObj.put("GrossStake", betgrossstake);
                 dataObj.put("RMOpen", openbet_rm);
                 dataObj.put("RMSettled", settled_rm);
                 dataObj.put("RMWinAmountTax", winning_tax);
@@ -644,6 +660,7 @@ public class BettingReportImpl {
                 dataObj.put("BetSlipID", "0");
                 dataObj.put("BetStatus", "0");
                 dataObj.put("BetType", "0");
+                dataObj.put("GameBetType", "0");
                 dataObj.put("BetChannel", "0");
                 dataObj.put("BetMobile", "0");
                 dataObj.put("RMOpen", "0");
@@ -669,8 +686,8 @@ public class BettingReportImpl {
             JSONArray dataArray1 = new JSONArray();
             String query1="select ifnull(sum(Acc_Amount),0),(select ifnull(sum(Acc_Bonus_Amount),0) from user_accounts where Acc_Mobile='"+mobile+"' and Acc_Bonus_Status=1 and Acc_Trans_Type in (1,4,7)),"
                         + "(select ifnull(sum(Acc_Bonus_Amount),0) from user_accounts where Acc_Mobile='"+mobile+"' and Acc_Bonus_Status=1 and Acc_Trans_Type=9),"
-                        + "date(registration_date) ,(select ifnull(sum(Acc_Amount),0) from user_accounts where Acc_Trans_Type=4  and Acc_Mobile='"+mobile+"' ) as 'total betstake' ," +
-                          "(select ifnull(sum(Acc_Amount),0) from user_accounts where Acc_Mpesa_Trans_No like 'BET_WIN%' and Acc_Trans_Type in (3,9) and Acc_Mobile='"+mobile+"' ) as 'total win' from user_accounts,player where Acc_Mobile='"+mobile+"' and msisdn='"+mobile+"' ";// group by Acc_Mobile
+                        + "(select date(registration_date) from player where msisdn='"+mobile+"') as 'reg date' ,(select ifnull(sum(Acc_Amount),0) from user_accounts where Acc_Trans_Type=4  and Acc_Mobile='"+mobile+"' ) as 'total betstake' ," +
+                          "(select ifnull(sum(Acc_Amount),0) from user_accounts where Acc_Mpesa_Trans_No like 'BET_WIN%' and Acc_Trans_Type in (3,9) and Acc_Mobile='"+mobile+"' ) as 'total win' from user_accounts where Acc_Mobile='"+mobile+"' ";// group by Acc_Mobile
             System.out.println("getPlayerAcc==="+query1);
             rs = stmt.executeQuery(query1);
             while (rs.next())
@@ -720,8 +737,8 @@ public class BettingReportImpl {
         try
         {
             dataQuery = "select Play_Bet_Timestamp, Play_Bet_Slip_ID, (case when Play_Bet_Status=200 then 'Pending'  when Play_Bet_Status=201 then 'Placed' when Play_Bet_Status=202 then 'Won' when Play_Bet_Status=203 then 'Lost' when Play_Bet_Status=204 then 'Rejected' when Play_Bet_Status=205 then 'Cancelled'  when Play_Bet_Status=209 then 'Voided' end)as 'bet_status', "+
-                     " Chan_Mode_Name , Play_Bet_Mobile,(Play_Bet_Cash_Stake-Play_Bet_Tax) as 'stake', Play_Bet_Bonus_Stake , Play_Bet_Possible_Winning, Play_Bet_Gross_Possible_Winning, " +
-                     "Play_Bet_Group_ID, Play_Bet_Possible_BonusWinning,(Case when Play_Bet_Type=1 then 'Single Bet' when Play_Bet_Type=4 then 'Jackpot' when Play_Bet_Type=3 then 'Multi Bet' end)  from player_bets ,channels_used where  Chan_Table_ID = play_bet_Channel  " +
+                     " Chan_Mode_Name , Play_Bet_Mobile,Play_Bet_Cash_Stake, Play_Bet_Bonus_Stake , Play_Bet_Possible_Winning, Play_Bet_Gross_Possible_Winning, " +
+                     "Play_Bet_Group_ID, Play_Bet_Possible_BonusWinning,(Case when Play_Bet_Type=1 then 'Single Bet' when Play_Bet_Type=4 then 'Jackpot' when Play_Bet_Type=3 then 'Multi Bet' end),Play_Bet_BetType from player_bets ,channels_used where  Chan_Table_ID = play_bet_Channel  " +
                      "and play_Bet_Type in (0,1,2,3,4)  and Play_Bet_Status in (200,201, 202, 203, 204,205,209) and  player_bets.Play_Bet_Mobile='"+mobile+"' order by Play_Bet_Timestamp desc ";        
             System.out.println("getPlayerBettingReportByMobile==="+dataQuery);
 
@@ -740,11 +757,13 @@ public class BettingReportImpl {
                 String betmobile = rs.getString(5);
                 String betstake = rs.getString(6);//bet rm 
                 String betbonusstake = rs.getString(7);//bet bm 
-                String betpossiblewinning = rs.getString(8);//bet rm possible win
-                String betgrosspossiblewinning = rs.getString(9);//bet rm possible win
-                String betgroup_id = rs.getString(10);
-                String betbonuspossiblewinning = rs.getString(11);//bet rm possible win
-                String bettype = rs.getString(12);//bet type
+                String betgrossstake = rs.getString(8);//gross rm 
+                String betpossiblewinning = rs.getString(9);//bet rm possible win
+                String betgrosspossiblewinning = rs.getString(10);//bet rm possible win
+                String betgroup_id = rs.getString(11);
+                String betbonuspossiblewinning = rs.getString(12);//bet rm possible win
+                String bettype = rs.getString(13);//bet type
+                String game_bettype = rs.getString(14);//(prelive or live)
 
 
                 String settled_rm="0.00",settled_bm="0.00",openbet_bm="0.00",ggr_rm="0.00",ngr_rm="0.00",ngrtax_rm="0.00",taxedngr_rm="0.00",bonusamountopen="0.00",bonusmoneysettled="0.00",openbet_rm="0.00",winamount_rm="0.00",winamount_bm="0.00",
@@ -764,7 +783,7 @@ public class BettingReportImpl {
                     refund_rm = "0.00"; // rm refund
                     refund_bm = "0.00"; // bm refund
 
-                    totalBetStake+=Integer.valueOf(betstake);
+                    totalBetStake+=Double.valueOf(betstake);
                 } 
                 else if (betstatus.equalsIgnoreCase("Won")) 
                 {
@@ -777,11 +796,11 @@ public class BettingReportImpl {
                     taxedwinamount_rm=String.format("%.2f", taxedamount_won);
                     winning_tax=String.format("%.2f", win_tax);// win_tax rm
                     winamount_rm =String.format("%.2f", Double.valueOf(betpossiblewinning)); // win rm
-                    ggr_rm = String.valueOf(Integer.valueOf(betstake)); // ggr rm
+                    ggr_rm = String.valueOf(Double.valueOf(betstake)); // ggr rm
                     openbet_bm = "0.00"; // open bm
                     settled_bm = String.valueOf(betbonusstake); // settled bm
                     winamount_bm = String.valueOf(betbonuspossiblewinning); // win bm
-                    ggr_bm = String.valueOf(Integer.valueOf(betbonusstake)); // ggr bm
+                    ggr_bm = String.valueOf(Double.valueOf(betbonusstake)); // ggr bm
                     refund_rm = "0.00"; // rm refund
                     refund_bm = "0.00"; // bm refund
 
@@ -851,8 +870,10 @@ public class BettingReportImpl {
                 dataObj.put("BetSlipID", betslip_id);
                 dataObj.put("BetStatus", betstatus);
                 dataObj.put("BetType", bettype);
+                dataObj.put("GameBetType", game_bettype);
                 dataObj.put("BetChannel", betchannel);
                 dataObj.put("BetMobile", betmobile);
+                dataObj.put("GrossStake", betgrossstake);
                 dataObj.put("RMOpen", openbet_rm);
                 dataObj.put("RMSettled", settled_rm);
                 dataObj.put("RMWinAmountTax", winning_tax);
@@ -879,8 +900,10 @@ public class BettingReportImpl {
                 dataObj.put("BetSlipID", "0");
                 dataObj.put("BetStatus", "0");
                 dataObj.put("BetType", "0");
+                dataObj.put("GameBetType", "0");
                 dataObj.put("BetChannel", "0");
                 dataObj.put("BetMobile", "0");
+                dataObj.put("GrossStake", "0");
                 dataObj.put("RMOpen", "0");
                 dataObj.put("RMSettled", "0");
                 dataObj.put("RMWinAmountTax", "0");
