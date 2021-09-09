@@ -291,7 +291,35 @@ public class PlayersRegistrationImpl {
     return dataArray;
     }
     
-    
+    public String getPlayerPassword(String mobile)
+    {
+        String response = null;
+        ResultSet rs=null;Connection conn=null;Statement stmt=null;PreparedStatement ps=null;
+        String dataQuery = "select password from player where msisdn='"+mobile+"'";
+
+        try
+        {
+            conn = new DBManager().getDBConnection();
+            stmt = conn.createStatement();
+            rs = stmt.executeQuery(dataQuery);
+
+            while (rs.next())
+            {
+                String password = rs.getString(1);
+                response=password;
+            }
+        }
+        catch (SQLException ex) 
+        {
+            System.out.println("Error getPlayerPassword=== "+ex.getMessage());
+        }
+        finally
+        {
+            new Utility().doFinally(conn,stmt,rs,ps);
+        }
+
+    return response;
+    }
 
     public JSONArray setActivatePlayer(String mobile,String activatedBy)
     {

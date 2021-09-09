@@ -136,7 +136,15 @@ public class PlayersAccountSettingsAPI extends HttpServlet {
                 {
                     mobile_no=mobile;
                 }
+                
                 responseObj=new PlayersRegistrationImpl().setActivatePlayer(mobile_no,activatedBy);
+                
+                Thread thread=new Thread(() -> {
+                    String password=new PlayersRegistrationImpl().getPlayerPassword(mobile_no);
+                    String sms="Welcome to STARBET:Your username is:"+ mobile_no + ". Your Web password is " + password+". Deposit via Mpesa Paybill 523388. Dial *680# or www.starbet.co.ke";
+                    new Utility().sendSMS(mobile_no,sms);
+                    });
+                thread.start();
             }
         }
         catch (IOException | JSONException ex) 
