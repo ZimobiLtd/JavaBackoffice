@@ -50,9 +50,13 @@ public class DBManager
         {
             datasource="jdbc/starbet_read"; 
         }
-        else
+        else if (type.equals("write"))
         {
             datasource="jdbc/starbet_write";
+        }
+        else
+        {
+            datasource="jdbc/startbet";  
         }
         
         DataSource dataSource = null;
