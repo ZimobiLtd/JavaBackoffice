@@ -46,7 +46,7 @@ public class BettingReportImpl {
         try
         {
 
-            conn = new DBManager().getDBConnection();
+            conn = DBManager.getInstance().getDBConnection("read");
             stmt = conn.createStatement();
             dataQuery = "select Play_Bet_Timestamp, Play_Bet_Slip_ID, (case when Play_Bet_Status=200 then 'Pending'  when Play_Bet_Status=201 then 'Placed' when Play_Bet_Status=202 then 'Won' when Play_Bet_Status=203 then 'Lost' when Play_Bet_Status=204 then 'Rejected' when Play_Bet_Status=205 then 'Cancelled' when Play_Bet_Status=209 then 'Voided' end)as 'bet_status', "+
                         " Chan_Mode_Name , Play_Bet_Mobile,Play_Bet_Cash_Stake, Play_Bet_Bonus_Stake,Play_Bet_Gross_Stake , Play_Bet_Possible_Winning, Play_Bet_Gross_Possible_Winning, " +
@@ -132,7 +132,7 @@ public class BettingReportImpl {
                     refund_rm = "0.00"; // rm refund
                     refund_bm = "0.00"; // bm refund
                 } 
-                else if (betstatus.equalsIgnoreCase("Rejected"))
+                else if (betstatus.equalsIgnoreCase("Rejected") || betstatus.equalsIgnoreCase("Cancelled"))
                 {
                     openbet_rm = "0.00"; // open rm
                     settled_rm = "0.00"; // settled rm
@@ -145,21 +145,7 @@ public class BettingReportImpl {
                     ngr_rm = "0.00"; // ngr 
                     refund_rm = String.valueOf(betstake); // rm refund
                     refund_bm = String.valueOf(betbonusstake);  // bm refund
-                } 
-                else if (betstatus.equalsIgnoreCase("Cancelled")) 
-                {
-                    openbet_rm = "0.00"; // open rm
-                    settled_rm = "0.00"; // settled rm
-                    winamount_rm = "0.00"; // win rm
-                    ggr_rm = "0.00"; // ggr rm
-                    openbet_bm = "0.00"; // open bm
-                    settled_bm = "0.00"; // settled bm
-                    winamount_bm = "0.00"; // win bm
-                    ggr_bm = "0.00"; // ggr bm
-                    ngr_rm = "0.00"; // ngr 
-                    refund_rm = String.valueOf(betstake); // rm refund
-                    refund_bm = String.valueOf(betbonusstake);  // bm refund
-                } 
+                }
                 else if (betstatus.equalsIgnoreCase("Pending")) 
                 {
                     openbet_rm = "0.00"; // open rm
@@ -267,7 +253,7 @@ public class BettingReportImpl {
                         "Play_Bet_Group_ID, Play_Bet_Possible_BonusWinning,(Case when Play_Bet_Type=1 then 'Single Bet' when Play_Bet_Type=4 then 'Jackpot' when Play_Bet_Type=3 then 'Multi Bet' end),Play_Bet_BetType from player_bets ,channels_used where  Chan_Table_ID = play_bet_Channel and  date(Play_Bet_Timestamp) between   '"+fromDate+"' and '"+toDate+"'  " +
                         "and play_Bet_Type in (0,1,2,3,4)  and Play_Bet_Status in (200,201, 202, 203, 204,205,209) order by Play_Bet_Timestamp desc ";
             
-            conn = new DBManager().getDBConnection();
+            conn = DBManager.getInstance().getDBConnection("read");
             stmt = conn.createStatement();
             rs = stmt.executeQuery(dataQuery);
             
@@ -352,7 +338,7 @@ public class BettingReportImpl {
                     refund_rm = "0.00"; // rm refund
                     refund_bm = "0.00"; // bm refund
                 } 
-                else if (betstatus.equalsIgnoreCase("Rejected"))
+                else if (betstatus.equalsIgnoreCase("Rejected") || betstatus.equalsIgnoreCase("Cancelled"))
                 {
                     openbet_rm = "0.00"; // open rm
                     settled_rm = "0.00"; // settled rm
@@ -365,21 +351,7 @@ public class BettingReportImpl {
                     ngr_rm = "0.00"; // ngr 
                     refund_rm = String.valueOf(betstake); // rm refund
                     refund_bm = String.valueOf(betbonusstake);  // bm refund
-                } 
-                else if (betstatus.equalsIgnoreCase("Cancelled")) 
-                {
-                    openbet_rm = "0.00"; // open rm
-                    settled_rm = "0.00"; // settled rm
-                    winamount_rm = "0.00"; // win rm
-                    ggr_rm = "0.00"; // ggr rm
-                    openbet_bm = "0.00"; // open bm
-                    settled_bm = "0.00"; // settled bm
-                    winamount_bm = "0.00"; // win bm
-                    ggr_bm = "0.00"; // ggr bm
-                    ngr_rm = "0.00"; // ngr 
-                    refund_rm = String.valueOf(betstake); // rm refund
-                    refund_bm = String.valueOf(betbonusstake);  // bm refund
-                } 
+                }
                 else if (betstatus.equalsIgnoreCase("Pending")) 
                 {
                     openbet_rm = "0.00"; // open rm
@@ -502,7 +474,7 @@ public class BettingReportImpl {
             }
             System.out.println("getPlayerBettingReport==="+dataQuery);
 
-            conn = new DBManager().getDBConnection();
+            conn = DBManager.getInstance().getDBConnection("read");
             stmt = conn.createStatement();
             rs = stmt.executeQuery(dataQuery);
             
@@ -742,7 +714,7 @@ public class BettingReportImpl {
                      "and play_Bet_Type in (0,1,2,3,4)  and Play_Bet_Status in (200,201, 202, 203, 204,205,209) and  player_bets.Play_Bet_Mobile='"+mobile+"' order by Play_Bet_Timestamp desc ";        
             System.out.println("getPlayerBettingReportByMobile==="+dataQuery);
 
-            conn = new DBManager().getDBConnection();
+            conn = DBManager.getInstance().getDBConnection("read");
             stmt = conn.createStatement();
             rs = stmt.executeQuery(dataQuery);
 

@@ -138,6 +138,54 @@ public class ManualGamesResolve {
                     "('"+matchID+"', 'under 3.5', '"+time+"', 18, 1, 'Total_3.5', '3.5', '12', 0, '1.0', 0, 'Manual'),\n" +
                     "('"+matchID+"', 'over 3.5', '"+time+"', 18, 3, 'Total_3.5', '3.5', '13', 0, '1.0', 0, 'Manual');";
         }
+        else if(market.equalsIgnoreCase("1_o2.5"))
+        {
+            query = "INSERT INTO `bet_event_winners` (`Bet_Ev_Match_ID`, `Bet_Ev_Winning_Prediction`, `Bet_Ev_Timestamp`, `Bet_Ev_Market_ID`, `Bet_Ev_Type`, `Bet_Ev_Market_Name`, `Bet_Ev_Market_Specifier`, `Bet_Ev_Outcome_ID`, `Bet_Ev_Void_Factor`, `Bet_Ev_Dead_Beat_Void_Factor`, `Bet_Process_Status`, `Bet_Settlement_Mode`)\n" +
+                    "VALUES" +
+                    "('"+matchID+"', 'Team1 & over 2.5', '"+time+"', 37, 1, '1x2 & total_2.5', '2.5', '796', 0, '1.0', 0, 'Manual'), " +
+                    "( '"+matchID+"', 'Team2 & over 2.5', '"+time+"', 37, 3, '1x2 & total_2.5', '2.5', '802', 0, '1.0', 0, 'Manual'), " +
+                    "('"+matchID+"', 'draw & over 2.5', '"+time+"', 37, 3, '1x2 & total_2.5', '2.5', '798', 0, '1.0', 0, 'Manual')";
+        }
+        else if(market.equalsIgnoreCase("2_o2.5"))
+        {
+            query = "INSERT INTO `bet_event_winners` (`Bet_Ev_Match_ID`, `Bet_Ev_Winning_Prediction`, `Bet_Ev_Timestamp`, `Bet_Ev_Market_ID`, `Bet_Ev_Type`, `Bet_Ev_Market_Name`, `Bet_Ev_Market_Specifier`, `Bet_Ev_Outcome_ID`, `Bet_Ev_Void_Factor`, `Bet_Ev_Dead_Beat_Void_Factor`, `Bet_Process_Status`, `Bet_Settlement_Mode`)\n" +
+                    "VALUES" +
+                    "('"+matchID+"', 'Team1 & over 2.5', '"+time+"', 37, 3, '1x2 & total_2.5', '2.5', '796', 0, '1.0', 0, 'Manual'), " +
+                    "( '"+matchID+"', 'Team2 & over 2.5', '"+time+"', 37, 1, '1x2 & total_2.5', '2.5', '802', 0, '1.0', 0, 'Manual'), " +
+                    "('"+matchID+"', 'draw & over 2.5', '"+time+"', 37, 0, '1x2 & total_2.5', '2.5', '798', 0, '1.0', 0, 'Manual')";
+        }
+        else if(market.equalsIgnoreCase("x_o2.5"))
+        {
+            query = "INSERT INTO `bet_event_winners` (`Bet_Ev_Match_ID`, `Bet_Ev_Winning_Prediction`, `Bet_Ev_Timestamp`, `Bet_Ev_Market_ID`, `Bet_Ev_Type`, `Bet_Ev_Market_Name`, `Bet_Ev_Market_Specifier`, `Bet_Ev_Outcome_ID`, `Bet_Ev_Void_Factor`, `Bet_Ev_Dead_Beat_Void_Factor`, `Bet_Process_Status`, `Bet_Settlement_Mode`)\n" +
+                    "VALUES" +
+                    "('"+matchID+"', 'Team1 & over 2.5', '"+time+"', 37, 3, '1x2 & total_2.5', '2.5', '796', 0, '1.0', 0, 'Manual'), " +
+                    "( '"+matchID+"', 'Team2 & over 2.5', '"+time+"', 37, 3, '1x2 & total_2.5', '2.5', '802', 0, '1.0', 0, 'Manual'), " +
+                    "('"+matchID+"', 'draw & over 2.5', '"+time+"', 37, 1, '1x2 & total_2.5', '2.5', '798', 0, '1.0', 0, 'Manual')";
+        }
+        else if(market.equalsIgnoreCase("1_u2.5"))
+        {
+            query = "INSERT INTO `bet_event_winners` (`Bet_Ev_Match_ID`, `Bet_Ev_Winning_Prediction`, `Bet_Ev_Timestamp`, `Bet_Ev_Market_ID`, `Bet_Ev_Type`, `Bet_Ev_Market_Name`, `Bet_Ev_Market_Specifier`, `Bet_Ev_Outcome_ID`, `Bet_Ev_Void_Factor`, `Bet_Ev_Dead_Beat_Void_Factor`, `Bet_Process_Status`, `Bet_Settlement_Mode`)\n" +
+                    "VALUES" +
+                    "('"+matchID+"', 'Team1 & under 2.5', '"+time+"', 37, 1, '1x2 & total_2.5', '2.5', '796', 0, '1.0', 0, 'Manual'), " +
+                    "( '"+matchID+"', 'Team2 & under 2.5', '"+time+"', 37, 3, '1x2 & total_2.5', '2.5', '802', 0, '1.0', 0, 'Manual'), " +
+                    "('"+matchID+"', 'draw & under 2.5', '"+time+"', 37, 3, '1x2 & total_2.5', '2.5', '798', 0, '1.0', 0, 'Manual')";
+        }
+        else if(market.equalsIgnoreCase("2_u2.5"))
+        {
+            query = "INSERT INTO `bet_event_winners` (`Bet_Ev_Match_ID`, `Bet_Ev_Winning_Prediction`, `Bet_Ev_Timestamp`, `Bet_Ev_Market_ID`, `Bet_Ev_Type`, `Bet_Ev_Market_Name`, `Bet_Ev_Market_Specifier`, `Bet_Ev_Outcome_ID`, `Bet_Ev_Void_Factor`, `Bet_Ev_Dead_Beat_Void_Factor`, `Bet_Process_Status`, `Bet_Settlement_Mode`)\n" +
+                    "VALUES" +
+                    "('"+matchID+"', 'Team1 & under 2.5', '"+time+"', 37, 3, '1x2 & total_2.5', '2.5', '796', 0, '1.0', 0, 'Manual'), " +
+                    "( '"+matchID+"', 'Team2 & under 2.5', '"+time+"', 37, 1, '1x2 & total_2.5', '2.5', '802', 0, '1.0', 0, 'Manual'), " +
+                    "('"+matchID+"', 'draw & under 2.5', '"+time+"', 37, 3, '1x2 & total_2.5', '2.5', '798', 0, '1.0', 0, 'Manual')";
+        }
+        else if(market.equalsIgnoreCase("x_u2.5"))
+        {
+            query = "INSERT INTO `bet_event_winners` (`Bet_Ev_Match_ID`, `Bet_Ev_Winning_Prediction`, `Bet_Ev_Timestamp`, `Bet_Ev_Market_ID`, `Bet_Ev_Type`, `Bet_Ev_Market_Name`, `Bet_Ev_Market_Specifier`, `Bet_Ev_Outcome_ID`, `Bet_Ev_Void_Factor`, `Bet_Ev_Dead_Beat_Void_Factor`, `Bet_Process_Status`, `Bet_Settlement_Mode`)\n" +
+                    "VALUES" +
+                    "('"+matchID+"', 'Team1 & under 2.5', '"+time+"', 37, 3, '1x2 & total_2.5', '2.5', '796', 0, '1.0', 0, 'Manual'), " +
+                    "( '"+matchID+"', 'Team2 & under 2.5', '"+time+"', 37, 3, '1x2 & total_2.5', '2.5', '802', 0, '1.0', 0, 'Manual'), " +
+                    "('"+matchID+"', 'draw & under 2.5', '"+time+"', 37, 1, '1x2 & total_2.5', '2.5', '798', 0, '1.0', 0, 'Manual')";
+        }
         
         
       
@@ -159,7 +207,7 @@ public class ManualGamesResolve {
         
         try
         {
-            conn = new DBManager().getDBConnection();
+            conn = DBManager.getInstance().getDBConnection("write");
             stmt = conn.createStatement();
             
             int i=stmt.executeUpdate(query);
@@ -256,7 +304,7 @@ public class ManualGamesResolve {
         
         try
         {
-            conn = new DBManager().getDBConnection();
+            conn = DBManager.getInstance().getDBConnection("read");
             stmt = conn.createStatement();
             rs = stmt.executeQuery(query);
             while (rs.next()) 
@@ -299,7 +347,7 @@ public class ManualGamesResolve {
         query = "select count(Mul_ID) from multibets where Mul_Match_ID='"+matchID+"' limit 1 ";
         try
         {
-            conn = new DBManager().getDBConnection();
+            conn = DBManager.getInstance().getDBConnection("read");
             stmt = conn.createStatement();
             rs = stmt.executeQuery(query);
             while (rs.next()) 
@@ -341,7 +389,7 @@ public class ManualGamesResolve {
         
         try
         {
-            conn = new DBManager().getDBConnection();
+            conn = DBManager.getInstance().getDBConnection("write");
             stmt = conn.createStatement();
             int i=stmt.executeUpdate(query);
             if(i > 0)

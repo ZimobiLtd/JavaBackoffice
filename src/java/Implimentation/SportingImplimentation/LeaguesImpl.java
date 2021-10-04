@@ -42,7 +42,7 @@ public class LeaguesImpl {
 
         try
         {
-            conn = new DBManager().getDBConnection();
+            conn = DBManager.getInstance().getDBConnection("read");
             stmt = conn.createStatement();
             rs = stmt.executeQuery(query);
 
@@ -85,7 +85,7 @@ public class LeaguesImpl {
         
         try
         {
-            conn = new DBManager().getDBConnection();
+            conn = DBManager.getInstance().getDBConnection("write");
             stmt = conn.createStatement();
             int i=stmt.executeUpdate(query);
             if(i > 0)

@@ -1,9 +1,10 @@
 package Database;
 
 
+import Utility.LoggerClass;
 import java.sql.Connection;
-import java.sql.DriverManager;
 import java.sql.SQLException;
+import java.util.logging.Level;
 import javax.naming.Context;
 import javax.naming.InitialContext;
 import javax.naming.NamingException;
@@ -21,52 +22,56 @@ import javax.sql.DataSource;
  */
 public class DBManager 
 {
-    String type,data_source;
-    String user ="mysqld_user";
-    String url1 = "jdbc:mysql://62.171.191.3:3306/starbet?useSSL=false";//192.168.0.88
-    String user_password ="+q4LY9.F:29:3b(q";
-    String driver="com.mysql.cj.jdbc.Driver";
+    private static DBManager dbManager=new DBManager();
+    private static final String DRIVER="com.mysql.cj.jdbc.Driver";
+    private static final String LOOKUP="java:comp/env";
     
-    public DBManager() 
+    private DBManager() 
     {
-        this.type="betting"; 
     }
-        
-    public Connection getDBConnection()
+    
+    
+    public static DBManager getInstance()
     {
-        Connection connection = null;
+        if (dbManager == null)
+        {
+            dbManager = new DBManager();
+        }
 
+        return dbManager;
+    }
+    
+    
+        
+    public Connection getDBConnection(String type)
+    {
+        String datasource;
+        if(type.equals("read"))
+        {
+            datasource="jdbc/starbet_read"; 
+        }
+        else
+        {
+            datasource="jdbc/starbet_write";
+        }
+        
+        DataSource dataSource = null;
+        Connection connection=null;
         try 
         {
-            Class.forName("com.mysql.cj.jdbc.Driver");
-            
-            if(type.equals("betting"))
-            {
-               data_source="jdbc/betting"; 
-               Context ctx = new InitialContext();
-               Context envCtx = (Context) ctx.lookup("java:comp/env");
-               DataSource ds = (DataSource)envCtx.lookup(data_source);
-               connection=ds.getConnection();
-               //connection = DriverManager.getConnection(url1, user, user_password);
-            }
-
-            if(type.equals("0"))
-            {
-                connection = DriverManager.getConnection(url1,user,user_password); // fetch a connection
-            }
-
-            if (connection != null)
-            {		
-               System.out.println("===Connection OK==="+type);   
-            }
-
+            Class.forName(DRIVER);
+            Context ctx = new InitialContext();
+            Context envCtx = (Context) ctx.lookup(LOOKUP);
+            dataSource = (DataSource)envCtx.lookup(datasource);
+            connection=dataSource.getConnection();
         }
-        catch (ClassNotFoundException | SQLException | NamingException ex) 
+        catch (SQLException | ClassNotFoundException | NamingException ex) 
         {
-            System.out.println("Error getDBConnection==="+ex.getMessage());
-        } 
-                
-    return connection;
+            LoggerClass.buildLog(Thread.currentThread().getStackTrace()[1],Level.SEVERE, "<<<ClassNotFoundException | NamingException>>> "+ex.getMessage());
+        }
+        
+        return connection;
     }
+    
       
 }

@@ -40,7 +40,7 @@ public class SettingsImpl {
 
         try
         {
-            conn = new DBManager().getDBConnection();
+            conn = DBManager.getInstance().getDBConnection("read");
             stmt = conn.createStatement();
             rs = stmt.executeQuery(query);
 
@@ -89,7 +89,7 @@ public class SettingsImpl {
 
         try
         {
-            conn = new DBManager().getDBConnection();
+            conn = DBManager.getInstance().getDBConnection("read");
             stmt = conn.createStatement();
             rs = stmt.executeQuery(query);
 
@@ -137,7 +137,7 @@ public class SettingsImpl {
 
         try
         {
-            conn = new DBManager().getDBConnection();
+            conn = DBManager.getInstance().getDBConnection("read");
             stmt = conn.createStatement();
             rs = stmt.executeQuery(query);
 
@@ -212,7 +212,7 @@ public class SettingsImpl {
 
         try
         {
-            conn = new DBManager().getDBConnection();
+            conn = DBManager.getInstance().getDBConnection("read");
             stmt = conn.createStatement();
             rs = stmt.executeQuery(query);
 
@@ -270,7 +270,7 @@ public class SettingsImpl {
         
         try
         {
-            conn = new DBManager().getDBConnection();
+            conn = DBManager.getInstance().getDBConnection("write");
             ps = conn.prepareStatement(query);
             
             ps.setString(1,name );
@@ -309,7 +309,7 @@ public class SettingsImpl {
         
         try
         {
-            conn = new DBManager().getDBConnection();
+            conn = DBManager.getInstance().getDBConnection("read");
             stmt = conn.createStatement();
             int i=stmt.executeUpdate(query);
             if(i > 0)
@@ -339,7 +339,7 @@ public class SettingsImpl {
 
         try
         {
-            conn = new DBManager().getDBConnection();
+            conn = DBManager.getInstance().getDBConnection("read");
             stmt = conn.createStatement();
             rs = stmt.executeQuery(query);
 

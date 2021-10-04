@@ -46,7 +46,7 @@ public class ProfitLossImpl {
 
         try
         {
-            conn = new DBManager().getDBConnection();
+            conn = DBManager.getInstance().getDBConnection("read");
             stmt = conn.createStatement();
 
             ArrayList<String> dates= loopDate(toDate);

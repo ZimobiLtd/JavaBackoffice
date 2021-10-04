@@ -37,7 +37,7 @@ public class BCLBReportImpl {
 
         try
         {
-            conn = new DBManager().getDBConnection();
+            conn = DBManager.getInstance().getDBConnection("read");
             stmt = conn.createStatement();
             for (String date : new Utility().getDatesList(datefrom ,dateto)) 
             {

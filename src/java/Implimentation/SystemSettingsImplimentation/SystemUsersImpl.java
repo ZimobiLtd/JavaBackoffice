@@ -58,7 +58,7 @@ public class SystemUsersImpl {
 
         try
         {
-            conn = new DBManager().getDBConnection();
+            conn = DBManager.getInstance().getDBConnection("read");
             stmt = conn.createStatement();
             rs = stmt.executeQuery(query);
 
@@ -137,7 +137,7 @@ public class SystemUsersImpl {
 
         try
         {
-            conn = new DBManager().getDBConnection();
+            conn = DBManager.getInstance().getDBConnection("read");
             stmt = conn.createStatement();
             rs = stmt.executeQuery(query);
 
@@ -204,7 +204,7 @@ public class SystemUsersImpl {
 
         try
         { 
-            conn = new DBManager().getDBConnection();
+            conn = DBManager.getInstance().getDBConnection("read");
             stmt = conn.createStatement();
             rs = stmt.executeQuery(query);
 
@@ -236,7 +236,7 @@ public class SystemUsersImpl {
 
         try
         {
-            conn = new DBManager().getDBConnection();
+            conn = DBManager.getInstance().getDBConnection("read");
             stmt = conn.createStatement();
             rs = stmt.executeQuery(query);
 
@@ -275,7 +275,7 @@ public class SystemUsersImpl {
 
         try
         {
-            conn = new DBManager().getDBConnection();
+            conn = DBManager.getInstance().getDBConnection("write");
             stmt = conn.createStatement();
 
             ps = conn.prepareStatement(query);
@@ -322,7 +322,7 @@ public class SystemUsersImpl {
 
         try
         {
-            conn = new DBManager().getDBConnection();
+            conn = DBManager.getInstance().getDBConnection("read");
             stmt = conn.createStatement();
             int i=stmt.executeUpdate(query);
             if(i > 0)
@@ -356,7 +356,7 @@ public class SystemUsersImpl {
 
         try
         {
-            conn = new DBManager().getDBConnection();
+            conn = DBManager.getInstance().getDBConnection("write");
             stmt = conn.createStatement();
             int i=stmt.executeUpdate(query);
             if(i > 0)
@@ -386,7 +386,7 @@ public class SystemUsersImpl {
 
         try
         {
-            conn = new DBManager().getDBConnection();
+            conn = DBManager.getInstance().getDBConnection("write");
             stmt = conn.createStatement();
 
             ps = conn.prepareStatement(query);
@@ -421,7 +421,7 @@ public class SystemUsersImpl {
 
         try
         {
-            conn = new DBManager().getDBConnection();
+            conn = DBManager.getInstance().getDBConnection("read");
             stmt = conn.createStatement();
             rs = stmt.executeQuery(query);
 
@@ -458,7 +458,7 @@ public class SystemUsersImpl {
 
         try
         {
-            conn = new DBManager().getDBConnection();
+            conn = DBManager.getInstance().getDBConnection("read");
             stmt = conn.createStatement();
             rs = stmt.executeQuery(query);
 
@@ -492,7 +492,7 @@ public class SystemUsersImpl {
         int success_code=500;String query="";
         try
         {
-            conn = new DBManager().getDBConnection();
+            conn = DBManager.getInstance().getDBConnection("write");
             stmt = conn.createStatement();
             if(taskType ==0 )
             {
@@ -527,7 +527,7 @@ public class SystemUsersImpl {
         try
         {
             String query = "select count(userid) from users where emailaddress='"+email+"'  ";
-            conn = new DBManager().getDBConnection();
+            conn = DBManager.getInstance().getDBConnection("read");
             stmt = conn.createStatement();
             rs = stmt.executeQuery(query);
             while (rs.next()) {

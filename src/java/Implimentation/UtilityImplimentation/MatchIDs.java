@@ -70,7 +70,7 @@ public class MatchIDs extends HttpServlet {
         String data="";
         String query="select  ifnull(group_concat(Mul_Match_ID separator '#'),'No match id was found') from multibets where  Mul_Group_ID=(Select  Play_Bet_Group_ID  from player_bets where Play_Bet_Slip_ID='"+betSlipID+"')";
 
-        try( Connection conn = new DBManager().getDBConnection();
+        try( Connection conn = DBManager.getInstance().getDBConnection("read");
         Statement stmt = conn.createStatement();)
         {
 

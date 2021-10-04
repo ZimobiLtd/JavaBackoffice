@@ -49,7 +49,7 @@ public class GamesHighlightsImpl {
 
         try
         {
-            conn = new DBManager().getDBConnection();
+            conn = DBManager.getInstance().getDBConnection("read");
             stmt = conn.createStatement();
             rs = stmt.executeQuery(query);
 
@@ -118,7 +118,7 @@ public class GamesHighlightsImpl {
 
         try
         {
-            conn = new DBManager().getDBConnection();
+            conn = DBManager.getInstance().getDBConnection("read");
             stmt = conn.createStatement();
             rs = stmt.executeQuery(dataQuery);
 
@@ -195,7 +195,7 @@ public class GamesHighlightsImpl {
         //System.out.println("setHighlights==="+query);
         try
         {
-            conn = new DBManager().getDBConnection();
+            conn = DBManager.getInstance().getDBConnection("write");
             stmt = conn.createStatement();
             int i=stmt.executeUpdate(query);
             if(i > 0)
@@ -236,7 +236,7 @@ public class GamesHighlightsImpl {
 
         try
         {
-            conn = new DBManager().getDBConnection();
+            conn = DBManager.getInstance().getDBConnection("write");
             stmt = conn.createStatement();
             int i=stmt.executeUpdate(query);
             if(i > 0)
@@ -277,7 +277,7 @@ public class GamesHighlightsImpl {
         //System.out.println("setBannerHighlights==="+query);
         try
         {
-            conn = new DBManager().getDBConnection();
+            conn = DBManager.getInstance().getDBConnection("write");
             stmt = conn.createStatement();
             int i=stmt.executeUpdate(query);
             if(i > 0)
@@ -316,7 +316,7 @@ public class GamesHighlightsImpl {
         //System.out.println("setBannerunHighlights==="+query);
         try
         {
-            conn = new DBManager().getDBConnection();
+            conn = DBManager.getInstance().getDBConnection("write");
             stmt = conn.createStatement();
             int i=stmt.executeUpdate(query);
             if(i > 0)
@@ -355,7 +355,7 @@ public class GamesHighlightsImpl {
         //System.out.println("setHighlightJackpot==="+query);
         try
         {
-            conn = new DBManager().getDBConnection();
+            conn = DBManager.getInstance().getDBConnection("write");
             stmt = conn.createStatement();
             int i=stmt.executeUpdate(query);
             if(i > 0)
@@ -396,7 +396,7 @@ public class GamesHighlightsImpl {
 
         try
         {
-            conn = new DBManager().getDBConnection();
+            conn = DBManager.getInstance().getDBConnection("write");
             stmt = conn.createStatement();
             int i=stmt.executeUpdate(query);
             if(i > 0)

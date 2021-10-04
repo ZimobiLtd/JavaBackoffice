@@ -36,7 +36,7 @@ public class GamingSummaryImpl {
 
         try
         {
-            conn = new DBManager().getDBConnection();
+            conn = DBManager.getInstance().getDBConnection("read");
             stmt = conn.createStatement();
             
             String reg_today = "select count(id) from player where DATE(registration_date) = curdate() ";

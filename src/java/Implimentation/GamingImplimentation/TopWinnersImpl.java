@@ -44,7 +44,7 @@ public class TopWinnersImpl {
                         "GROUP BY Play_Bet_Mobile ORDER BY Play_Bet_Possible_Winning desc  ";
             System.out.println("getTopWinners==="+dataQuery);
 
-            conn = new DBManager().getDBConnection();
+            conn = DBManager.getInstance().getDBConnection("read");
             stmt = conn.createStatement();
             rs = stmt.executeQuery(dataQuery);
 

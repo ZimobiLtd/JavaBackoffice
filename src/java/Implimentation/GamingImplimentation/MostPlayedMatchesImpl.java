@@ -44,7 +44,7 @@ public class MostPlayedMatchesImpl {
                     + "from multibets  where  date(Mul_EventTime) between '"+dateFrom+"' and '"+dateTo+"' group by Mul_Match_ID order by count(Mul_Match_ID) desc";
             System.out.println("getMostPlayed==="+dataQuery);
             
-            conn = new DBManager().getDBConnection();
+            conn = DBManager.getInstance().getDBConnection("read");
             stmt = conn.createStatement();
             rs = stmt.executeQuery(dataQuery);
 

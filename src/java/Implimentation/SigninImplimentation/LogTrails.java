@@ -117,7 +117,7 @@ public class LogTrails extends HttpServlet {
             JSONObject dataObj  = null;
             JSONArray dataArray = new JSONArray();
             
-            try( Connection conn = new DBManager().getDBConnection();
+            try( Connection conn = DBManager.getInstance().getDBConnection("read");
             Statement stmt = conn.createStatement();)
             {
 
@@ -184,7 +184,7 @@ public class LogTrails extends HttpServlet {
             JSONObject dataObj  = null;
             JSONArray dataArray = new JSONArray();
             
-            try( Connection conn = new DBManager().getDBConnection();
+            try( Connection conn = DBManager.getInstance().getDBConnection("read");
             Statement stmt = conn.createStatement();)
             {
 
@@ -259,7 +259,7 @@ public class LogTrails extends HttpServlet {
             JSONObject dataObj  = new JSONObject();
             JSONArray dataArray = new JSONArray();
    
-            try( Connection conn = new DBManager().getDBConnection();
+            try( Connection conn = DBManager.getInstance().getDBConnection("write");
             Statement stmt = conn.createStatement();)
             {
                 
@@ -291,7 +291,7 @@ public class LogTrails extends HttpServlet {
             JSONObject dataObj  = new JSONObject();
             JSONArray dataArray = new JSONArray();
    
-            try( Connection conn = new DBManager().getDBConnection();
+            try( Connection conn = DBManager.getInstance().getDBConnection("write");
             Statement stmt = conn.createStatement();)
             {
                 

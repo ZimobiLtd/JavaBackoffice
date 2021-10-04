@@ -127,6 +127,11 @@ public class PlayersRegistrationAPI extends HttpServlet {
                 String todate=data[1];
                 responseObj=new PlayersRegistrationImpl().getPlayerRegistrations(fromdate,todate);
             }
+            else if(searchKey.equals("keyword"))
+            {
+                String keyword=maindata;
+                responseObj=new PlayersRegistrationImpl().filterPlayerRegistrationsByKeyword(keyword);
+            }
         }
         catch (IOException | JSONException ex) 
         { 

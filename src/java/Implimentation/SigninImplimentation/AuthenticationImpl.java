@@ -39,7 +39,7 @@ public class AuthenticationImpl {
 
         try
         {
-            conn = new DBManager().getDBConnection();
+            conn = DBManager.getInstance().getDBConnection("read");
             stmt = conn.createStatement();
             rs = stmt.executeQuery(userquery);
             while (rs.next())
@@ -101,7 +101,7 @@ public class AuthenticationImpl {
 
         try
         { 
-            conn = new DBManager().getDBConnection();
+            conn = DBManager.getInstance().getDBConnection("write");
             stmt = conn.createStatement();
 
             ps = conn.prepareStatement(query);

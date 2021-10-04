@@ -100,7 +100,7 @@ public class BetDetailsImpl extends HttpServlet {
             JSONObject dataObj  = null;
             JSONArray dataArray = new JSONArray();
             
-            try( Connection conn = new DBManager().getDBConnection();
+            try( Connection conn = DBManager.getInstance().getDBConnection("read");
             Statement stmt = conn.createStatement();)
             {
                 
@@ -182,7 +182,7 @@ public class BetDetailsImpl extends HttpServlet {
             String data="";
             String query="select Play_Bet_Group_ID from player_bets where Play_Bet_Slip_ID = '" + betslipid + "'";
 
-            try( Connection conn = new DBManager().getDBConnection();
+            try( Connection conn = DBManager.getInstance().getDBConnection("read");
             Statement stmt = conn.createStatement();)
             {
 

@@ -174,7 +174,7 @@ public class MainDashBoardSummaryImpl {
 
             try
             {
-                conn = new DBManager().getDBConnection();
+                conn = DBManager.getInstance().getDBConnection("read");
                 stmt = conn.createStatement();
                 
                 for(int i=0;i<collection.length;i++)

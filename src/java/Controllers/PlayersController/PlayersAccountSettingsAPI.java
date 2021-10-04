@@ -141,7 +141,7 @@ public class PlayersAccountSettingsAPI extends HttpServlet {
                 
                 Thread thread=new Thread(() -> {
                     String password=new PlayersRegistrationImpl().getPlayerPassword(mobile_no);
-                    String sms="Welcome to STARBET:Your username is:"+ mobile_no + ". Your Web password is " + password+". Deposit via Mpesa Paybill 523388. Dial *680# or www.starbet.co.ke";
+                    String sms="Welcome to STARBET:Your username is:"+ "0"+mobile_no.substring(3) + ". Your Web password is " + password+". Deposit via Mpesa Paybill 523388. Dial *680# or www.starbet.co.ke";
                     new Utility().sendSMS(mobile_no,sms);
                     });
                 thread.start();

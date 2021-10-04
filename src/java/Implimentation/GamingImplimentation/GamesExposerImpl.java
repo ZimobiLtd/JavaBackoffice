@@ -45,7 +45,7 @@ public class GamesExposerImpl {
                         "between '"+fromDate+"' and '"+toDate+"' and Mul_EventTime is not null group by B.Mul_Prediction, B.Mul_Match_ID order by Mul_EventTime   desc ";
             System.out.println("getGamingPlayerLiability==="+dataQuery);
 
-            conn = new DBManager().getDBConnection();
+            conn = DBManager.getInstance().getDBConnection("read");
             stmt = conn.createStatement();
             rs = stmt.executeQuery(dataQuery);
 

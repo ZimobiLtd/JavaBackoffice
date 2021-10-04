@@ -37,7 +37,7 @@ public class JackpotProcessor {
 
         try
         {
-            conn = new DBManager().getDBConnection();
+            conn = DBManager.getInstance().getDBConnection("read");
             stmt = conn.createStatement();
             rs = stmt.executeQuery(query);
 
@@ -110,7 +110,7 @@ public class JackpotProcessor {
 
         try
         {
-            conn = new DBManager().getDBConnection();
+            conn = DBManager.getInstance().getDBConnection("read");
             stmt = conn.createStatement();
             rs = stmt.executeQuery(query);
 
@@ -149,7 +149,7 @@ public class JackpotProcessor {
             java.sql.Timestamp startDate = new java.sql.Timestamp(sdf.parse(minDate).getTime());  
             java.sql.Timestamp endDate = new java.sql.Timestamp(sdf.parse(maxDate).getTime()); 
             
-            conn = new DBManager().getDBConnection();
+            conn = DBManager.getInstance().getDBConnection("write");
             stmt=conn.createStatement();
             ps = conn.prepareStatement(query,Statement.RETURN_GENERATED_KEYS);
             
@@ -190,7 +190,7 @@ public class JackpotProcessor {
         
         try
         {
-            conn = new DBManager().getDBConnection();
+            conn = DBManager.getInstance().getDBConnection("write");
             stmt = conn.createStatement();
             
             int i=stmt.executeUpdate(query);
@@ -222,7 +222,7 @@ public class JackpotProcessor {
         
         try
         {
-            conn = new DBManager().getDBConnection();
+            conn = DBManager.getInstance().getDBConnection("write");
             stmt = conn.createStatement();
             
             int i=stmt.executeUpdate(query);
