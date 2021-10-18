@@ -122,7 +122,7 @@ public class MainDashBoardSummaryImpl {
         dataQueryOpenBetsTurnOver = "select ifnull(sum(Play_Bet_Stake),0), ifnull(sum(Play_Bet_Bonus_Stake),0) from player_bets where Play_Bet_Status in (201) "
                 + " and  date(Play_Bet_Timestamp) between '" + fromDate + "' and '" + toDate + "'";
         
-        dataQuerySettledBetsTurnOver = "select ifnull(sum(Play_Bet_Stake),0), ifnull(sum(Play_Bet_Bonus_Stake),0) from player_bets where Play_Bet_Status in (202,203) "
+        dataQuerySettledBetsTurnOver = "select ifnull(sum(Play_Bet_Cash_Stake),0) from player_bets where Play_Bet_Status in (202,203) "
                 + " and  date(Play_Bet_Timestamp) between '" + fromDate + "' and '" + toDate + "'";
         
         dataQueryWonBetsTurnOver = "select ifnull(sum(Play_Bet_Stake),0), ifnull(sum(Play_Bet_Bonus_Stake),0) from player_bets where Play_Bet_Status in (202) "

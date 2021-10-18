@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<web-app version="3.1" xmlns="http://xmlns.jcp.org/xml/ns/javaee" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://xmlns.jcp.org/xml/ns/javaee http://xmlns.jcp.org/xml/ns/javaee/web-app_3_1.xsd">
+    <servlet>
+        <servlet-name>httpstest</servlet-name>
+        <servlet-class>httpstest</servlet-class>
+    </servlet>
+    <servlet>
+        <servlet-name>Order_Request</servlet-name>
+        <servlet-class>Order_Request</servlet-class>
+    </servlet>
+    
+    <servlet>
+        <servlet-name>Order_Response</servlet-name>
+        <servlet-class>Order_Response</servlet-class>
+    </servlet>
+    
+    <servlet-mapping>
+        <servlet-name>httpstest</servlet-name>
+        <url-pattern>/httpstest</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>Order_Request</servlet-name>
+        <url-pattern>/Order_Request</url-pattern>
+    </servlet-mapping>
+     <servlet-mapping>
+        <servlet-name>Order_Response</servlet-name>
+        <url-pattern>/Order_Response</url-pattern>
+    </servlet-mapping>
+    
+    <session-config>
+        <session-timeout>
+            30
+        </session-timeout>
+    </session-config>
+    
+    <security-constraint>
+        <display-name>Constraint2</display-name>
+        <web-resource-collection>
+            <web-resource-name>httptest</web-resource-name>
+            <description>test</description>
+            <url-pattern>/A_Auto/httpstest</url-pattern>
+        </web-resource-collection>
+        <user-data-constraint>
+            <description>CONFIDENTIAL</description>
+            <transport-guarantee>CONFIDENTIAL</transport-guarantee>
+        </user-data-constraint>
+    </security-constraint>
+    
+    <security-constraint>
+        <display-name>ORDER REQUEST</display-name>
+        <web-resource-collection>
+            <web-resource-name>Order_Request</web-resource-name>
+            <description>CONFIDENCIAL</description>
+            <url-pattern>/IkoSpare/Order_Request</url-pattern>
+        </web-resource-collection>
+        <user-data-constraint>
+            <description>CONFIDENTIAL</description>
+            <transport-guarantee>CONFIDENTIAL</transport-guarantee>
+        </user-data-constraint>
+    </security-constraint>
+    
+     <security-constraint>
+        <display-name>ORDER RESPONSE</display-name>
+        <web-resource-collection>
+            <web-resource-name>Order_Response</web-resource-name>
+            <description>CONFIDENCIAL</description>
+            <url-pattern>/IkoSpare/Order_Response</url-pattern>
+        </web-resource-collection>
+        <user-data-constraint>
+            <description>CONFIDENTIAL</description>
+            <transport-guarantee>CONFIDENTIAL</transport-guarantee>
+        </user-data-constraint>
+    </security-constraint>
+    
+</web-app>
