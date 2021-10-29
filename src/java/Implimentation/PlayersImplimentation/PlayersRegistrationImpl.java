@@ -326,7 +326,7 @@ public class PlayersRegistrationImpl {
 
         try
         {
-            dataQuery= " update player set `status` =2,narration='"+narration+"',action_by='"+deactivatedBy+"' where msisdn = '"+mobile+"' ";
+            dataQuery= " update player set `status` = 2,narration='"+narration+"',action_by='"+deactivatedBy+"' where msisdn = '"+mobile+"' ";
             conn = DBManager.getInstance().getDBConnection("write");
             stmt = conn.createStatement();
             stmt.executeUpdate(dataQuery);

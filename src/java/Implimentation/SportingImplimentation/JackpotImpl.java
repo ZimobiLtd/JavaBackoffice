@@ -43,7 +43,7 @@ public class JackpotImpl {
         ResultSet rs=null;Connection conn=null;Statement stmt=null;PreparedStatement ps=null;
         String query = "select id,display_name,datecreated,start_date,end_date,stake_amount,amount,"
                 + "(case when jp_status=1 then 'Active' when jp_status=2 then 'Expired' when jp_status=3 then 'Inactive' when jp_status=4 then 'Closed' end) as  'jp status',"
-                + "(case when jp_result_status=1 then 'Open' when jp_status=2 then 'Closed'end) as 'result status',jp_total_games,jp_winners,jp_all_winners,jp_total_resulted from jackpot order by datecreated desc";
+                + "(case when jp_result_status=1 then 'Open' when jp_status=2 then 'Closed'end) as 'result status',jp_total_games,jp_winners,jp_all_winners,jp_total_resulted from jackpot order by id desc";
         
         System.out.println("getJackports==="+query);
 

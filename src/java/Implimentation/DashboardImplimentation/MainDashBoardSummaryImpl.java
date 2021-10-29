@@ -141,7 +141,7 @@ public class MainDashBoardSummaryImpl {
 
         dataQueryWithdrawals = "SELECT  count(Acc_ID),ifnull(sum(Acc_Amount),0) as 'user b2c withdrawal', "
                             + "(select  ifnull(sum(Play_Bet_Cash_Stake),0) as 'betstakes' from player_bets where DATE(Play_Bet_Timestamp) between '" + fromDate + "' and '" + toDate + "' and Play_Bet_Status in (201,202,203)) as 'cash bet withdrawal' , "
-                           + "(select  ifnull(sum(Play_Bet_Bonus_Stake),0) as 'betstakes' from player_bets where DATE(Play_Bet_Timestamp) between '" + fromDate + "' and '" + toDate + "' and Play_Bet_Status in (201,202,203)) as 'bonus bet withdrawal' , "
+                            + "(select  ifnull(sum(Play_Bet_Bonus_Stake),0) as 'betstakes' from player_bets where DATE(Play_Bet_Timestamp) between '" + fromDate + "' and '" + toDate + "' and Play_Bet_Status in (201,202,203)) as 'bonus bet withdrawal' , "
                             + "(select ifnull(sum(Acc_Amount),0) from user_accounts where Acc_Trans_Type = 4 and Acc_Gateway like '%GOLDENRACE_BET%' and date(Acc_Date) between '" + fromDate + "' and '" + toDate + "' ) as 'goldenrace bet withdrawal' , "
                             + "(select ifnull(sum(Acc_Amount),0) from user_accounts where Acc_Trans_Type = 4 and Golden_Race_GameCycleId like 'SM%' and date(Acc_Date) between '" + fromDate + "' and '" + toDate + "' ) as 'slotgame bet withdrawal' , "
                             + "(select ifnull(sum(Acc_Amount),0) from user_accounts where Acc_Trans_Type = 3 and Golden_Race_Trans_Type like 'win%' and Acc_Gateway like '%GOLDENRACE_BET%' and date(Acc_Date) between '" + fromDate + "' and '" + toDate + "' ) as 'goldenrace bet win' , "
@@ -152,7 +152,6 @@ public class MainDashBoardSummaryImpl {
                             + "FROM user_accounts where Acc_Trans_Type = 2 and  date(Acc_Date) between '" + fromDate + "' and '" + toDate + "'";
 
         dataQueryBalance = "select ifnull(sum(Acc_Amount),0) from user_accounts where date(Acc_Date) between '" + fromDate + "' and '" + toDate + "' ";
-
         
         dataQueryBetsByStatus = "select Play_Bet_Status,count(Play_Bet_ID) from player_bets where date(Play_Bet_Timestamp) between '" + fromDate + "' and '" + toDate + "' GROUP BY Play_Bet_Status";
         
@@ -252,10 +251,10 @@ public class MainDashBoardSummaryImpl {
                                totalWinnings=String.valueOf((Math.round(Double.valueOf(rs.getString(1)).intValue())));;
                             break;
                             case 3:
-                               settledBetsTurnoverRM=String.valueOf((Math.round(Double.valueOf(rs.getString(1)).intValue())));;
+                               settledBetsTurnoverRM=String.valueOf((Math.round(Double.valueOf(rs.getString(1)).intValue())));
                             break;
                             case 4:
-                               wonBetsTurnoverRM=String.valueOf((Math.round(Double.valueOf(rs.getString(1)).intValue())));;
+                               wonBetsTurnoverRM=String.valueOf((Math.round(Double.valueOf(rs.getString(1)).intValue())));
                             break;
                             default:
                             break;
@@ -272,22 +271,16 @@ public class MainDashBoardSummaryImpl {
                 GGR = Double.valueOf(totalTurnoverRM) ;
                 double ngr_val =GGR - Double.valueOf(totalWinnings);
                 NGR=ngr_val-(ngr_val*0.15);
-                Profit=Double.valueOf(settledBetsTurnoverRM)-(Double.valueOf(totalWinnings));//-Double.valueOf(wonBetsTurnoverRM)*0.15
+                double sportsProfit=Double.valueOf(settledBetsTurnoverRM)-(Double.valueOf(totalWinnings));//-Double.valueOf(wonBetsTurnoverRM)*0.15
+                double goldenRaceProfit=(Double.valueOf(wallet2GoldenraceBetwithdrawAccBal) * -1)-(Double.valueOf(goldenRaceBetwinAccBal));
+                double slotGamesProfit=(Double.valueOf(wallet2SlotGameBetwithdrawAccBal) * -1)-(Double.valueOf(slotGameBetwinAccBal));
                 
                 
                 dataObj.put("GGR", String.valueOf(GGR));
                 dataObj.put("NGR", String.valueOf(NGR));
-                
-                if((int) Profit < 0)
-                {
-                    dataObj.put("Profit","0");
-                    dataObj.put("Loss", String.valueOf(Profit*-1));
-                }
-                else
-                {
-                    dataObj.put("Profit",String.valueOf(Profit));
-                    dataObj.put("Loss", "0");
-                }
+                dataObj.put("SportsProfit",sportsProfit);
+                dataObj.put("GoldenRaceProfit",goldenRaceProfit);
+                dataObj.put("SlotGamesProfit",slotGamesProfit);
                 
                 
                 main.put("Profit_Summary", dataObj);
