@@ -51,7 +51,8 @@ public class ManualResolveAPI extends HttpServlet {
         if(market.equalsIgnoreCase("1") || market.equalsIgnoreCase("2") || market.equalsIgnoreCase("x") || market.equalsIgnoreCase("gg")|| market.equalsIgnoreCase("ng") || 
             market.equalsIgnoreCase("x2") || market.equalsIgnoreCase("x1")  || market.equalsIgnoreCase("12") || market.equalsIgnoreCase("o2.5") || market.equalsIgnoreCase("u2.5") 
             || market.equalsIgnoreCase("o1.5") || market.equalsIgnoreCase("u1.5")|| market.equalsIgnoreCase("o3.5") || market.equalsIgnoreCase("u3.5") || market.equalsIgnoreCase("1_o2.5")
-            || market.equalsIgnoreCase("2_o2.5") || market.equalsIgnoreCase("x_o2.5") || market.equalsIgnoreCase("1_u2.5") || market.equalsIgnoreCase("2_u2.5") || market.equalsIgnoreCase("x_u2.5"))
+            || market.equalsIgnoreCase("2_o2.5") || market.equalsIgnoreCase("x_o2.5") || market.equalsIgnoreCase("1_u2.5") || market.equalsIgnoreCase("2_u2.5") || market.equalsIgnoreCase("x_u2.5") 
+            || market.equalsIgnoreCase("o4.5") || market.equalsIgnoreCase("u4.5") || market.equalsIgnoreCase("o5.5") || market.equalsIgnoreCase("u5.5")  || market.equalsIgnoreCase("o0.5"))
         {
             int matchIDStatus=new ManualGamesResolve().checkMatchID(matchID);
             if(matchIDStatus == 200)
