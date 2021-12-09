@@ -40,7 +40,7 @@ public class ManualGamesResolve {
                         "VALUES " +
                         "('"+matchID+"', 'draw', '"+time+"', 1, 3, '1x2', '', '2', 0, '1.0', 0, 'Manual'),\n" +
                         "('"+matchID+"', 'Team2', '"+time+"', 1, 3, '1x2', '', '1', 0, '1.0', 0, 'Manual'),\n" +
-                        "('"+matchID+"', 'Team1', '"+time+"', 1, 1, '1x2', '', '3', 0, '1.0', 0, 'Manual');";
+                        "('"+matchID+"', 'Team1', '"+time+"', 1, 1, '1x2', '', '3', 0, '1.0', 0, 'Manual')";
         }
         else if(market.equalsIgnoreCase("x"))
         {
@@ -77,21 +77,21 @@ public class ManualGamesResolve {
             query = "INSERT INTO `bet_event_winners` (`Bet_Ev_Match_ID`, `Bet_Ev_Winning_Prediction`, `Bet_Ev_Timestamp`, `Bet_Ev_Market_ID`, `Bet_Ev_Type`, `Bet_Ev_Market_Name`, `Bet_Ev_Market_Specifier`, `Bet_Ev_Outcome_ID`, `Bet_Ev_Void_Factor`, `Bet_Ev_Dead_Beat_Void_Factor`, `Bet_Process_Status`, `Bet_Settlement_Mode`)\n" +
                     "VALUES" +
                     "('"+matchID+"', 'over 0.5', '"+time+"', 37, 3, 'total_0.5', '4.5', '796', 0, '1.0', 0, 'Manual'), " +
-                    "( '"+matchID+"', 'under 0.5', '"+time+"', 37, 3, 'total_0.5', '4.5', '802', 0, '1.0', 0, 'Manual')";
+                    "('"+matchID+"', 'under 0.5', '"+time+"', 37, 3, 'total_0.5', '4.5', '802', 0, '1.0', 0, 'Manual')";
         }
         else if(market.equalsIgnoreCase("o2.5"))
         {
             query = "INSERT INTO `bet_event_winners` (`Bet_Ev_Match_ID`, `Bet_Ev_Winning_Prediction`, `Bet_Ev_Timestamp`, `Bet_Ev_Market_ID`, `Bet_Ev_Type`, `Bet_Ev_Market_Name`, `Bet_Ev_Market_Specifier`, `Bet_Ev_Outcome_ID`, `Bet_Ev_Void_Factor`, `Bet_Ev_Dead_Beat_Void_Factor`, `Bet_Process_Status`, `Bet_Settlement_Mode`)\n" +
                     "VALUES" +
                     "('"+matchID+"', 'over 2.5', '"+time+"', 18, 1, 'Total_2.5', '2.5', '12', 0, '1.0', 0, 'Manual'),\n" +
-                    "('"+matchID+"', 'under 2.5', '"+time+"', 18, 3, 'Total_2.5', '2.5', '13', 0, '1.0', 0, 'Manual');";
+                    "('"+matchID+"', 'under 2.5', '"+time+"', 18, 3, 'Total_2.5', '2.5', '13', 0, '1.0', 0, 'Manual')";
         }
         else if(market.equalsIgnoreCase("u2.5"))
         {
             query = "INSERT INTO `bet_event_winners` (`Bet_Ev_Match_ID`, `Bet_Ev_Winning_Prediction`, `Bet_Ev_Timestamp`, `Bet_Ev_Market_ID`, `Bet_Ev_Type`, `Bet_Ev_Market_Name`, `Bet_Ev_Market_Specifier`, `Bet_Ev_Outcome_ID`, `Bet_Ev_Void_Factor`, `Bet_Ev_Dead_Beat_Void_Factor`, `Bet_Process_Status`, `Bet_Settlement_Mode`)\n" +
                     "VALUES" +
                     "('"+matchID+"', 'over 2.5', '"+time+"', 18, 3, 'Total_2.5', '2.5', '12', 0, '1.0', 0, 'Manual'),\n" +
-                    "('"+matchID+"', 'under 2.5', '"+time+"', 18, 1, 'Total_2.5', '2.5', '13', 0, '1.0', 0, 'Manual');";
+                    "('"+matchID+"', 'under 2.5', '"+time+"', 18, 1, 'Total_2.5', '2.5', '13', 0, '1.0', 0, 'Manual')";
         }
         else if(market.equalsIgnoreCase("x2"))
         {
@@ -131,6 +131,48 @@ public class ManualGamesResolve {
                     "('"+matchID+"', 'under 1.5', '"+time+"', 18, 1, 'Total_1.5', '1.5', '12', 0, '1.0', 0, 'Manual'),\n" +
                     "('"+matchID+"', 'over 1.5', '"+time+"', 18, 3, 'Total_1.5', '1.5', '13', 0, '1.0', 0, 'Manual');";
         }
+        else if(market.equalsIgnoreCase("1_u1.5"))
+        {
+            query = "INSERT INTO `bet_event_winners`(`Bet_Ev_Match_ID`, `Bet_Ev_Winning_Prediction`, `Bet_Ev_Timestamp`, `Bet_Ev_Market_ID`, `Bet_Ev_Type`, `Bet_Ev_Market_Name`, `Bet_Ev_Market_Specifier`, `Bet_Ev_Outcome_ID`, `Bet_Ev_Void_Factor`, `Bet_Ev_Dead_Beat_Void_Factor`, `Bet_Process_Status`, `Bet_Settlement_Mode`) "
+                    + "VALUES ('"+matchID+"', 'Team1 & under 1.5', '"+time+"', 37, 1, '1x2 & total_1.5', '1.5', '794', 0, '1.0', 0, 'Manual'),"
+                    + "VALUES ('"+matchID+"', 'draw & under 1.5', '"+time+"', 37, 3, '1x2 & total_1.5', '1.5', '794', 0, '1.0', 0, 'Manual'),"
+                    + "VALUES ('"+matchID+"', 'Team2 & under 1.5', '"+time+"', 37, 3, '1x2 & total_1.5', '1.5', '794', 0, '1.0', 0, 'Manual')";
+        }  
+        else if(market.equalsIgnoreCase("x_u1.5"))
+        {
+            query = "INSERT INTO `bet_event_winners`(`Bet_Ev_Match_ID`, `Bet_Ev_Winning_Prediction`, `Bet_Ev_Timestamp`, `Bet_Ev_Market_ID`, `Bet_Ev_Type`, `Bet_Ev_Market_Name`, `Bet_Ev_Market_Specifier`, `Bet_Ev_Outcome_ID`, `Bet_Ev_Void_Factor`, `Bet_Ev_Dead_Beat_Void_Factor`, `Bet_Process_Status`, `Bet_Settlement_Mode`) "
+                    + "VALUES ('"+matchID+"', 'Team1 & under 1.5', '"+time+"', 37, 3, '1x2 & total_1.5', '1.5', '794', 0, '1.0', 0, 'Manual'),"
+                    + "VALUES ('"+matchID+"', 'draw & under 1.5', '"+time+"', 37, 1, '1x2 & total_1.5', '1.5', '794', 0, '1.0', 0, 'Manual'),"
+                    + "VALUES ('"+matchID+"', 'Team2 & under 1.5', '"+time+"', 37, 3, '1x2 & total_1.5', '1.5', '794', 0, '1.0', 0, 'Manual')";
+        }
+        else if(market.equalsIgnoreCase("2_u1.5"))
+        {
+            query = "INSERT INTO `bet_event_winners`(`Bet_Ev_Match_ID`, `Bet_Ev_Winning_Prediction`, `Bet_Ev_Timestamp`, `Bet_Ev_Market_ID`, `Bet_Ev_Type`, `Bet_Ev_Market_Name`, `Bet_Ev_Market_Specifier`, `Bet_Ev_Outcome_ID`, `Bet_Ev_Void_Factor`, `Bet_Ev_Dead_Beat_Void_Factor`, `Bet_Process_Status`, `Bet_Settlement_Mode`) "
+                    + "VALUES ('"+matchID+"', 'Team1 & under 1.5', '"+time+"', 37, 3, '1x2 & total_1.5', '1.5', '794', 0, '1.0', 0, 'Manual'),"
+                    + "VALUES ('"+matchID+"', 'draw & under 1.5', '"+time+"', 37, 3, '1x2 & total_1.5', '1.5', '794', 0, '1.0', 0, 'Manual'),"
+                    + "VALUES ('"+matchID+"', 'Team2 & under 1.5', '"+time+"', 37, 1, '1x2 & total_1.5', '1.5', '794', 0, '1.0', 0, 'Manual')";
+        }
+        else if(market.equalsIgnoreCase("1_o1.5"))
+        {
+            query = "INSERT INTO `bet_event_winners`(`Bet_Ev_Match_ID`, `Bet_Ev_Winning_Prediction`, `Bet_Ev_Timestamp`, `Bet_Ev_Market_ID`, `Bet_Ev_Type`, `Bet_Ev_Market_Name`, `Bet_Ev_Market_Specifier`, `Bet_Ev_Outcome_ID`, `Bet_Ev_Void_Factor`, `Bet_Ev_Dead_Beat_Void_Factor`, `Bet_Process_Status`, `Bet_Settlement_Mode`) "
+                    + "VALUES ('"+matchID+"', 'Team1 & over 1.5', '"+time+"', 37, 1, '1x2 & total_1.5', '1.5', '794', 0, '1.0', 0, 'Manual'),"
+                    + "VALUES ('"+matchID+"', 'draw & over 1.5', '"+time+"', 37, 3, '1x2 & total_1.5', '1.5', '794', 0, '1.0', 0, 'Manual'),"
+                    + "VALUES ('"+matchID+"', 'Team2 & over 1.5', '"+time+"', 37, 3, '1x2 & total_1.5', '1.5', '794', 0, '1.0', 0, 'Manual')";
+        }  
+        else if(market.equalsIgnoreCase("x_o1.5"))
+        {
+            query = "INSERT INTO `bet_event_winners`(`Bet_Ev_Match_ID`, `Bet_Ev_Winning_Prediction`, `Bet_Ev_Timestamp`, `Bet_Ev_Market_ID`, `Bet_Ev_Type`, `Bet_Ev_Market_Name`, `Bet_Ev_Market_Specifier`, `Bet_Ev_Outcome_ID`, `Bet_Ev_Void_Factor`, `Bet_Ev_Dead_Beat_Void_Factor`, `Bet_Process_Status`, `Bet_Settlement_Mode`) "
+                    + "VALUES ('"+matchID+"', 'Team1 & over 1.5', '"+time+"', 37, 3, '1x2 & total_1.5', '1.5', '794', 0, '1.0', 0, 'Manual'),"
+                    + "VALUES ('"+matchID+"', 'draw & over 1.5', '"+time+"', 37, 1, '1x2 & total_1.5', '1.5', '794', 0, '1.0', 0, 'Manual'),"
+                    + "VALUES ('"+matchID+"', 'Team2 & over 1.5', '"+time+"', 37, 3, '1x2 & total_1.5', '1.5', '794', 0, '1.0', 0, 'Manual')";
+        }
+        else if(market.equalsIgnoreCase("2_o1.5"))
+        {
+            query = "INSERT INTO `bet_event_winners`(`Bet_Ev_Match_ID`, `Bet_Ev_Winning_Prediction`, `Bet_Ev_Timestamp`, `Bet_Ev_Market_ID`, `Bet_Ev_Type`, `Bet_Ev_Market_Name`, `Bet_Ev_Market_Specifier`, `Bet_Ev_Outcome_ID`, `Bet_Ev_Void_Factor`, `Bet_Ev_Dead_Beat_Void_Factor`, `Bet_Process_Status`, `Bet_Settlement_Mode`) "
+                    + "VALUES ('"+matchID+"', 'Team1 & over 1.5', '"+time+"', 37, 3, '1x2 & total_1.5', '1.5', '794', 0, '1.0', 0, 'Manual'),"
+                    + "VALUES ('"+matchID+"', 'draw & over 1.5', '"+time+"', 37, 3, '1x2 & total_1.5', '1.5', '794', 0, '1.0', 0, 'Manual'),"
+                    + "VALUES ('"+matchID+"', 'Team2 & over 1.5', '"+time+"', 37, 1, '1x2 & total_1.5', '1.5', '794', 0, '1.0', 0, 'Manual')";
+        } 
         else if(market.equalsIgnoreCase("o3.5"))
         {
             query = "INSERT INTO `bet_event_winners` (`Bet_Ev_Match_ID`, `Bet_Ev_Winning_Prediction`, `Bet_Ev_Timestamp`, `Bet_Ev_Market_ID`, `Bet_Ev_Type`, `Bet_Ev_Market_Name`, `Bet_Ev_Market_Specifier`, `Bet_Ev_Outcome_ID`, `Bet_Ev_Void_Factor`, `Bet_Ev_Dead_Beat_Void_Factor`, `Bet_Process_Status`, `Bet_Settlement_Mode`)\n" +
@@ -144,6 +186,48 @@ public class ManualGamesResolve {
                     "VALUES" +
                     "('"+matchID+"', 'under 3.5', '"+time+"', 18, 1, 'Total_3.5', '3.5', '12', 0, '1.0', 0, 'Manual'),\n" +
                     "('"+matchID+"', 'over 3.5', '"+time+"', 18, 3, 'Total_3.5', '3.5', '13', 0, '1.0', 0, 'Manual');";
+        }
+        else if(market.equalsIgnoreCase("1_o3.5"))
+        {
+            query = "INSERT INTO `bet_event_winners`(`Bet_Ev_ID`, `Bet_Ev_Match_ID`, `Bet_Ev_Winning_Prediction`, `Bet_Ev_Timestamp`, `Bet_Ev_Market_ID`, `Bet_Ev_Type`, `Bet_Ev_Market_Name`, `Bet_Ev_Market_Specifier`, `Bet_Ev_Outcome_ID`, `Bet_Ev_Void_Factor`, `Bet_Ev_Dead_Beat_Void_Factor`, `Bet_Process_Status`, `Bet_Settlement_Mode`) "
+                + "VALUES ('"+matchID+"', 'Team1 & over 3.5', '"+time+"', 37, 1, '1x2 & total_3.5', '3.5', '796', 0, '1.0', 0, 'Manual'),"
+                + "VALUES ('"+matchID+"', 'draw & over 3.5', '"+time+"', 37, 3, '1x2 & total_3.5', '3.5', '796', 0, '1.0', 0, 'Manual'),"
+                + "VALUES ('"+matchID+"', 'Team2 & over 3.5', '"+time+"', 37, 3, '1x2 & total_3.5', '3.5', '796', 0, '1.0', 0, 'Manual')";
+        }
+        else if(market.equalsIgnoreCase("x_o3.5"))
+        {
+            query = "INSERT INTO `bet_event_winners`(`Bet_Ev_ID`, `Bet_Ev_Match_ID`, `Bet_Ev_Winning_Prediction`, `Bet_Ev_Timestamp`, `Bet_Ev_Market_ID`, `Bet_Ev_Type`, `Bet_Ev_Market_Name`, `Bet_Ev_Market_Specifier`, `Bet_Ev_Outcome_ID`, `Bet_Ev_Void_Factor`, `Bet_Ev_Dead_Beat_Void_Factor`, `Bet_Process_Status`, `Bet_Settlement_Mode`) "
+                + "VALUES ('"+matchID+"', 'Team1 & over 3.5', '"+time+"', 37, 3, '1x2 & total_3.5', '3.5', '796', 0, '1.0', 0, 'Manual'),"
+                + "VALUES ('"+matchID+"', 'draw & over 3.5', '"+time+"', 37, 1, '1x2 & total_3.5', '3.5', '796', 0, '1.0', 0, 'Manual'),"
+                + "VALUES ('"+matchID+"', 'Team2 & over 3.5', '"+time+"', 37, 3, '1x2 & total_3.5', '3.5', '796', 0, '1.0', 0, 'Manual')";
+        }
+        else if(market.equalsIgnoreCase("2_o3.5"))
+        {
+            query = "INSERT INTO `bet_event_winners`(`Bet_Ev_ID`, `Bet_Ev_Match_ID`, `Bet_Ev_Winning_Prediction`, `Bet_Ev_Timestamp`, `Bet_Ev_Market_ID`, `Bet_Ev_Type`, `Bet_Ev_Market_Name`, `Bet_Ev_Market_Specifier`, `Bet_Ev_Outcome_ID`, `Bet_Ev_Void_Factor`, `Bet_Ev_Dead_Beat_Void_Factor`, `Bet_Process_Status`, `Bet_Settlement_Mode`) "
+                + "VALUES ('"+matchID+"', 'Team1 & over 3.5', '"+time+"', 37, 3, '1x2 & total_3.5', '3.5', '796', 0, '1.0', 0, 'Manual'),"
+                + "VALUES ('"+matchID+"', 'draw & over 3.5', '"+time+"', 37, 3, '1x2 & total_3.5', '3.5', '796', 0, '1.0', 0, 'Manual'),"
+                + "VALUES ('"+matchID+"', 'Team2 & over 3.5', '"+time+"', 37, 1, '1x2 & total_3.5', '3.5', '796', 0, '1.0', 0, 'Manual')";
+        }
+        else if(market.equalsIgnoreCase("1_u3.5"))
+        {
+            query = "INSERT INTO `bet_event_winners`(`Bet_Ev_ID`, `Bet_Ev_Match_ID`, `Bet_Ev_Winning_Prediction`, `Bet_Ev_Timestamp`, `Bet_Ev_Market_ID`, `Bet_Ev_Type`, `Bet_Ev_Market_Name`, `Bet_Ev_Market_Specifier`, `Bet_Ev_Outcome_ID`, `Bet_Ev_Void_Factor`, `Bet_Ev_Dead_Beat_Void_Factor`, `Bet_Process_Status`, `Bet_Settlement_Mode`) "
+                + "VALUES ('"+matchID+"', 'Team1 & under 3.5', '"+time+"', 37, 1, '1x2 & total_3.5', '3.5', '796', 0, '1.0', 0, 'Manual'),"
+                + "VALUES ('"+matchID+"', 'draw & under 3.5', '"+time+"', 37, 3, '1x2 & total_3.5', '3.5', '796', 0, '1.0', 0, 'Manual'),"
+                + "VALUES ('"+matchID+"', 'Team2 & under 3.5', '"+time+"', 37, 3, '1x2 & total_3.5', '3.5', '796', 0, '1.0', 0, 'Manual')";
+        }
+        else if(market.equalsIgnoreCase("x_u3.5"))
+        {
+            query = "INSERT INTO `bet_event_winners`(`Bet_Ev_ID`, `Bet_Ev_Match_ID`, `Bet_Ev_Winning_Prediction`, `Bet_Ev_Timestamp`, `Bet_Ev_Market_ID`, `Bet_Ev_Type`, `Bet_Ev_Market_Name`, `Bet_Ev_Market_Specifier`, `Bet_Ev_Outcome_ID`, `Bet_Ev_Void_Factor`, `Bet_Ev_Dead_Beat_Void_Factor`, `Bet_Process_Status`, `Bet_Settlement_Mode`) "
+                + "VALUES ('"+matchID+"', 'Team1 & under 3.5', '"+time+"', 37, 3, '1x2 & total_3.5', '3.5', '796', 0, '1.0', 0, 'Manual'),"
+                + "VALUES ('"+matchID+"', 'draw & under 3.5', '"+time+"', 37, 1, '1x2 & total_3.5', '3.5', '796', 0, '1.0', 0, 'Manual'),"
+                + "VALUES ('"+matchID+"', 'Team2 & under 3.5', '"+time+"', 37, 3, '1x2 & total_3.5', '3.5', '796', 0, '1.0', 0, 'Manual')";
+        }
+        else if(market.equalsIgnoreCase("2_u3.5"))
+        {
+            query = "INSERT INTO `bet_event_winners`(`Bet_Ev_ID`, `Bet_Ev_Match_ID`, `Bet_Ev_Winning_Prediction`, `Bet_Ev_Timestamp`, `Bet_Ev_Market_ID`, `Bet_Ev_Type`, `Bet_Ev_Market_Name`, `Bet_Ev_Market_Specifier`, `Bet_Ev_Outcome_ID`, `Bet_Ev_Void_Factor`, `Bet_Ev_Dead_Beat_Void_Factor`, `Bet_Process_Status`, `Bet_Settlement_Mode`) "
+                + "VALUES ('"+matchID+"', 'Team1 & under 3.5', '"+time+"', 37, 3, '1x2 & total_3.5', '3.5', '796', 0, '1.0', 0, 'Manual'),"
+                + "VALUES ('"+matchID+"', 'draw & under 3.5', '"+time+"', 37, 3, '1x2 & total_3.5', '3.5', '796', 0, '1.0', 0, 'Manual'),"
+                + "VALUES ('"+matchID+"', 'Team2 & under 3.5', '"+time+"', 37, 1, '1x2 & total_3.5', '3.5', '796', 0, '1.0', 0, 'Manual')";
         }
         else if(market.equalsIgnoreCase("1_o2.5"))
         {
@@ -193,6 +277,48 @@ public class ManualGamesResolve {
                     "( '"+matchID+"', 'Team2 & under 2.5', '"+time+"', 37, 3, '1x2 & total_2.5', '2.5', '802', 0, '1.0', 0, 'Manual'), " +
                     "('"+matchID+"', 'draw & under 2.5', '"+time+"', 37, 1, '1x2 & total_2.5', '2.5', '798', 0, '1.0', 0, 'Manual')";
         }
+        else if(market.equalsIgnoreCase("1_o4.5"))
+        {
+            query = "INSERT INTO `bet_event_winners`(`Bet_Ev_Match_ID`, `Bet_Ev_Winning_Prediction`, `Bet_Ev_Timestamp`, `Bet_Ev_Market_ID`, `Bet_Ev_Type`, `Bet_Ev_Market_Name`, `Bet_Ev_Market_Specifier`, `Bet_Ev_Outcome_ID`, `Bet_Ev_Void_Factor`, `Bet_Ev_Dead_Beat_Void_Factor`, `Bet_Process_Status`, `Bet_Settlement_Mode`) "
+                + "VALUES ('"+matchID+"', 'Team1 & over 4.5', '"+time+"', 37, 1, '1x2 & total_4.5', '4.5', '804', 0, '1.0', 0, 'Manual'),"
+                + "VALUES ('"+matchID+"', 'draw & over 4.5', '"+time+"', 37, 3, '1x2 & total_4.5', '4.5', '804', 0, '1.0', 0, 'Manual'),"
+                + "VALUES ('"+matchID+"', 'Team2 & over 4.5', '"+time+"', 37, 3, '1x2 & total_4.5', '4.5', '804', 0, '1.0', 0, 'Manual')";
+        }
+        else if(market.equalsIgnoreCase("x_o4.5"))
+        {
+            query = "INSERT INTO `bet_event_winners`(`Bet_Ev_Match_ID`, `Bet_Ev_Winning_Prediction`, `Bet_Ev_Timestamp`, `Bet_Ev_Market_ID`, `Bet_Ev_Type`, `Bet_Ev_Market_Name`, `Bet_Ev_Market_Specifier`, `Bet_Ev_Outcome_ID`, `Bet_Ev_Void_Factor`, `Bet_Ev_Dead_Beat_Void_Factor`, `Bet_Process_Status`, `Bet_Settlement_Mode`) "
+                + "VALUES ('"+matchID+"', 'Team1 & over 4.5', '"+time+"', 37, 3, '1x2 & total_4.5', '4.5', '804', 0, '1.0', 0, 'Manual'),"
+                + "VALUES ('"+matchID+"', 'draw & over 4.5', '"+time+"', 37, 1, '1x2 & total_4.5', '4.5', '804', 0, '1.0', 0, 'Manual'),"
+                + "VALUES ('"+matchID+"', 'Team2 & over 4.5', '"+time+"', 37, 3, '1x2 & total_4.5', '4.5', '804', 0, '1.0', 0, 'Manual')";
+        }
+        else if(market.equalsIgnoreCase("2_o4.5"))
+        {
+            query = "INSERT INTO `bet_event_winners`(`Bet_Ev_Match_ID`, `Bet_Ev_Winning_Prediction`, `Bet_Ev_Timestamp`, `Bet_Ev_Market_ID`, `Bet_Ev_Type`, `Bet_Ev_Market_Name`, `Bet_Ev_Market_Specifier`, `Bet_Ev_Outcome_ID`, `Bet_Ev_Void_Factor`, `Bet_Ev_Dead_Beat_Void_Factor`, `Bet_Process_Status`, `Bet_Settlement_Mode`) "
+                + "VALUES ('"+matchID+"', 'Team1 & over 4.5', '"+time+"', 37, 3, '1x2 & total_4.5', '4.5', '804', 0, '1.0', 0, 'Manual'),"
+                + "VALUES ('"+matchID+"', 'draw & over 4.5', '"+time+"', 37, 3, '1x2 & total_4.5', '4.5', '804', 0, '1.0', 0, 'Manual'),"
+                + "VALUES ('"+matchID+"', 'Team2 & over 4.5', '"+time+"', 37, 1, '1x2 & total_4.5', '4.5', '804', 0, '1.0', 0, 'Manual')";
+        }
+        else if(market.equalsIgnoreCase("1_u4.5"))
+        {
+            query = "INSERT INTO `bet_event_winners`(`Bet_Ev_Match_ID`, `Bet_Ev_Winning_Prediction`, `Bet_Ev_Timestamp`, `Bet_Ev_Market_ID`, `Bet_Ev_Type`, `Bet_Ev_Market_Name`, `Bet_Ev_Market_Specifier`, `Bet_Ev_Outcome_ID`, `Bet_Ev_Void_Factor`, `Bet_Ev_Dead_Beat_Void_Factor`, `Bet_Process_Status`, `Bet_Settlement_Mode`) "
+                + "VALUES ('"+matchID+"', 'Team1 & under 4.5', '"+time+"', 37, 1, '1x2 & total_4.5', '4.5', '804', 0, '1.0', 0, 'Manual'),"
+                + "VALUES ('"+matchID+"', 'draw & under 4.5', '"+time+"', 37, 3, '1x2 & total_4.5', '4.5', '804', 0, '1.0', 0, 'Manual'),"
+                + "VALUES ('"+matchID+"', 'Team2 & under 4.5', '"+time+"', 37, 3, '1x2 & total_4.5', '4.5', '804', 0, '1.0', 0, 'Manual')";
+        }
+        else if(market.equalsIgnoreCase("x_u4.5"))
+        {
+            query = "INSERT INTO `bet_event_winners`(`Bet_Ev_Match_ID`, `Bet_Ev_Winning_Prediction`, `Bet_Ev_Timestamp`, `Bet_Ev_Market_ID`, `Bet_Ev_Type`, `Bet_Ev_Market_Name`, `Bet_Ev_Market_Specifier`, `Bet_Ev_Outcome_ID`, `Bet_Ev_Void_Factor`, `Bet_Ev_Dead_Beat_Void_Factor`, `Bet_Process_Status`, `Bet_Settlement_Mode`) "
+                + "VALUES ('"+matchID+"', 'Team1 & under 4.5', '"+time+"', 37, 3, '1x2 & total_4.5', '4.5', '804', 0, '1.0', 0, 'Manual'),"
+                + "VALUES ('"+matchID+"', 'draw & under 4.5', '"+time+"', 37, 1, '1x2 & total_4.5', '4.5', '804', 0, '1.0', 0, 'Manual'),"
+                + "VALUES ('"+matchID+"', 'Team2 & under 4.5', '"+time+"', 37, 3, '1x2 & total_4.5', '4.5', '804', 0, '1.0', 0, 'Manual')";
+        }
+        else if(market.equalsIgnoreCase("2_u4.5"))
+        {
+            query = "INSERT INTO `bet_event_winners`(`Bet_Ev_Match_ID`, `Bet_Ev_Winning_Prediction`, `Bet_Ev_Timestamp`, `Bet_Ev_Market_ID`, `Bet_Ev_Type`, `Bet_Ev_Market_Name`, `Bet_Ev_Market_Specifier`, `Bet_Ev_Outcome_ID`, `Bet_Ev_Void_Factor`, `Bet_Ev_Dead_Beat_Void_Factor`, `Bet_Process_Status`, `Bet_Settlement_Mode`) "
+                + "VALUES ('"+matchID+"', 'Team1 & under 4.5', '"+time+"', 37, 3, '1x2 & total_4.5', '4.5', '804', 0, '1.0', 0, 'Manual'),"
+                + "VALUES ('"+matchID+"', 'draw & under 4.5', '"+time+"', 37, 3, '1x2 & total_4.5', '4.5', '804', 0, '1.0', 0, 'Manual'),"
+                + "VALUES ('"+matchID+"', 'Team2 & under 4.5', '"+time+"', 37, 1, '1x2 & total_4.5', '4.5', '804', 0, '1.0', 0, 'Manual')";
+        }
         else if(market.equalsIgnoreCase("o4.5"))
         {
             query = "INSERT INTO `bet_event_winners` (`Bet_Ev_Match_ID`, `Bet_Ev_Winning_Prediction`, `Bet_Ev_Timestamp`, `Bet_Ev_Market_ID`, `Bet_Ev_Type`, `Bet_Ev_Market_Name`, `Bet_Ev_Market_Specifier`, `Bet_Ev_Outcome_ID`, `Bet_Ev_Void_Factor`, `Bet_Ev_Dead_Beat_Void_Factor`, `Bet_Process_Status`, `Bet_Settlement_Mode`)\n" +
@@ -220,6 +346,46 @@ public class ManualGamesResolve {
                     "VALUES" +
                     "('"+matchID+"', 'under 5.5', '"+time+"', 37, 3, 'total_4.5', '5.5', '796', 0, '1.0', 0, 'Manual'), " +
                     "( '"+matchID+"', 'over 5.5', '"+time+"', 37, 3, 'total_4.5', '5.5', '802', 0, '1.0', 0, 'Manual')";
+        }
+        else if(market.equalsIgnoreCase("1h_dc"))
+        {
+            query = "INSERT INTO bet_event_winners (`Bet_Ev_Match_ID`, `Bet_Ev_Winning_Prediction`, `Bet_Ev_Timestamp`, `Bet_Ev_Market_ID`, `Bet_Ev_Type`, `Bet_Ev_Market_Name`, `Bet_Ev_Market_Specifier`, `Bet_Ev_Outcome_ID`, `Bet_Ev_Void_Factor`, `Bet_Ev_Dead_Beat_Void_Factor`, `Bet_Process_Status`, `Bet_Settlement_Mode`) "
+                + "VALUES ('"+matchID+"', 'Team1 or draw', '"+time+"', 63, 1, '1st half - double chance', '', '9', 0, '1.0', 0, 'Manual')";      
+        }
+        else if(market.equalsIgnoreCase("1h_1x2"))
+        {
+            query = "INSERT INTO `bet_event_winners` (`Bet_Ev_Match_ID`, `Bet_Ev_Winning_Prediction`, `Bet_Ev_Timestamp`, `Bet_Ev_Market_ID`, `Bet_Ev_Type`, `Bet_Ev_Market_Name`, `Bet_Ev_Market_Specifier`, `Bet_Ev_Outcome_ID`, `Bet_Ev_Void_Factor`, `Bet_Ev_Dead_Beat_Void_Factor`, `Bet_Process_Status`, `Bet_Settlement_Mode`) "
+                    + "VALUES ('"+matchID+"', 'draw', '"+time+"', 60, 3, '1st half - 1x2', '', '2', 0, '1.0', 0, 'Manual')";      
+        }
+        else if(market.equalsIgnoreCase("tc_8.5"))
+        {
+            query = "INSERT INTO `bet_event_winners` (`Bet_Ev_Match_ID`, `Bet_Ev_Winning_Prediction`, `Bet_Ev_Timestamp`, `Bet_Ev_Market_ID`, `Bet_Ev_Type`, `Bet_Ev_Market_Name`, `Bet_Ev_Market_Specifier`, `Bet_Ev_Outcome_ID`, `Bet_Ev_Void_Factor`, `Bet_Ev_Dead_Beat_Void_Factor`, `Bet_Process_Status`, `Bet_Settlement_Mode`) "
+                    + "VALUES ('"+matchID+"', 'over 8.5', '"+time+"', 166, 1, 'Total corners_8.5', '8.5', '12', 0, '1.0', 0, 'Auto')";      
+        }
+        else if(market.equalsIgnoreCase("tc_10.5"))
+        {
+            query = "INSERT INTO `bet_event_winners` (`Bet_Ev_Match_ID`, `Bet_Ev_Winning_Prediction`, `Bet_Ev_Timestamp`, `Bet_Ev_Market_ID`, `Bet_Ev_Type`, `Bet_Ev_Market_Name`, `Bet_Ev_Market_Specifier`, `Bet_Ev_Outcome_ID`, `Bet_Ev_Void_Factor`, `Bet_Ev_Dead_Beat_Void_Factor`, `Bet_Process_Status`, `Bet_Settlement_Mode`) "
+                    + "VALUES ('"+matchID+"', 'over 10.5', '"+time+"', 166, 3, 'Total corners_10.5', '10.5', '12', 0, '1.0', 0, 'Auto')";      
+        }
+        else if(market.equalsIgnoreCase("tc_11.5"))
+        {
+            query = "INSERT INTO `bet_event_winners` (`Bet_Ev_ID`, `Bet_Ev_Match_ID`, `Bet_Ev_Winning_Prediction`, `Bet_Ev_Timestamp`, `Bet_Ev_Market_ID`, `Bet_Ev_Type`, `Bet_Ev_Market_Name`, `Bet_Ev_Market_Specifier`, `Bet_Ev_Outcome_ID`, `Bet_Ev_Void_Factor`, `Bet_Ev_Dead_Beat_Void_Factor`, `Bet_Process_Status`, `Bet_Settlement_Mode`) "
+                    + "VALUES ('"+matchID+"', 'under 11.5', '"+time+"', 166, 3, 'Total corners_11.5', '11.5', '13', 0, '1.0', 0, 'Auto')";      
+        }
+        else if(market.equalsIgnoreCase("odds_even"))
+        {
+            query = "INSERT INTO `bet_event_winners` (`Bet_Ev_Match_ID`, `Bet_Ev_Winning_Prediction`, `Bet_Ev_Timestamp`, `Bet_Ev_Market_ID`, `Bet_Ev_Type`, `Bet_Ev_Market_Name`, `Bet_Ev_Market_Specifier`, `Bet_Ev_Outcome_ID`, `Bet_Ev_Void_Factor`, `Bet_Ev_Dead_Beat_Void_Factor`, `Bet_Process_Status`, `Bet_Settlement_Mode`) "
+                    + "VALUES ('"+matchID+"', 'odd', '"+time+"', 26, 1, 'Odd/even', '', '70', 0, '1.0', 0, 'Auto')";      
+        }
+        else if(market.equalsIgnoreCase("ht_ft"))
+        {
+            query = "INSERT INTO `bet_event_winners` (`Bet_Ev_ID`, `Bet_Ev_Match_ID`, `Bet_Ev_Winning_Prediction`, `Bet_Ev_Timestamp`, `Bet_Ev_Market_ID`, `Bet_Ev_Type`, `Bet_Ev_Market_Name`, `Bet_Ev_Market_Specifier`, `Bet_Ev_Outcome_ID`, `Bet_Ev_Void_Factor`, `Bet_Ev_Dead_Beat_Void_Factor`, `Bet_Process_Status`, `Bet_Settlement_Mode`) "
+                    + "VALUES ('"+matchID+"', 'Team1/Team2', '"+time+"', 47, 3, 'Halftime/fulltime', '', '422', 0, '1.0', 0, 'Auto')";      
+        }
+        else if(market.equalsIgnoreCase("d_no_bet"))
+        {
+            query = "INSERT INTO `bet_event_winners` (`Bet_Ev_ID`, `Bet_Ev_Match_ID`, `Bet_Ev_Winning_Prediction`, `Bet_Ev_Timestamp`, `Bet_Ev_Market_ID`, `Bet_Ev_Type`, `Bet_Ev_Market_Name`, `Bet_Ev_Market_Specifier`, `Bet_Ev_Outcome_ID`, `Bet_Ev_Void_Factor`, `Bet_Ev_Dead_Beat_Void_Factor`, `Bet_Process_Status`, `Bet_Settlement_Mode`) "
+                    + "VALUES ('"+matchID+"', 'Team2', '"+time+"', 11, 3, 'Draw no bet', '', '5', 0, '1.0', 0, 'Auto')";      
         }
         
         

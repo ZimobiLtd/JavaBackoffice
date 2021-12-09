@@ -48,42 +48,31 @@ public class ManualResolveAPI extends HttpServlet {
         String matchID=req.getParameter("match_id").trim();
         String market=req.getParameter("market").trim();
         
-        if(market.equalsIgnoreCase("1") || market.equalsIgnoreCase("2") || market.equalsIgnoreCase("x") || market.equalsIgnoreCase("gg")|| market.equalsIgnoreCase("ng") || 
-            market.equalsIgnoreCase("x2") || market.equalsIgnoreCase("x1")  || market.equalsIgnoreCase("12") || market.equalsIgnoreCase("o2.5") || market.equalsIgnoreCase("u2.5") 
-            || market.equalsIgnoreCase("o1.5") || market.equalsIgnoreCase("u1.5")|| market.equalsIgnoreCase("o3.5") || market.equalsIgnoreCase("u3.5") || market.equalsIgnoreCase("1_o2.5")
-            || market.equalsIgnoreCase("2_o2.5") || market.equalsIgnoreCase("x_o2.5") || market.equalsIgnoreCase("1_u2.5") || market.equalsIgnoreCase("2_u2.5") || market.equalsIgnoreCase("x_u2.5") 
-            || market.equalsIgnoreCase("o4.5") || market.equalsIgnoreCase("u4.5") || market.equalsIgnoreCase("o5.5") || market.equalsIgnoreCase("u5.5")  || market.equalsIgnoreCase("o0.5"))
+        int matchIDStatus=new ManualGamesResolve().checkMatchID(matchID);
+        if(matchIDStatus == 200)
         {
-            int matchIDStatus=new ManualGamesResolve().checkMatchID(matchID);
-            if(matchIDStatus == 200)
+            int dataStatus=new ManualGamesResolve().checkBetEventData(matchID,market);
+            if(dataStatus == 404)
             {
-                int dataStatus=new ManualGamesResolve().checkBetEventData(matchID,market);
-                if(dataStatus == 404)
+                int status=new ManualGamesResolve().resolveGames(matchID,market);
+                if(status == 200)
                 {
-                    int status=new ManualGamesResolve().resolveGames(matchID,market);
-                    if(status == 200)
-                    {
-                        response="======\n\n "+matchID+" Market "+market+" Saved Successfully \n\n===========================================================";
-                    }
-                    else
-                    {
-                        response="======\n\n "+matchID+" Failed To Save "+market+" Market \n\n===========================================================";
-                    }
+                    response="======\n\n "+matchID+" Market "+market+" Saved Successfully \n\n===========================================================";
                 }
                 else
                 {
-                    response="======\n\n Match ID "+matchID+" Already Exist In Bet_Event_Winers \n\n===========================================================";
+                    response="======\n\n "+matchID+" Failed To Save "+market+" Market \n\n===========================================================";
                 }
             }
             else
             {
-                response="======\n\n Match ID "+matchID+" Not Found In Bets \n\n===========================================================";
-            }  
+                response="======\n\n Match ID "+matchID+" Already Exist In Bet_Event_Winers \n\n===========================================================";
+            }
         }
         else
         {
-            response="======\n\n Invalid Market "+market+" \n\n===========================================================";
-        }
+            response="======\n\n Match ID "+matchID+" Not Found In Bets \n\n===========================================================";
+        } 
         
         
         PrintWriter out = resp.getWriter(); 
