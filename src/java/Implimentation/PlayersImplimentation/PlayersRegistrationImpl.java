@@ -42,7 +42,7 @@ public class PlayersRegistrationImpl {
                         " (select ifnull(max(Acc_Date),'0') from user_accounts where Acc_Mobile = msisdn and Acc_Trans_Type=1) as 'Last Deposit', " +
                         " (select count(Play_Bet_ID) from player_bets where Play_Bet_Mobile = msisdn and Play_Bet_Status <> 206) as 'Bets Count', " +
                         "(select referee  from refferafriend where refered=msisdn limit 1) as 'Referee',Reg_Keyword "+
-                        " from player where date(registration_date) between '"+from+"' and '"+to+"' order by registration_date desc ";
+                        " from player where date(registration_date) between '"+from+"' and '"+to+"' and msisdn is not null order by registration_date desc ";
         System.out.println("getPlayerRegistrations==="+dataQuery);
 
         JSONObject dataObj  = null;
