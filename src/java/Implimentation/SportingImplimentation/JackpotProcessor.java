@@ -63,15 +63,25 @@ public class JackpotProcessor {
     public int highlightJackpotGames(String []matchIDs)
     {
         int status=500;
-        String matchIDsValues="0";
-        StringBuilder sb= new StringBuilder();
+        StringBuilder jackpotGamesBuilder= new StringBuilder();
+        StringBuilder jackpotGamesReserveBuilder= new StringBuilder();
+        int counter = 0;
         for(String matchID : matchIDs)
         {
-            sb.append(","+matchID);
+            counter ++;
+            if(counter <= 10)
+            {
+               jackpotGamesBuilder.append(",").append(matchID); 
+            }
+            else
+            {
+               jackpotGamesReserveBuilder.append(",").append(matchID);  
+            }
+            
         }
-        matchIDsValues=sb.substring(1);
         
-        String []datesData=getMinMaxDate(matchIDsValues);
+        String jackpoGamestMatchIDs=jackpotGamesBuilder.substring(1);
+        String []datesData=getMinMaxDate(jackpoGamestMatchIDs);
         String minDate=datesData[0];
         String maxDate=datesData[1];
         
@@ -82,16 +92,18 @@ public class JackpotProcessor {
         }
         else
         {
-            int markStatus=markJackpotGames(resultID,matchIDsValues,matchIDs.length);
-            if(markStatus == 200)
-            {
-                status=200;
-            }
-            else
-            {
-                status=500;
-            }
+            status=markJackpotGames(resultID,jackpoGamestMatchIDs,0,10);
         }
+        
+        Runnable runnable = () ->
+        {
+            if(matchIDs.length > 10)
+            {
+                String jackpoReserveGamestMatchIDs=jackpotGamesReserveBuilder.substring(1);
+                markJackpotGames(resultID,jackpoReserveGamestMatchIDs,1,10);
+            }  
+        };
+        runnable.run();
         
         return status;
     }
@@ -105,9 +117,7 @@ public class JackpotProcessor {
         
         ResultSet rs=null;Connection conn=null;Statement stmt=null;PreparedStatement ps=null;
         String query = "select date_sub(min(Torna_Match_Event_Time),INTERVAL 15 MINUTE),max(Torna_Match_Event_Time) from tournament where Torna_Match_ID in ("+matchIDsValues+") limit 1";
-        System.out.println("getMinMaxDate==="+query);
-
-
+        
         try
         {
             conn = DBManager.getInstance().getDBConnection("read");
@@ -181,12 +191,11 @@ public class JackpotProcessor {
     
     
     
-    public int markJackpotGames(int jackpotID,String matchIDsValues,int limit) 
+    public int markJackpotGames(int jackpotID,String matchIDsValues,int jackpotReserve,int limit) 
     {
         ResultSet rs=null;Connection conn=null;Statement stmt=null;PreparedStatement ps=null;
         int status=500; 
-        String query = "update tournament set jackpot_status=1,Jackpot_Ref_No="+jackpotID+" where Torna_Match_ID in ("+matchIDsValues+") limit "+limit+" ";
-        System.out.println("markJackpotGames==="+query);
+        String query = "update tournament set jackpot_status=1,Jackpot_Reserve="+jackpotReserve+",Jackpot_Ref_No="+jackpotID+" where Torna_Match_ID in ("+matchIDsValues+") limit "+limit+" ";
         
         try
         {
@@ -217,8 +226,7 @@ public class JackpotProcessor {
     {
         ResultSet rs=null;Connection conn=null;Statement stmt=null;PreparedStatement ps=null;
         int status=500; 
-        String query = "update tournament set jackpot_status=0,Jackpot_Ref_No=0  where Jackpot_Ref_No="+jackpotID+" ";
-        System.out.println("unMarkJackpotGames==="+query);
+        String query = "update tournament set jackpot_status=0,Jackpot_Reserve="+0+",Jackpot_Ref_No=0  where Jackpot_Ref_No="+jackpotID+" ";
         
         try
         {
