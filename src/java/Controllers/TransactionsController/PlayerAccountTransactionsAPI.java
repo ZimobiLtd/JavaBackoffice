@@ -69,7 +69,6 @@ public class PlayerAccountTransactionsAPI extends HttpServlet {
                 jb.append(line);
             }
 
-            System.out.println("filterPlayerTransactionsReport==="+jb.toString());
             jsonobj = new JSONObject(jb.toString());
             String searchKey=jsonobj.getString("search_key");
             maindata=jsonobj.getString("data");

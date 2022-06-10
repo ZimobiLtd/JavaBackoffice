@@ -70,8 +70,6 @@ public class TransactionsB2CAPI extends HttpServlet {
         resp.setHeader("Access-Control-Allow-Origin", "*");
         PrintWriter out = resp.getWriter(); 
 
-        System.out.println("getransactionsB2C===");
-
         String []respo=new Utility().getDatesRange(-1);
         String fromdate=respo[0];
         String todate=respo[1];
@@ -100,7 +98,6 @@ public class TransactionsB2CAPI extends HttpServlet {
                 jb.append(line);
             }
             
-            System.out.println("filterTransactionsB2C==="+jb.toString());
             jsonobj = new JSONObject(jb.toString());
             maindata=jsonobj.getString("data");
 

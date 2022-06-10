@@ -6,7 +6,8 @@ package Controllers.TransactionsController;
  * and open the template in the editor.
  */
 
-import Implimentation.TransactionsImplimentation.GoldenRaceTransactionsImpl;
+import Implimentation.TransactionsImplimentation.PragmaticTransactionsProcessorImpl;
+import Implimentation.TransactionsImplimentation.SlotGamesTransactionsProcessorImpl;
 import Utility.Utility;
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -25,9 +26,18 @@ import org.json.JSONException;
  *
  * @author jac
  */
-@WebServlet(urlPatterns = {"/transactions/goldenrace"})
-public class GoldenRaceTransactionsAPI extends HttpServlet {
+@WebServlet(urlPatterns = {"/transactions/pragmatic"})
+public class PragmaticTransactionsAPI extends HttpServlet {
 
+    /**
+     * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
+     * methods.
+     *
+     * @param request servlet request
+     * @param response servlet response
+     * @throws ServletException if a servlet-specific error occurs
+     * @throws IOException if an I/O error occurs
+     */
     private String maindata;
     private JSONObject jsonobj=null;JSONArray responseObj  = null;
     private SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
@@ -51,6 +61,8 @@ public class GoldenRaceTransactionsAPI extends HttpServlet {
         }
     }
     
+    
+
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp)
     throws ServletException, IOException 
@@ -62,7 +74,7 @@ public class GoldenRaceTransactionsAPI extends HttpServlet {
         String []respo=new Utility().getDatesRange(-2);
         String fromdate=respo[0];
         String todate=respo[1];
-        responseObj=new GoldenRaceTransactionsImpl().getGoldenRaceTransactions(fromdate,todate,"0");
+        responseObj=new SlotGamesTransactionsProcessorImpl().getSlotGamesTransactions(fromdate,todate,"0");
         
         out.print(responseObj);
     }
@@ -102,7 +114,8 @@ public class GoldenRaceTransactionsAPI extends HttpServlet {
                player_mobile="254"+player_mobile.substring(1);
             }
 
-            String trans_type="",trans_status="";
+            String trans_type,trans_status;
+            
             if(transtype.equals("Bet"))
             {
                 trans_type="'bet'";
@@ -139,27 +152,29 @@ public class GoldenRaceTransactionsAPI extends HttpServlet {
             }
 
 
+
+
             if(trans_type.equals("All") && trans_status.equals("All"))
             {
-                responseObj=new GoldenRaceTransactionsImpl().getGoldenRaceTransactions(from,to,player_mobile);
+                responseObj=new PragmaticTransactionsProcessorImpl().getPragmaticGamesTransactions(from,to,player_mobile);
             }
             else if(!trans_type.equals("All") && trans_status.equals("All"))
             {
                 trans_type="Golden_Race_Trans_Type="+trans_type;
                 trans_status="Acc_Status in (0,1,2)";
-                responseObj=new GoldenRaceTransactionsImpl().filterGoldenRaceTransactions(from,to,trans_type,trans_status,player_mobile);
+                responseObj=new PragmaticTransactionsProcessorImpl().filterPragmaticGamesTransactions(from,to,trans_type,trans_status,player_mobile);
             }
             else if(trans_type.equals("All") && !trans_status.equals("All"))
             {
                 trans_type="Golden_Race_Trans_Type in('bet','win','cancelbet')";
                 trans_status="Acc_Status ="+trans_status;
-                responseObj=new GoldenRaceTransactionsImpl().filterGoldenRaceTransactions(from,to,trans_type,trans_status,player_mobile);
+                responseObj=new PragmaticTransactionsProcessorImpl().filterPragmaticGamesTransactions(from,to,trans_type,trans_status,player_mobile);
             }
             else
             {
                 trans_type="Golden_Race_Trans_Type ="+trans_type;
                 trans_status="Acc_Status ="+trans_status;
-                responseObj=new GoldenRaceTransactionsImpl().filterGoldenRaceTransactions(from,to,trans_type,trans_status,player_mobile);
+                responseObj=new PragmaticTransactionsProcessorImpl().filterPragmaticGamesTransactions(from,to,trans_type,trans_status,player_mobile);
             }
         }
         catch (IOException | JSONException ex) 

@@ -13,6 +13,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.text.SimpleDateFormat;
+import java.util.Optional;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -36,8 +37,9 @@ public class DormantPlayersImpl {
         ResultSet rs=null;Connection conn=null;Statement stmt=null;PreparedStatement ps=null;
         String dataQuery = "select msisdn,registration_date,(select ifnull(sum(Acc_Amount),0) from user_accounts where Acc_Mobile=msisdn ) as 'account balance', "+
                            "(select ifnull(sum(Acc_Bonus_Amount),0) from user_accounts where Acc_Mobile=msisdn and Acc_Bonus_Status=1 and Acc_Trans_Type in (1,4,7)) as 'bonus balance', " +
-                           "(select ifnull(max(Play_Bet_Timestamp),'0') from player_bets where Play_Bet_Mobile=msisdn and date(Play_Bet_Timestamp) not between '"+from+"' and '"+to+"' ) as 'last bet date' " +
-                           "from player where msisdn not  in ( select Play_Bet_Mobile from player_bets  where date(Play_Bet_Timestamp) between '"+from+"' and '"+to+"' )  group by msisdn ";
+                           "(select ifnull(max(Play_Bet_Timestamp),'0') from player_bets where Play_Bet_Mobile=msisdn and date(Play_Bet_Timestamp) not between '"+from+"' and '"+to+"' ) as 'last bet date', "+
+                           "(select 'Referal' from refferafriend where refered = msisdn limit 1) as 'Referal status' " +
+                           "from player where msisdn not  in ( select Play_Bet_Mobile from player_bets  where date(Play_Bet_Timestamp) between '"+from+"' and '"+to+"' )  group by msisdn order by registration_date desc";
         System.out.println("getDormantPlayer==="+dataQuery);
 
         JSONObject dataObj  = null;
@@ -64,14 +66,16 @@ public class DormantPlayersImpl {
                 String regdate =sdf.format(rs.getTimestamp(2));
                 String balanceRM = rs.getString(3);
                 String balanceBM = rs.getString(4);
-                String lastactivedate= rs.getString(5);
+                String lastActiveDate= rs.getString(5);
+                String referalStatus= Optional.ofNullable(rs.getString(6)).orElse("Not referal");
 
                 dataObj  = new JSONObject();
                 dataObj.put("Mobile", mobile_no);
                 dataObj.put("Registration_Date", regdate);
                 dataObj.put("BalanceRM", balanceRM);
                 dataObj.put("BalanceBM", balanceBM);
-                dataObj.put("LastActiveDate", lastactivedate);
+                dataObj.put("LastActiveDate", lastActiveDate);
+                dataObj.put("ReferalStatus", (referalStatus.equalsIgnoreCase("0") || referalStatus.equalsIgnoreCase("Not referal")) ? "Not referal" : "Referal");
                 dataArray.put(dataObj);
             }
 
@@ -84,6 +88,7 @@ public class DormantPlayersImpl {
                 dataObj.put("BalanceRM", "0");
                 dataObj.put("BalanceBM", "0");
                 dataObj.put("LastActiveDate", "0");
+                dataObj.put("ReferalStatus", "0");
                 dataArray.put(dataObj);
             }
         }

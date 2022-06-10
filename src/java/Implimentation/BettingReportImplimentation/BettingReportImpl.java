@@ -48,10 +48,11 @@ public class BettingReportImpl {
 
             conn = DBManager.getInstance().getDBConnection("read");
             stmt = conn.createStatement();
-            dataQuery = "select Play_Bet_Timestamp, Play_Bet_Slip_ID, (case when Play_Bet_Status=200 then 'Pending'  when Play_Bet_Status=201 then 'Placed' when Play_Bet_Status=202 then 'Won' when Play_Bet_Status=203 then 'Lost' when Play_Bet_Status=204 then 'Rejected' when Play_Bet_Status=205 then 'Cancelled' when Play_Bet_Status=209 then 'Voided' end)as 'bet_status', "+
+            dataQuery = "select Play_Bet_Timestamp, Play_Bet_Slip_ID, (case when Play_Bet_Status=200 then 'Pending'  when Play_Bet_Status=201 then 'Placed' when Play_Bet_Status=202 then 'Won' "
+                      + "when Play_Bet_Status=203 then 'Lost' when Play_Bet_Status=204 then 'Rejected' when Play_Bet_Status=205 then 'Cancelled' when Play_Bet_Status=209 then 'Voided' end)as 'bet_status', "+
                         " Chan_Mode_Name , Play_Bet_Mobile,Play_Bet_Cash_Stake, Play_Bet_Bonus_Stake,Play_Bet_Gross_Stake , Play_Bet_Possible_Winning, Play_Bet_Gross_Possible_Winning, " +
-                        "Play_Bet_Group_ID, Play_Bet_Possible_BonusWinning,(Case when Play_Bet_Type=1 then 'Single Bet' when Play_Bet_Type=4 then 'Jackpot' when Play_Bet_Type=3 then 'Multi Bet' end),Play_Bet_BetType from player_bets ,channels_used where  Chan_Table_ID = play_bet_Channel  " +
-                        "and play_Bet_Type in (0,1,2,3,4)  and Play_Bet_Status in (200,201, 202, 203, 204,205,209) and  player_bets.Play_Bet_Slip_ID='"+betSlipID+"' order by Play_Bet_Timestamp desc ";        
+                        "Play_Bet_Group_ID, Play_Bet_Possible_BonusWinning,(Case when Play_Bet_Type=1 then 'Single Bet' when Play_Bet_Type=4 then 'Jackpot' when Play_Bet_Type=3 then 'Multi Bet' end),Play_Bet_BetType"
+                      + " from player_bets ,channels_used where  Chan_Table_ID = play_bet_Channel and play_Bet_Type in (0,1,2,3,4)  and Play_Bet_Status in (200,201, 202, 203, 204,205,209) and  player_bets.Play_Bet_Slip_ID='"+betSlipID+"' order by Play_Bet_Timestamp desc ";        
 
             System.out.println("getBettingReportByBetslipID==="+dataQuery);
 

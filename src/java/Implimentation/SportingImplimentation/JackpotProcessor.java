@@ -100,7 +100,7 @@ public class JackpotProcessor {
             if(matchIDs.length > 10)
             {
                 String jackpoReserveGamestMatchIDs=jackpotGamesReserveBuilder.substring(1);
-                markJackpotGames(resultID,jackpoReserveGamestMatchIDs,1,10);
+                markJackpotGames(resultID,jackpoReserveGamestMatchIDs,1,50);
             }  
         };
         runnable.run();
@@ -195,8 +195,8 @@ public class JackpotProcessor {
     {
         ResultSet rs=null;Connection conn=null;Statement stmt=null;PreparedStatement ps=null;
         int status=500; 
-        String query = "update tournament set jackpot_status=1,Jackpot_Reserve="+jackpotReserve+",Jackpot_Ref_No="+jackpotID+" where Torna_Match_ID in ("+matchIDsValues+") limit "+limit+" ";
-        
+        String query = "update tournament set jackpot_status=0,Jackpot_Reserve="+jackpotReserve+",Jackpot_Ref_No="+jackpotID+" where Torna_Match_ID in ("+matchIDsValues+") limit "+limit+" ";
+        System.out.println("markJackpotGames=> "+query);
         try
         {
             conn = DBManager.getInstance().getDBConnection("write");

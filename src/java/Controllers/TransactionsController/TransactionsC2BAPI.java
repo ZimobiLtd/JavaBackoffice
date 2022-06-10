@@ -68,8 +68,6 @@ public class TransactionsC2BAPI extends HttpServlet {
         resp.setContentType("application/json;charset=UTF-8");
         resp.setHeader("Access-Control-Allow-Origin", "*");
         PrintWriter out = resp.getWriter(); 
-
-        System.out.println("getTransactionsC2B===");
         
         String []respo=new Utility().getDatesRange(-1);
         String fromdate=respo[0];

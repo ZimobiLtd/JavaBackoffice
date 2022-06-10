@@ -70,8 +70,6 @@ public class SlotGamesTransactionsAPI extends HttpServlet {
         resp.setHeader("Access-Control-Allow-Origin", "*");
         PrintWriter out = resp.getWriter(); 
 
-        System.out.println("getSlotGamesTransactions===");
-
         String []respo=new Utility().getDatesRange(-2);
         String fromdate=respo[0];
         String todate=respo[1];
@@ -100,7 +98,6 @@ public class SlotGamesTransactionsAPI extends HttpServlet {
                 jb.append(line);
             }
             
-            System.out.println("filterSlotGamesTransactions==="+jb.toString());
             jsonobj = new JSONObject(jb.toString());
             maindata=jsonobj.getString("data");
 

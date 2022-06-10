@@ -35,7 +35,8 @@ public class PlayerAccountTransactionsImpl {
     {
         ResultSet rs=null;Connection conn=null;Statement stmt=null;PreparedStatement ps=null;
         String dataQuery = "select Acc_Id, Acc_Date, Acc_Mobile,if(Acc_Amount=0,Acc_Bonus_Amount,Acc_Amount), Acc_Mpesa_Trans_No, ifnull(Acc_Comment,'No comment'),if(Acc_Status =0,'Processed','Pending'),"
-                         + "(CASE when Acc_Trans_Type =1 then 'Deposit' when Acc_Trans_Type=2 then 'User Withdrawal'  when Acc_Trans_Type=8 then 'Withdrawal Charge' when Acc_Trans_Type=9 then 'Bonus Winning' when Acc_Trans_Type=3 then 'Bet Win' when Acc_Trans_Type=4 then 'Bet Withdrawal'  end) as 'Trans_Type'"
+                         + "(CASE when Acc_Trans_Type =1 then 'Deposit' when Acc_Trans_Type=2 then 'User Withdrawal'  when Acc_Trans_Type=8 then 'Withdrawal Charge' when Acc_Trans_Type=9 then 'Bonus Winning' "
+                         + "when Acc_Trans_Type=3 then 'Bet Win' when Acc_Trans_Type=4 then 'Bet Withdrawal'  end) as 'Trans_Type'"
                          + ",ifnull(Acc_Gateway,'Mpesa') from user_accounts where  date(Acc_Date) between '"+from+"' and '"+to+"' and Acc_Mobile='"+mobile+"' order by Acc_Date desc ";
         System.out.println("getPlayerTransactions==="+dataQuery);
 

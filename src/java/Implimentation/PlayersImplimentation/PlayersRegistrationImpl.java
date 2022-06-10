@@ -37,12 +37,11 @@ public class PlayersRegistrationImpl {
         String dataQuery = "select id, msisdn, ifnull(`name`,'no name'), ifnull(email,'no email'), registration_date, (select ifnull(sum(Acc_Amount),0) from user_accounts "
                         + "where Acc_Mobile = msisdn ), (select ifnull(sum(Acc_Bonus_Amount),0) from user_accounts where Acc_Mobile=msisdn and Acc_Bonus_Status=1 and Acc_Trans_Type in (1,4,7)),"
                         + "(select ifnull(sum(Acc_Bonus_Amount),0) from user_accounts where Acc_Mobile=msisdn and Acc_Bonus_Status=12),"
-                        + "(case when User_Channel=1 then'USSD' when User_Channel=2 then 'SMS' when User_Channel=3 then 'Computer Web' when User_Channel=4 then 'Mobile Web' when User_Channel=0 then 'No Channel'  end), "
                         + "(case when `status`=1 then 'Inactive' when `status`=0 then 'Active' end), " +
                         " (select ifnull(max(Acc_Date),'0') from user_accounts where Acc_Mobile = msisdn and Acc_Trans_Type=1) as 'Last Deposit', " +
                         " (select count(Play_Bet_ID) from player_bets where Play_Bet_Mobile = msisdn and Play_Bet_Status <> 206) as 'Bets Count', " +
-                        "(select referee  from refferafriend where refered=msisdn limit 1) as 'Referee',Reg_Keyword "+
-                        " from player where date(registration_date) between '"+from+"' and '"+to+"' and msisdn is not null order by registration_date desc ";
+                        " (select referee  from refferafriend where refered=msisdn limit 1) as 'Referee',Reg_Keyword, "+
+                        "Chan_Mode_Name from player,channels_used where date(registration_date) between '"+from+"' and '"+to+"' and msisdn is not null and User_Channel = Chan_Table_ID order by registration_date desc ";
         System.out.println("getPlayerRegistrations==="+dataQuery);
 
         JSONObject dataObj  = null;
@@ -69,12 +68,12 @@ public class PlayersRegistrationImpl {
                 String balanceRM = rs.getString(6);
                 String balanceBM = rs.getString(7);
                 String refferalBM = rs.getString(8);
-                String channel = rs.getString(9);
-                String status = rs.getString(10);
-                String lastdepositdate = rs.getString(11);
-                String betscount = rs.getString(12);
-                String referee = rs.getString(13);
-                String promoterCode = rs.getString(14);
+                String status = rs.getString(9);
+                String lastdepositdate = rs.getString(10);
+                String betscount = rs.getString(11);
+                String referee = rs.getString(12);
+                String promoterCode = rs.getString(13);
+                String channel = rs.getString(14);
                 String referalStatus="0";
                 if(referee == null)
                 {
@@ -132,12 +131,11 @@ public class PlayersRegistrationImpl {
         String dataQuery = "select id, msisdn, ifnull(`name`,'no name'), ifnull(email,'no email'), registration_date, (select ifnull(sum(Acc_Amount),0) from user_accounts "
                         + "where Acc_Mobile = msisdn ), (select ifnull(sum(Acc_Bonus_Amount),0) from user_accounts where Acc_Mobile=msisdn and Acc_Bonus_Status=1 and Acc_Trans_Type in (1,4,7)),"
                         + "(select ifnull(sum(Acc_Bonus_Amount),0) from user_accounts where Acc_Mobile=msisdn and Acc_Bonus_Status=12),"
-                        + "(case when User_Channel=1 then'USSD' when User_Channel=2 then 'SMS' when User_Channel=3 then 'Computer Web' when User_Channel=4 then 'Mobile Web' when User_Channel=0 then 'No Channel'  end), "
                         + "(case when `status`=1 then 'Inactive' when `status`=0 then 'Active' end), " +
                         " (select ifnull(max(Acc_Date),'0') from user_accounts where Acc_Mobile = msisdn and Acc_Trans_Type=1) as 'Last Deposit', " +
                         " (select count(Play_Bet_ID) from player_bets where Play_Bet_Mobile = msisdn and Play_Bet_Status <> 206) as 'Bets Count', " +
-                        "(select referee  from refferafriend where refered=msisdn limit 1) as 'Referee',Reg_Keyword "+
-                        " from player where msisdn='"+mobile_no+"' order by registration_date desc ";
+                        " (select referee  from refferafriend where refered=msisdn limit 1) as 'Referee',Reg_Keyword, "+
+                        " Chan_Mode_Name from player,channels_used where msisdn='"+mobile_no+"' and User_Channel = Chan_Table_ID order by registration_date desc ";
         System.out.println("getPlayerRegistrations==="+dataQuery);
 
         JSONObject dataObj  = null;
@@ -164,12 +162,12 @@ public class PlayersRegistrationImpl {
                 String balanceRM = rs.getString(6);
                 String balanceBM = rs.getString(7);
                 String refferalBM = rs.getString(8);
-                String channel = rs.getString(9);
-                String status = rs.getString(10);
-                String lastdepositdate = rs.getString(11);
-                String betscount = rs.getString(12);
-                String referee = rs.getString(13);
-                String promoterCode = rs.getString(14);
+                String status = rs.getString(9);
+                String lastdepositdate = rs.getString(10);
+                String betscount = rs.getString(11);
+                String referee = rs.getString(12);
+                String promoterCode = rs.getString(13);
+                String channel = rs.getString(14);
                 String referalStatus="0";
                 if(referee == null)
                 {
@@ -227,12 +225,12 @@ public class PlayersRegistrationImpl {
         String dataQuery = "select id, msisdn, ifnull(`name`,'no name'), ifnull(email,'no email'), registration_date, (select ifnull(sum(Acc_Amount),0) from user_accounts "
                         + "where Acc_Mobile = msisdn ), (select ifnull(sum(Acc_Bonus_Amount),0) from user_accounts where Acc_Mobile=msisdn and Acc_Bonus_Status=1 and Acc_Trans_Type in (1,4,7)),"
                         + "(select ifnull(sum(Acc_Bonus_Amount),0) from user_accounts where Acc_Mobile=msisdn and Acc_Bonus_Status=12),"
-                        + "(case when User_Channel=1 then'USSD' when User_Channel=2 then 'SMS' when User_Channel=3 then 'Computer Web' when User_Channel=4 then 'Mobile Web' when User_Channel=0 then 'No Channel'  end), "
                         + "(case when `status`=1 then 'Inactive' when `status`=0 then 'Active' end), " +
                         " (select ifnull(max(Acc_Date),'0') from user_accounts where Acc_Mobile = msisdn and Acc_Trans_Type=1) as 'Last Deposit', " +
                         " (select count(Play_Bet_ID) from player_bets where Play_Bet_Mobile = msisdn and Play_Bet_Status <> 206) as 'Bets Count', " +
-                        "(select referee  from refferafriend where refered=msisdn limit 1) as 'Referee',Reg_Keyword "+
-                        " from player where Reg_Keyword='"+keyword+"' order by registration_date desc ";
+                        " (select referee  from refferafriend where refered=msisdn limit 1) as 'Referee',Reg_Keyword, "+
+                        " Chan_Mode_Name from player,channels_used where Reg_Keyword='"+keyword+"' and User_Channel = Chan_Table_ID order by registration_date desc ";
+        
         System.out.println("getPlayerRegistrations==="+dataQuery);
 
         JSONObject dataObj  = null;
@@ -259,12 +257,12 @@ public class PlayersRegistrationImpl {
                 String balanceRM = rs.getString(6);
                 String balanceBM = rs.getString(7);
                 String refferalBM = rs.getString(8);
-                String channel = rs.getString(9);
-                String status = rs.getString(10);
-                String lastdepositdate = rs.getString(11);
-                String betscount = rs.getString(12);
-                String referee = rs.getString(13);
-                String promoterCode = rs.getString(14);
+                String status = rs.getString(9);
+                String lastdepositdate = rs.getString(10);
+                String betscount = rs.getString(11);
+                String referee = rs.getString(12);
+                String promoterCode = rs.getString(13);
+                String channel = rs.getString(14);
                 String referalStatus="0";
                 if(referee == null)
                 {

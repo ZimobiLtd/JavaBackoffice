@@ -69,8 +69,6 @@ public class UserAccountsTransactionsAPI extends HttpServlet {
         resp.setHeader("Access-Control-Allow-Origin", "*");
         PrintWriter out = resp.getWriter(); 
 
-        System.out.println("getUserAccountsTransactions===");
-
         String []respo=new Utility().getDatesRange(0);
         String fromdate=respo[0];
         String todate=respo[1];

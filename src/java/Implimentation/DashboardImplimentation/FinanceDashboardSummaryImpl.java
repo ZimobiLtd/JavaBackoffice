@@ -71,6 +71,7 @@ public class FinanceDashboardSummaryImpl {
         String computer_Web_Reg="0";
         String SMS_Reg="0";
         String mobile_Web_Reg="0";
+        String operamini_Web_Reg="0";
         
         String placedBets="0";
         String wonBets="0";
@@ -83,6 +84,7 @@ public class FinanceDashboardSummaryImpl {
         String computer_Web_Bets="0";
         String mobile_Web_Bets="0";
         String SMS_Bets="0";
+        String opera_Web_Bets="0";
         
         String Single_Bets="0";
         String Multi_Bets="0";
@@ -114,7 +116,8 @@ public class FinanceDashboardSummaryImpl {
 
         registrations="select count(id),(select count(id) from player where date(registration_date) between  '" + fromDate + "' and '" + toDate + "' and user_channel=2), "
                     + "(select count(id) from player where date(registration_date) between  '" + fromDate + "' and '" + toDate + "' and user_channel=3), "
-                    + "(select count(id) from player where date(registration_date) between  '" + fromDate + "' and '" + toDate + "' and user_channel=4) "
+                    + "(select count(id) from player where date(registration_date) between  '" + fromDate + "' and '" + toDate + "' and user_channel=4), "
+                    + "(select count(id) from player where date(registration_date) between  '" + fromDate + "' and '" + toDate + "' and user_channel in (5,6)) "
                     + "from player where date(registration_date) between  '" + fromDate + "' and '" + toDate + "' and user_channel=1 ";
 
         dataQueryDeposit = "SELECT count(Acc_ID),ifnull(sum(Acc_Amount),0) FROM user_accounts "
@@ -133,7 +136,8 @@ public class FinanceDashboardSummaryImpl {
         
         dataQueryBetsByChannel="select count(Play_Bet_Slip_ID),(select count(Play_Bet_Slip_ID) from player_bets where date(Play_Bet_Timestamp) between '" + fromDate + "' and '" + toDate + "' and Play_Bet_Channel = 2), "
                 + "(select count(Play_Bet_Slip_ID) from player_bets where date(Play_Bet_Timestamp) between '" + fromDate + "' and '" + toDate + "' and Play_Bet_Channel = 3), "
-                + "(select count(Play_Bet_Slip_ID) from player_bets where date(Play_Bet_Timestamp) between '" + fromDate + "' and '" + toDate + "' and Play_Bet_Channel = 4) "
+                + "(select count(Play_Bet_Slip_ID) from player_bets where date(Play_Bet_Timestamp) between '" + fromDate + "' and '" + toDate + "' and Play_Bet_Channel = 4), "
+                + "(select count(Play_Bet_Slip_ID) from player_bets where date(Play_Bet_Timestamp) between '" + fromDate + "' and '" + toDate + "' and Play_Bet_Channel in (5,6)) "
                 + "from player_bets where date(Play_Bet_Timestamp) between '" + fromDate + "' and '" + toDate + "' and Play_Bet_Channel = 1 " ;
 
         dataQueryBetsByBetType="select ifnull(Play_Bet_Type,0), ifnull(count(Play_Bet_Type),0) from player_bets  where date(Play_Bet_Timestamp) between '" + fromDate + "' and '" + toDate + "' and Play_Bet_Status in (201,202,203) GROUP BY Play_Bet_Type";
@@ -252,12 +256,14 @@ public class FinanceDashboardSummaryImpl {
                     SMS_Reg=rs.getString(2);
                     computer_Web_Reg=rs.getString(3);
                     mobile_Web_Reg=rs.getString(4);
+                    operamini_Web_Reg=rs.getString(5);
                 }
                 dataObj  = new JSONObject();
                 dataObj.put("SMS_Reg", SMS_Reg);
                 dataObj.put("USSD_Reg", USSD_Reg);
                 dataObj.put("Computer_Web", computer_Web_Reg);
                 dataObj.put("Mobile_Web", mobile_Web_Reg);
+                dataObj.put("OperaMini", operamini_Web_Reg);
                 
                 main.put("Registration_Summary", dataObj);
                 
@@ -312,12 +318,14 @@ public class FinanceDashboardSummaryImpl {
                     SMS_Bets=rs.getString(2);
                     computer_Web_Bets=rs.getString(3);
                     mobile_Web_Bets=rs.getString(4);
+                    opera_Web_Bets=rs.getString(5);
                 }
                 dataObj  = new JSONObject();
                 dataObj.put("SMS_Bets", SMS_Bets);
                 dataObj.put("USSD_Bets", USSD_Bets);
                 dataObj.put("Computer_Web_Bets", computer_Web_Bets);
                 dataObj.put("Mobile_Web_Bets", mobile_Web_Bets);
+                dataObj.put("Opera_Web_Bets", opera_Web_Bets);
                 
                 main.put("BetsByChannel_Summary", dataObj);
                 
