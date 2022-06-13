@@ -83,15 +83,14 @@ public class JackpotGamesHighlightsAPI extends HttpServlet {
             System.out.println("jackpotGamesHighlights==="+jb.toString());
             jsonobj = new JSONObject(jb.toString());
             String action=jsonobj.getString("action");
-            JSONObject data =jsonobj.getJSONObject("data");
 
             if(action.equals("jackpot_highlight_games"))
             {
                 JSONObject dataObj  = new JSONObject();
                 JSONArray dataArray = new JSONArray();
-                String startDate = data.getString("startDate");
-                String endDate = data.getString("endDate");
-                String []matchIDs = data.getString("matchIDs").trim().split("#");
+                String startDate = jsonobj.getString("startDate");
+                String endDate = jsonobj.getString("endDate");
+                String []matchIDs = jsonobj.getString("data").trim().split("#");
 
                 int validateJackpot=new JackpotProcessor().validateJackpotCreation();
                 if(validateJackpot != 10)
@@ -117,7 +116,7 @@ public class JackpotGamesHighlightsAPI extends HttpServlet {
             }
             else if(action.equals("jackpot_unhighlight_games"))
             {  
-                responseObj=new GamesHighlightsImpl().setunHighlightJackpot(data.getString("matchID"));
+                responseObj=new GamesHighlightsImpl().setunHighlightJackpot(jsonobj.getString("data"));
             }
         }
         catch (IOException | JSONException ex) 
