@@ -60,7 +60,7 @@ public class JackpotProcessor {
     }
     
     
-    public int highlightJackpotGames(String []matchIDs)
+    public int highlightJackpotGames(String startDate,String endDate,String []matchIDs)
     {
         int status=500;
         StringBuilder jackpotGamesBuilder= new StringBuilder();
@@ -81,11 +81,8 @@ public class JackpotProcessor {
         }
         
         String jackpoGamestMatchIDs=jackpotGamesBuilder.substring(1);
-        String []datesData=getMinMaxDate(jackpoGamestMatchIDs);
-        String minDate=datesData[0];
-        String maxDate=datesData[1];
         
-        int resultID=createJackpotEntry(minDate,maxDate,matchIDs);
+        int resultID=createJackpotEntry(startDate,endDate,matchIDs);
         if(resultID == 500500)
         {
             status=500;
