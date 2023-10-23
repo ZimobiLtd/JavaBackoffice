@@ -1,10 +1,8 @@
 package Database;
 
 
-import Utility.LoggerClass;
 import java.sql.Connection;
 import java.sql.SQLException;
-import java.util.logging.Level;
 import javax.naming.Context;
 import javax.naming.InitialContext;
 import javax.naming.NamingException;
@@ -45,33 +43,18 @@ public class DBManager
         
     public Connection getDBConnection(String type)
     {
-        String datasource;
-        if(type.equals("read"))
-        {
-            datasource="jdbc/starbet_read"; 
-        }
-        else if (type.equals("write"))
-        {
-            datasource="jdbc/starbet_write";
-        }
-        else
-        {
-            datasource="jdbc/startbet";  
-        }
-        
-        DataSource dataSource = null;
         Connection connection=null;
         try 
         {
             Class.forName(DRIVER);
             Context ctx = new InitialContext();
             Context envCtx = (Context) ctx.lookup(LOOKUP);
-            dataSource = (DataSource)envCtx.lookup(datasource);
+            DataSource dataSource = (DataSource)envCtx.lookup("jdbc/ushindibet");
             connection=dataSource.getConnection();
         }
         catch (SQLException | ClassNotFoundException | NamingException ex) 
         {
-            LoggerClass.buildLog(Thread.currentThread().getStackTrace()[1],Level.SEVERE, "<<<ClassNotFoundException | NamingException>>> "+ex.getMessage());
+            System.out.println("<<<ClassNotFoundException | NamingException>>> "+ex.getMessage());
         }
         
         return connection;
